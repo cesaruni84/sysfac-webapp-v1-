@@ -12,6 +12,7 @@ import { GrillaGuiaRemision } from '../../models/guia_remision.model';
 export class GuiaRemisionService {
 
   url = `${HOST}/empresas/`;
+  url2 = `${HOST}/guias`;
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -28,7 +29,7 @@ export class GuiaRemisionService {
 
   registrarGuiaRemisionBD(guiaRemision: GuiaRemision) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<any>(this.url, guiaRemision, this.httpOptions);
+    return this.http.post<any>(this.url2, guiaRemision, this.httpOptions);
   }
 
 
