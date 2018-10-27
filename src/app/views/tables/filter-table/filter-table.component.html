@@ -1,0 +1,21 @@
+<script lang="javascript" src="/node_modules/xlsx-style/dist/xlsx.core.min.js"></script>
+<script lang="javascript" src="/node_modules/xlsx-style/dist/xlsx.full.min.js"></script>
+<script lang="javascript" src="/node_modules/xlsx-style/dist/xlsx.js"></script>
+<script lang="javascript" src="/node_modules/xlsx-style/dist/xlsx.full.min.map"></script>
+
+
+<mat-form-field class="margin-333" style="width: 100%">
+    <input matInput placeholder="FILTRO SERIE" value="" (keyup)='updateFilter($event)'>
+</mat-form-field>
+
+
+<mat-form-field class="margin-333" style="width: 100%">
+    <input matInput placeholder="FILTRO ESTADO" value="" (keyup)='updateFilter2($event)'>
+</mat-form-field>
+
+<button mat-raised-button color="primary" (click)="ExportTOExcel()">Export as Excel</button>
+
+<div class="mat-box-shadow margin-333">
+    <ngx-datatable #table class="material bg-white" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="10" [rows]="rows" [columns]="columns">
+    </ngx-datatable>
+</div>

@@ -1,0 +1,15 @@
+.example-card {
+    max-width: 400px;
+}
+
+.green-snackbar {
+    background: rgb(33, 243, 145);
+}
+
+.red-snackbar {
+    background: #F44336;
+}
+
+mat-grid-tile {
+    background: lightblue;
+}

@@ -1,0 +1,50 @@
+<div class="page-wrap height-100 mat-bg-primary" [ngStyle]="{'background-image': getUrl()}">
+    <div class="session-form-hold">
+        <mat-progress-bar mode="determinate" class="session-progress"></mat-progress-bar>
+        <mat-card>
+            <mat-card-content>
+                <div class="text-center pb-1">
+                    <img src="assets/images/logo-full.png" alt="" class="mb-05">
+                    <H2>Módulo de Facturación</H2>
+                    <p class="text-muted m-0">Inicie sesión en su cuenta</p>
+                </div>
+                <form [formGroup]="signinForm" (ngSubmit)="signin()">
+                    <div class="">
+                        <mat-form-field class="full-width">
+                            <input matInput name="username" [formControl]="signinForm.controls['username']" placeholder="Usuario" value="">
+                        </mat-form-field>
+                        <small *ngIf="signinForm.controls['username'].hasError('required') && signinForm.controls['username'].touched" class="form-error-msg"> Usuario es requerido </small>
+                    </div>
+
+                    <div class="">
+                        <mat-form-field class="full-width">
+                            <input type="password" name="password" matInput [formControl]="signinForm.controls['password']" placeholder="Password" value="">
+                        </mat-form-field>
+                        <small *ngIf="signinForm.controls['password'].hasError('required') && signinForm.controls['password'].touched" class="form-error-msg"> Password es requerido </small>
+                    </div>
+
+                    <div class="">
+                        <mat-form-field class="full-width">
+                            <mat-select name="empresaSelected" placeholder="Empresa" [formControl]="signinForm.controls['empresaSelected']" requeried>
+                                <mat-option *ngFor="let empresa of listaEmpresas" [value]="empresa">
+                                    {{empresa.comercial + ' - RUC ' + empresa.ruc }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                    </div>
+                    <div class="pb-1">
+                        <mat-checkbox name="rememberMe" [formControl]="signinForm.controls['rememberMe']" class="pb-1">Recordar en este equipo</mat-checkbox>
+                    </div>
+
+                    <button mat-raised-button class="mat-primary full-width mb-1" [disabled]="signinForm.invalid">Ingresar</button>
+                    <div class="text-center">
+                        <a [routerLink]="'/sessions/forgot-password'" class="mat-primary text-center full-width">Olvidó clave?</a>
+                        <span fxFlex></span>
+                        <a [routerLink]="'/sessions/signup'" class="mat-primary text-center full-width">Crear una nueva cuenta</a>
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

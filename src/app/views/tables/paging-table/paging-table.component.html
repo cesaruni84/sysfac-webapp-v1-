@@ -1,0 +1,68 @@
+<mat-card>
+
+    <mat-card-content class="mb-0 p-05">
+        <form [formGroup]="formFilter" novalidate>
+            <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
+                <div fxFlex="100" fxFlex.gt-xs="50">
+                    <mat-form-field fxFlex="17%" class="pl-1">
+                        <input matInput name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="Nro de Serie" maxlength="4" style="color:blue" (keyup)='updateFilter($event)'>
+                    </mat-form-field>
+                    <mat-label fxFlex="20%" class="pl-1"><b>&nbsp; - </b></mat-label>
+                    <mat-form-field fxFlex="25%" class="pl-1">
+                        <input matInput name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="Nro de Guia" maxlength="7" style="color:red" (keyup)='updateFilter($event)'>
+                    </mat-form-field>
+                    <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
+                    <mat-form-field class="pl-1 ml-2" fxFlex="40%">
+                        <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" placeholder="Fecha Inicio (Emisión)" maxlength="10">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field class="pl-1" fxFlex="40%">
+                        <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" placeholder="Fecha Fin (Emisión)" maxlength="10">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+
+                </div>
+            </div>
+            <br>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
+                <mat-form-field class="pl-1">
+                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="Estado" (selectionChange)='updateFilter4($event)'>
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option value="Registrado">Registrado</mat-option>
+                        <mat-option value="Anulado">Anulado</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="pl-1" fxFlex="30%">
+                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="Chofer" (selectionChange)="seleccionarChofer4($event)">
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
+                            {{chofer.nombres + ' ' + chofer.apellidos}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="pl-1" fxFlex="30%">
+                    <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']" placeholder="Destino" (selectionChange)="seleccionarFactoriaDestinatario4($event)">
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.refLarga2">
+                            {{factoria.refLarga2}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <section class="pl-1 ml-05">
+                    <mat-checkbox name="esFacturado" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
+                </section>
+            </div>
+            <div class="pl-1 full-width" align="right">
+                <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()">Exportar</button>
+            </div>
+
+        </form>
+    </mat-card-content>
+</mat-card>
+
+<div class="mat-box-shadow margin-333" [style.fontSize.px]="10">
+    <ngx-datatable class="material bg-white" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns" [selectionType]="'single'" (select)='onSelect($event)'>
+    </ngx-datatable>
+</div>
