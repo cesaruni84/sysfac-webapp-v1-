@@ -71,7 +71,7 @@ export class HeaderSideComponent implements OnInit {
 
   }
 
-  logout() {
+  logout(event: any) {
 
     this.userService.deleteUserLoggedIn();
     this.router.navigate(['/sessions/signin']);
