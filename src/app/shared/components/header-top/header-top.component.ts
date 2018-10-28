@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { NavigationService } from "../../../shared/services/navigation.service";
+import { NavigationService } from '../../services/navigation.service';
 import { Subscription } from 'rxjs';
-import { ThemeService } from '../../../shared/services/theme.service';
+import { ThemeService } from '../../services/theme.service';
 import { TranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../../services/layout.service';
 

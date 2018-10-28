@@ -101,14 +101,12 @@ export class BasicFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    // let password = new FormControl('', Validators.required);
-    // let confirmPassword = new FormControl('', CustomValidators.equalTo(password));
 
     const numberPatern = '^[0-9.,]+$';
 
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
-    
+
     // Arma Formulario
     this.basicForm = new FormGroup({
       // empresa_: new FormControl('', [Validators.required]),
@@ -180,6 +178,11 @@ export class BasicFormComponent implements OnInit {
       ]),
     });
 
+    this.cargarCombosFormulario();
+
+  };
+
+  cargarCombosFormulario() {
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias().subscribe(data1 => {
       console.log(data1);
@@ -212,9 +215,8 @@ export class BasicFormComponent implements OnInit {
       console.log(data5);
       this.comboBalanzas = data5;
     });
+  }
 
-
-  };
 
   seleccionarFactoriaRemitente(e: any) {
       this.valorRucRemitente_ = e.value.cliente.ruc;
@@ -234,8 +236,7 @@ export class BasicFormComponent implements OnInit {
   }
 
   // Grabar Guia de Remisión
-  grabarGuiaRemision(model: any, isValid: boolean, e: Event){
-
+  grabarGuiaRemision(model: any, isValid: boolean, e: Event) {
 
     console.log(this.basicForm.status);
    if (this.basicForm.invalid) {
