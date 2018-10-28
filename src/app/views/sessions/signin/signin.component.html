@@ -10,7 +10,7 @@
                 </div>
                 <form [formGroup]="signinForm" (ngSubmit)="signin()">
                     <div class="">
-                        <mat-form-field class="full-width">
+                        <mat-form-field class="full-width" [style.fontSize.px]="14">
                             <input matInput name="username" [formControl]="signinForm.controls['username']" placeholder="Usuario" value="">
                         </mat-form-field>
                         <small *ngIf="signinForm.controls['username'].hasError('required') && signinForm.controls['username'].touched" class="form-error-msg"> Usuario es requerido </small>
@@ -34,7 +34,7 @@
 
                     </div>
                     <div class="pb-1">
-                        <mat-checkbox name="rememberMe" [formControl]="signinForm.controls['rememberMe']" class="pb-1">Recordar en este equipo</mat-checkbox>
+                        <small *ngIf="errorResponse_" class="form-error-msg"> {{errorResponse_.errorMessage }}</small>
                     </div>
 
                     <button mat-raised-button class="mat-primary full-width mb-1" [disabled]="signinForm.invalid">Ingresar</button>

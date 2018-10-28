@@ -10,7 +10,7 @@ export class UsuarioService {
   public usserLogged: Usuario;
 
   constructor() {
-    this.isUserLoggedIn = false;
+
    }
 
   setUserLoggedIn(user: Usuario) {
@@ -19,7 +19,23 @@ export class UsuarioService {
     localStorage.setItem('currentUser', JSON.stringify(user));
   }
 
+  deleteUserLoggedIn() {
+    this.isUserLoggedIn = false;
+    localStorage.removeItem('currentUser');
+  }
+
   getUserLoggedIn() {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
+
+  getToken() {
+    return localStorage.getItem('currentUser');
+  }
+
+  isAuthenticated(): boolean {
+    return this.getToken() !== null;
+  }
+
+
+
 }

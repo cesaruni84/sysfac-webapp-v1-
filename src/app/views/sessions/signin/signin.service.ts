@@ -16,11 +16,13 @@ export class SigninService {
   constructor(private http: HttpClient) {
    }
 
-  validarLogin(user: UsuarioForm) {
+  login(user: UsuarioForm) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<Usuario>(this.url, user);
   }
 
-
+  logout() {
+    localStorage.removeItem('currentUser');
+  }
 
 }

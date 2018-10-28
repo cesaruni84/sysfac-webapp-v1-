@@ -33,6 +33,7 @@ export class SigninComponent implements OnInit {
   // Retorno de la validacion
   usuario_: Usuario;
   errorResponse_: ErrorResponse;
+  returnUrl: String;
 
   constructor(private empresaService: EmpresaService,
               private signinService: SigninService,
@@ -44,40 +45,55 @@ export class SigninComponent implements OnInit {
 
   ngOnInit() {
 
+     // Resetea Login Status
+    this.signinService.logout();
+
+    // Carga validaciones de formulario
+    this.cargarFormulario();
+
+    // Carga lista de Combos de Empresa
+    this.cargarComboEmpresas();
+
+    // Siguiente URL
+    this.returnUrl = '/dashboard';
+  }
+
+  cargarFormulario() {
     this.signinForm = new FormGroup({
       username: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       empresaSelected: new FormControl('', Validators.required),
       rememberMe: new FormControl(false)
     });
+  }
+
+  cargarComboEmpresas(){
     this.empresaService.listarComboEmpresas().subscribe(data => {
-      console.log(data);
       this.listaEmpresas = data;
     });
+  }
 
+
+  valor (tagName: any) {
+    return this.signinForm.get(tagName).value;
   }
 
   signin() {
-
-    // Obtiene Datos de formulario
-    const txtCodigoUsuario_ = this.signinForm.get('username').value;
-    const txtClaveUsuario_ = this.signinForm.get('password').value;
-    const idEmpresa_ = this.signinForm.get('empresaSelected').value.id;
-
     // Carga Objeto a enviar por POST
-    this.usuarioForm = new UsuarioForm(txtCodigoUsuario_, txtClaveUsuario_, idEmpresa_ );
+    this.usuarioForm = new UsuarioForm(this.valor('username'),
+                                        this.valor('password'),
+                                        this.valor('empresaSelected').id );
+
     this.submitButton.disabled = true;
     this.progressBar.mode = 'indeterminate';
 
     // Manda POST hacia BD AWS
-    this.signinService.validarLogin(this.usuarioForm)
+    this.signinService.login(this.usuarioForm)
       .subscribe((data_) => {
-        this.usuario_ = data_;
-        this.progressBar.mode = 'determinate';
-        this.userService.setUserLoggedIn(this.usuario_);
-        
+        this.userService.setUserLoggedIn(data_);
+
         // Redirigir a nueva pagina pasando el objeto como usuario
-        this.router.navigate(['/dashboard']);
+        this.router.navigate([this.returnUrl]);
 
 
       }, (error: HttpErrorResponse) => {
@@ -89,9 +105,10 @@ export class SigninComponent implements OnInit {
 
   }
 
-  getUrl()
-  {
-    return "url('http://estringsoftware.com/wp-content/uploads/2017/07/estring-header-lowsat.jpg')";
+  getUrl() {
+    // return "url('http://estringsoftware.com/wp-content/uploads/2017/07/estring-header-lowsat.jpg')";
+    return "url('https://www.compromisorse.com/upload/noticias/005/5106/cemex_lh.jpg')";
+    
   }
 
 
