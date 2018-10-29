@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import {
   MatInputModule, MatDatepickerModule, MatSelectModule, MatCardModule, MatSlideToggleModule,
-   MatCheckboxModule, MatFormFieldModule, MatButtonModule
+   MatCheckboxModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatChipsModule
  } from '@angular/material';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -21,6 +22,8 @@ import { TablesRoutes } from './tables.routing';
     MatInputModule,
     NgxDatatableModule,
     MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
     FormsModule,
     ReactiveFormsModule,
     MatSlideToggleModule,

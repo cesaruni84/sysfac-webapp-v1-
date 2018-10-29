@@ -62,7 +62,92 @@
     </mat-card-content>
 </mat-card>
 
-<div class="mat-box-shadow margin-333" [style.fontSize.px]="10">
-    <ngx-datatable class="material bg-white" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns" [selectionType]="'single'" (select)='onSelect($event)'>
+<div class="mat-box-shadow margin-333">
+    <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns">
+        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
+                <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.id }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.nroguia }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.fechaEmision }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.nroLiq }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.ordenServicio }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.remitente }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Razón Soc. Dest" [flexGrow]="1" [width]="250">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.destinatario }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <mat-chip mat-sm-chip class="full-width" [color]="'primary'" [selected]="row.estado =='REGISTRADO'">{{row.estado == 'REGISTRADO' ? 'Registrado' : 'Anulado'}}</mat-chip>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Producto" [flexGrow]="1" [width]="240">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.producto }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="130">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.cantidad }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Chofer" [flexGrow]="1" [width]="240">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.chofer }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.balance | currency }}
+            </ng-template>
+        </ngx-datatable-column> -->
+        <ngx-datatable-column name="Guía Rem. Cliente" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.nroGuiaCliente }}
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Fec. Recepción" [flexGrow]="1" [width]="130">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.fechaRecepcion }}
+            </ng-template>
+        </ngx-datatable-column>
+
     </ngx-datatable>
 </div>

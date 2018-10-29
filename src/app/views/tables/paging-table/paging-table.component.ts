@@ -1,6 +1,5 @@
 import { FactoriaService } from './../../../shared/services/factorias/factoria.service';
 import { UsuarioService } from './../../../shared/services/auth/usuario.service';
-import { GrillaGuiaRemision } from './../../../shared/models/guia_remision.model';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TablesService } from '../tables.service';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
@@ -18,6 +17,7 @@ import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '../../../../../node_modules/@swimlane/ngx-datatable';
 import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
 import { formatDate } from '../../../../../node_modules/@angular/common';
+import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 
 
 @Component({
@@ -114,6 +114,7 @@ export class PagingTableComponent implements OnInit {
       this.listaGrillaGuias = data;
       this.rows = this.temp = this.total_rows_bd = data;
       this.loader.close();
+
     });
 
 
@@ -315,7 +316,18 @@ export class PagingTableComponent implements OnInit {
 
   onSelect({ selected }) {
     console.log('Select Event', selected, );
+
   }
+
+  onActivate($event) {
+     if ($event.type === 'dblclick'){
+       console.log('doble click');
+     }
+
+
+  }
+
+
 
   seleccionarChofer4(event) {
 
@@ -326,5 +338,12 @@ export class PagingTableComponent implements OnInit {
 
 
   }
+  consultarGuia(row) {
+    console.log(row.nroguia);
+
+  }
+
+
+
 
 }

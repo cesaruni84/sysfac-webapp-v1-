@@ -1,31 +1,36 @@
-<div class="page-wrap height-100 mat-bg-primary" [ngStyle]="{'background-image': getUrl()}">
+<div class=" height-100 mat-bg-primary" [ngStyle]="{'background-image': getUrl()}">
     <div class="session-form-hold">
         <mat-progress-bar mode="determinate" class="session-progress"></mat-progress-bar>
         <mat-card>
             <mat-card-content>
                 <div class="text-center pb-1">
-                    <img src="assets/images/logo-full.png" alt="" class="mb-05">
+                    <img src="assets/images/logo-full.png" alt="" class="mb-0">
                     <H2>Módulo de Facturación</H2>
                     <p class="text-muted m-0">Inicie sesión en su cuenta</p>
                 </div>
-                <form [formGroup]="signinForm" (ngSubmit)="signin()">
+                <form [formGroup]="signinForm" (ngSubmit)="signin()" [style.fontSize.px]="16">
                     <div class="">
-                        <mat-form-field class="full-width" [style.fontSize.px]="14">
-                            <input matInput name="username" [formControl]="signinForm.controls['username']" placeholder="Usuario" value="">
+                        <mat-form-field class="full-width" appearance="outline">
+                            <mat-label style="color:rgb(62, 139, 228)">Usuario</mat-label>
+                            <input matInput name="username" [formControl]="signinForm.controls['username']" placeholder="" value="">
+                            <mat-icon matSuffix>account_box</mat-icon>
+                            <mat-error *ngIf="signinForm.controls['username'].hasError('required') && signinForm.controls['username'].touched" class="form-error-msg"> Usuario es requerido </mat-error>
                         </mat-form-field>
-                        <small *ngIf="signinForm.controls['username'].hasError('required') && signinForm.controls['username'].touched" class="form-error-msg"> Usuario es requerido </small>
                     </div>
 
                     <div class="">
-                        <mat-form-field class="full-width">
-                            <input type="password" name="password" matInput [formControl]="signinForm.controls['password']" placeholder="Password" value="">
+                        <mat-form-field class="full-width" appearance="outline">
+                            <mat-label style="color:rgb(62, 139, 228)">Password</mat-label>
+                            <input type="password" name="password" matInput [formControl]="signinForm.controls['password']" placeholder="" value="">
+                            <mat-icon matSuffix>vpn_key</mat-icon>
+                            <mat-error *ngIf="signinForm.controls['password'].hasError('required') && signinForm.controls['password'].touched" class="form-error-msg"> Password es requerido </mat-error>
                         </mat-form-field>
-                        <small *ngIf="signinForm.controls['password'].hasError('required') && signinForm.controls['password'].touched" class="form-error-msg"> Password es requerido </small>
                     </div>
 
                     <div class="">
-                        <mat-form-field class="full-width">
-                            <mat-select name="empresaSelected" placeholder="Empresa" [formControl]="signinForm.controls['empresaSelected']" requeried>
+                        <mat-form-field class="full-width" appearance="outline">
+                            <mat-label style="color:rgb(62, 139, 228)">Empresa</mat-label>
+                            <mat-select name="empresaSelected" placeholder="" [formControl]="signinForm.controls['empresaSelected']" requeried>
                                 <mat-option *ngFor="let empresa of listaEmpresas" [value]="empresa">
                                     {{empresa.comercial + ' - RUC ' + empresa.ruc }}
                                 </mat-option>
