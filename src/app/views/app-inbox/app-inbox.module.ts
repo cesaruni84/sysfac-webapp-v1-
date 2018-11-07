@@ -18,7 +18,7 @@ import {
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
 
-import { SharedModule } from './../../shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 import { AppInboxComponent } from './app-inbox.component';
 import { MailComposeComponent } from './mail-compose.component';
 import { InboxRoutes } from "./app-inbox.routing";

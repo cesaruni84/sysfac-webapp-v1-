@@ -105,11 +105,5 @@ export class SigninComponent implements OnInit {
 
   }
 
-  getUrl() {
-    // return "url('http://estringsoftware.com/wp-content/uploads/2017/07/estring-header-lowsat.jpg')";
-    return "url('https://www.compromisorse.com/upload/noticias/005/5106/cemex_lh.jpg')";
-    
-  }
-
 
 }

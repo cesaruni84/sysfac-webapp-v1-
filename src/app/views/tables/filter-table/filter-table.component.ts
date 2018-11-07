@@ -68,7 +68,6 @@ export class FilterTableComponent implements OnInit {
   updateFilter2(event) {
 
     console.log('dataFiltrada: ' + this.dataFiltrada);
-
     const val = event.target.value.toLowerCase();
     this.filtro2 = val ;
     const val_filtro1 = this.filtro1;

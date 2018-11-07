@@ -8,7 +8,7 @@ import {
   isSameMonth,
   addHours
 } from 'date-fns';
-import { EgretCalendarEvent } from '../../shared/models/event.model';
+import { EgretCalendarEvent } from '../models/event.model';
 
 export class CalendarEventDB {
   private colors: any = {

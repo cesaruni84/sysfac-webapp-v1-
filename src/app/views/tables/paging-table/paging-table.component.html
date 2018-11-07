@@ -2,40 +2,36 @@
 
     <mat-card-content class="mb-0 p-05">
         <form [formGroup]="formFilter" novalidate>
-            <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
-                <div fxFlex="100" fxFlex.gt-xs="50">
-                    <mat-form-field fxFlex="17%" class="pl-1">
-                        <input matInput name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="Nro de Serie" maxlength="4" style="color:blue" (keyup)='updateFilter($event)'>
-                    </mat-form-field>
-                    <mat-label fxFlex="20%" class="pl-1"><b>&nbsp; - </b></mat-label>
-                    <mat-form-field fxFlex="25%" class="pl-1">
-                        <input matInput name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="Nro de Guia" maxlength="7" style="color:red" (keyup)='updateFilter($event)'>
-                    </mat-form-field>
-                    <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
-                    <mat-form-field class="pl-1 ml-2" fxFlex="40%">
-                        <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" placeholder="Fecha Inicio (Emisión)" maxlength="10">
-                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
-                    <mat-form-field class="pl-1" fxFlex="40%">
-                        <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" placeholder="Fecha Fin (Emisión)" maxlength="10">
-                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                        <mat-datepicker #picker2></mat-datepicker>
-                    </mat-form-field>
-
-                </div>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
+                <mat-form-field fxFlex="10%" class="pl-1">
+                    <input matInput name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="NRO. DE SERIE" maxlength="4" style="color:blue" (keyup)='updateFilter($event)'>
+                </mat-form-field>
+                <mat-form-field fxFlex="15%" class="pl-1">
+                    <input matInput name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="NRO. DE GUIA" maxlength="7" style="color:red" (keyup)='updateFilter($event)'>
+                </mat-form-field>
+                <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
+                <mat-form-field class="pl-1 ml-2" fxFlex="40%">
+                    <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" placeholder="FECHA INICIO (EMISION)" maxlength="10">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="pl-1" fxFlex="40%">
+                    <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" placeholder="FECHA FIN (EMISION)" maxlength="10">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
             </div>
             <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                 <mat-form-field class="pl-1">
-                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="Estado" (selectionChange)='updateFilter4($event)'>
+                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="ESTADO" (selectionChange)='updateFilter4($event)'>
                         <mat-option value="">Todos</mat-option>
                         <mat-option value="Registrado">Registrado</mat-option>
                         <mat-option value="Anulado">Anulado</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
-                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="Chofer" (selectionChange)="seleccionarChofer4($event)">
+                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="CHOFER" (selectionChange)="seleccionarChofer4($event)">
                         <mat-option value="">Todos</mat-option>
                         <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
                             {{chofer.nombres + ' ' + chofer.apellidos}}
@@ -43,7 +39,7 @@
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
-                    <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']" placeholder="Destino" (selectionChange)="seleccionarFactoriaDestinatario4($event)">
+                    <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']" placeholder="DESTINO" (selectionChange)="seleccionarFactoriaDestinatario4($event)">
                         <mat-option value="">Todos</mat-option>
                         <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.refLarga2">
                             {{factoria.refLarga2}}
@@ -63,6 +59,7 @@
 </mat-card>
 
 <div class="mat-box-shadow margin-333">
+
     <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns">
         <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
             <ng-template let-row="row" ngx-datatable-cell-template>
@@ -71,63 +68,63 @@
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60">
+        <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.id }}
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1">
+        <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" prop="nroguia">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.nroguia }}
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130">
+        <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.fechaEmision }}
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1">
+        <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1" prop="nroLiq">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.nroLiq }}
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1">
+        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" prop="ordenServicio">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.ordenServicio }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270">
+        <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270" prop="remitente">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.remitente }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Razón Soc. Dest" [flexGrow]="1" [width]="250">
+        <ngx-datatable-column name="Razón Soc. Dest" [flexGrow]="1" [width]="250" prop="destinatario">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.destinatario }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110">
+        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110" prop="estado">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <mat-chip mat-sm-chip class="full-width" [color]="'primary'" [selected]="row.estado =='REGISTRADO'">{{row.estado == 'REGISTRADO' ? 'Registrado' : 'Anulado'}}</mat-chip>
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Producto" [flexGrow]="1" [width]="240">
+        <ngx-datatable-column name="Producto" [flexGrow]="1" [width]="240" prop="producto">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.producto }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="130">
+        <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="130" prop="cantidad">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.cantidad }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Chofer" [flexGrow]="1" [width]="240">
+        <ngx-datatable-column name="Chofer" [flexGrow]="1" [width]="240" prop="chofer">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.chofer }}
             </ng-template>

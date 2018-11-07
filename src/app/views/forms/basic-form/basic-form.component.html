@@ -7,96 +7,111 @@
         <form [formGroup]="basicForm" novalidate [style.fontSize.px]="12" (ngSubmit)="grabarGuiaRemision(basicForm.value, basicForm.valid, $event)">
             <div fxLayout="row wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
-                    <div fxLayout="row" fxLayoutWrap="wrap">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
                         <div fxFlex="100" fxFlex.gt-xs="70">
-
                             <mat-card class="p-1 m-05">
                                 <mat-card-content class="pb-0">
                                     <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="14" fxFlex="15%"><b><br>EMPRESA :</b></mat-label>
-                                        <mat-form-field fxFlex="70%" appearance="fill">
-                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [disabled]="true" style="color:blue">
+                                        <mat-form-field fxFlex="100%" appearance="">
+                                            <mat-label [style.fontSize.px]="16"><b>EMPRESA :</b></mat-label>
+                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [disabled]="true" style="color:#3f51b5">
+                                            <mat-icon matSuffix>store</mat-icon>
                                         </mat-form-field>
 
                                     </div>
 
                                     <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="14" fxFlex="15%"><b><br>DIRECCION :</b></mat-label>
-                                        <mat-form-field fxFlex="70%" appearance="fill">
-                                            <input matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [disabled]="true" style="color:blue">
+
+                                        <mat-form-field fxFlex="100%" appearance="">
+                                            <mat-label [style.fontSize.px]="16" fxFlex="15%"><b>DIRECCION :</b></mat-label>
+                                            <input matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [disabled]="true" style="color:#3f51b5">
+                                            <mat-icon matSuffix>directions</mat-icon>
                                         </mat-form-field>
                                     </div>
 
                                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign=" left">
                                         <mat-form-field appearance="outline">
                                             <mat-label><b>FECHA DE EMISION</b></mat-label>
-                                            <input matInput name="fechaEmision" [formControl]="basicForm.controls['fechaEmision']" [matDatepicker]="appDatepicker" maxlength="10" (dateChange)="onChangeFechaEmision('change_fecha_emision', $event)" style="color:blue">
+                                            <input matInput name="fechaEmision" [formControl]="basicForm.controls['fechaEmision']" [matDatepicker]="appDatepicker" maxlength="10" [(ngModel)]="valorFechaEmision_" (dateChange)="onChangeFechaEmision('change_fecha_emision', $event)" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
                                             <mat-datepicker touchUi #appDatepicker></mat-datepicker>
+                                            <mat-error *ngIf="basicForm.controls['fechaEmision'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
 
                                         <mat-form-field appearance="outline">
                                             <mat-label><b>FECHA INICIO TRASLADO</b></mat-label>
-                                            <input matInput name="fechaIniTraslado" [formControl]="basicForm.controls['fechaIniTraslado']" [matDatepicker]="picker" valuemaxlength="10" [(ngModel)]="valorFechaIniTraslado_" style="color:blue" disabled>
+                                            <input matInput name="fechaIniTraslado" [formControl]="basicForm.controls['fechaIniTraslado']" [matDatepicker]="picker" valuemaxlength="10" [(ngModel)]="valorFechaIniTraslado_" style="color:#3f51b5" disabled>
                                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                             <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                                            <mat-error *ngIf="basicForm.controls['fechaIniTraslado'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
 
-                                        <div fxLayout.xs="row">
-                                            <mat-label [style.fontSize.px]="14"><b><br>ESTADO :</b></mat-label>
-                                            <mat-label fxFlex="10%"></mat-label>
-                                            <mat-form-field fxFlex="55%" appearance="outline">
-                                                <mat-select [(value)]="estadoSelected" [formControl]="basicForm.controls['estadoSelected']" align="top" style="color:blue" disabled>
-                                                    <mat-option value="0">REGISTRADO</mat-option>
-                                                    <mat-option value="1">ANULADO </mat-option>
-                                                </mat-select>
-                                            </mat-form-field>
-                                        </div>
+
+                                        <mat-label fxFlex="10%"></mat-label>
+                                        <mat-form-field fxFlex="85%" appearance="outline">
+                                            <mat-label><b>ESTADO </b></mat-label>
+                                            <mat-select [(ngModel)]="estadoSelected_" [formControl]="basicForm.controls['estadoSelected']" align="top">
+                                                <mat-option value="0">Registrado</mat-option>
+                                                <mat-option value="1">Anulado </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
                                     </div>
                                 </mat-card-content>
                             </mat-card>
                         </div>
 
                         <div fxFlex="100" fxFlex.gt-xs="30">
-                            <mat-card class="p-05 m-05">
+                            <mat-card class="p-0 m-05">
                                 <mat-card-content>
                                     <div class="card-title-text m-0 p-0" align="center" [style.fontSize.px]="14">
                                         <mat-label fxFlex="30%"><b><br>R.U.C.  </b></mat-label>
                                         <mat-form-field fxFlex="50%" appearance="fill">
-                                            <input matInput name="rucEmpresa_" [formControl]="basicForm.controls['rucEmpresa_']" [disabled]="true" style="color:blue">
+                                            <input matInput name="rucEmpresa_" [formControl]="basicForm.controls['rucEmpresa_']" [disabled]="true" style="color:#3f51b5">
                                         </mat-form-field>
                                     </div>
                                     <mat-divider></mat-divider>
-                                    <div class="card-title-text m-05 p-05" align="center" [style.fontSize.px]="17">
+                                    <div class="card-title-text p-05 ml-0 mr-0" align="center" [style.fontSize.px]="15">
                                         <mat-label class="full-width"><b>GUIA DE REMISION  <br> TRANSPORTISTA </b></mat-label>
                                     </div>
                                     <mat-divider></mat-divider>
                                     <!-- <div fxLayout="row" fxLayoutWrap="wrap"> -->
-                                    <div fxLayout="row" fxLayoutWrap="wrap" fxLayoutGap="2.5%" class="mb-0 p-0" fxLayoutAlign="start center">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap" fxLayoutGap="2.5%" class="mb-0 p-0" fxLayoutAlign="start center">
                                         <mat-label fxFlex="35%" class="pl-0 ml-0"><b>NRO. DE GUIA :</b> </mat-label>
-                                        <div fxFlex="100" fxFlex.gt-xs="50" [style.fontSize.px]="18">
-                                            <mat-form-field fxFlex="35%">
-                                                <input matInput name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="4" value="0000" style="color:blue">
+                                        <div fxFlex="100" fxLayout.xs="column" fxFlex.gt-xs="50" [style.fontSize.px]="17">
+                                            <mat-form-field fxFlex="40%">
+                                                <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="5" value="00000" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
+                                                <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSerie'].hasError('required')">
+                                                    <strong>* REQUERIDO</strong>
+                                                </mat-error>
                                             </mat-form-field>
-                                            <mat-label fxFlex="20%" class="pl-1"><b>&nbsp; - </b></mat-label>
+                                            <mat-label fxFlex="20%"><b>&nbsp; &nbsp;- </b></mat-label>
                                             <mat-form-field fxFlex="60%" class="pl-1">
-                                                <input matInput name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="7" value="000000" style="color:red">
+                                                <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="8" value="00000000" [disabled]="edicion" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                                                <mat-error [style.fontSize.px]="10" *ngIf="basicForm.controls['nroSecuencia'].hasError('required')">
+                                                    <strong>* REQUERIDO</strong>
+                                                </mat-error>
                                             </mat-form-field>
                                         </div>
                                     </div>
+
 
                                 </mat-card-content>
                             </mat-card>
                         </div>
                     </div>
 
-                    <div fxLayout="row" fxLayoutWrap="wrap">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
                         <div fxFlex="100" fxFlex.gt-xs="50">
 
                             <mat-card class="p-0">
-                                <mat-card-title class="m-0">
+                                <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
                                     <div align="center">
                                         <span><b>REMITENTE </b></span>
                                     </div>
@@ -106,29 +121,26 @@
                                 <mat-card-content>
                                     <div class="pb-0">
                                         <br>
-                                        <mat-label [style.fontSize.px]="12"><b>RAZON SOCIAL / PLANTA </b></mat-label>
                                         <mat-form-field class="full-width" appearance="outline">
-                                            <mat-select name="remitenteSelected" [formControl]="basicForm.controls['remitenteSelected']" (selectionChange)="seleccionarFactoriaRemitente($event)" requeried>
+                                            <mat-label><b>RAZON SOCIAL / PLANTA </b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" [(ngModel)]="valorRemitenteSelected_" name="remitenteSelected" [formControl]="basicForm.controls['remitenteSelected']" (selectionChange)="seleccionarFactoriaRemitente($event)" requeried>
                                                 <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
+                                            <mat-error *ngIf="basicForm.controls['remitenteSelected'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
-                                        <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b><br>RUC :</b></mat-label>
-                                        <mat-form-field fxFlex="25%" appearance="fill">
-                                            <input matInput name="rucRemitente_" [formControl]="basicForm.controls['rucRemitente_']" [(ngModel)]="valorRucRemitente_" [disabled]="true" style="color:blue">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                                        <mat-form-field fxFlex="25%" appearance="outline">
+                                            <mat-label><b>RUC</b></mat-label>
+                                            <input matInput name="rucRemitente_" [formControl]="basicForm.controls['rucRemitente_']" [(ngModel)]="valorRucRemitente_" [disabled]="true" style="color:#3f51b5">
                                         </mat-form-field>
-
-                                    </div>
-
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
-                                        <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b><br>DIRECCION :</b></mat-label>
-                                        <mat-form-field fxFlex="90%" appearance="fill">
-                                            <input matInput name="direRemitente_" [formControl]="basicForm.controls['direRemitente_']" [(ngModel)]="valorDirRemitente_" [disabled]="true" style="color:blue">
+                                        <mat-form-field fxFlex="90%" appearance="outline">
+                                            <mat-label><b>DIRECCION</b></mat-label>
+                                            <textarea matInput name="direRemitente_" [formControl]="basicForm.controls['direRemitente_']" [(ngModel)]="valorDirRemitente_" [disabled]="true" style="color:#3f51b5"></textarea>
                                         </mat-form-field>
                                     </div>
                                 </mat-card-content>
@@ -136,7 +148,7 @@
                         </div>
                         <div fxFlex="100" fxFlex.gt-xs="50">
                             <mat-card class="p-0">
-                                <mat-card-title class="m-0">
+                                <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
                                     <div align="center">
                                         <span><b>DESTINATARIO </b></span>
                                     </div>
@@ -146,29 +158,30 @@
                                 <mat-card-content>
                                     <div class="pb-0">
                                         <br>
-                                        <mat-label [style.fontSize.px]="12"><b>RAZON SOCIAL / PLANTA </b></mat-label>
                                         <mat-form-field class="full-width" appearance="outline">
-                                            <mat-select name="destinatarioSelected" [formControl]="basicForm.controls['destinatarioSelected']" (selectionChange)="seleccionarFactoriaDestinatario($event)" required>
+                                            <mat-label><b>RAZON SOCIAL / PLANTA </b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" [(ngModel)]="valorDestinatarioSelected_" name="destinatarioSelected" [formControl]="basicForm.controls['destinatarioSelected']" (selectionChange)="seleccionarFactoriaDestinatario($event)">
                                                 <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
+                                            <mat-error *ngIf="basicForm.controls['destinatarioSelected'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b><br>RUC :</b></mat-label>
-                                        <mat-form-field fxFlex="25%" appearance="fill">
-                                            <input matInput name="rucDestinatario_" [formControl]="basicForm.controls['rucDestinatario_']" [(ngModel)]="valorRucDestinatario_" [disabled]="true" style="color:blue">
+                                        <mat-form-field fxFlex="25%" appearance="outline">
+                                            <mat-label><b>RUC</b></mat-label>
+                                            <input matInput name="rucDestinatario_" [formControl]="basicForm.controls['rucDestinatario_']" [(ngModel)]="valorRucDestinatario_" [disabled]="true" style="color:#3f51b5">
+                                        </mat-form-field>
+                                        <mat-form-field fxFlex="90%" appearance="outline">
+                                            <mat-label><b>DIRECCION</b></mat-label>
+                                            <textarea matInput name="direDestinatario_" [formControl]="basicForm.controls['direDestinatario_']" [(ngModel)]="valorDirDestinatario_" [disabled]="true" style="color:#3f51b5"></textarea>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
-                                        <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b><br>DIRECCION :</b></mat-label>
-                                        <mat-form-field fxFlex="90%" appearance="fill">
-                                            <input matInput name="direDestinatario_" [formControl]="basicForm.controls['direDestinatario_']" [(ngModel)]="valorDirDestinatario_" [disabled]="true" style="color:blue">
-                                        </mat-form-field>
-                                    </div>
+
                                 </mat-card-content>
                             </mat-card>
                         </div>
@@ -178,42 +191,55 @@
                     <!-- loop throught units -->
                     <div>
                         <mat-card class="p-0">
-                            <mat-card-header>
-                                <mat-card-title class="m-0"><b>PRODUCTOS</b></mat-card-title>
-                            </mat-card-header>
+                            <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                                <div align="center">
+                                    <span><b>PRODUCTOS </b></span>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </mat-card-title>
                             <br>
                             <mat-card-content>
                                 <!-- group name in this case row index -->
                                 <div [style.fontSize.px]="16">
-                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="5.5%" fxLayoutAlign="center">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="7.5%" fxLayoutAlign="left">
 
                                         <!-- unit name input field -->
                                         <mat-form-field fxFlex="40%">
-                                            <mat-select name="productoSelected" placeholder="DESCRIPCION" [formControl]="basicForm.controls[ 'productoSelected']" requeried>
+                                            <mat-select [compareWith]="compareObjects" [(ngModel)]="valorProductoSelected_" name="productoSelected" placeholder="DESCRIPCION" [formControl]="basicForm.controls[ 'productoSelected']" requeried>
                                                 <mat-option *ngFor="let producto of comboProductos" [value]="producto">
                                                     {{producto.nemonico}}
                                                 </mat-option>
                                             </mat-select>
+                                            <mat-error *ngIf="basicForm.controls['productoSelected'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
 
                                         <!-- unit quantity input field -->
                                         <mat-form-field fxFlex="10%" fxFlex.xs="20">
-                                            <input matInput name="cantidad" placeholder="CANTIDAD" type="number" value="0.00" [formControl]="basicForm.controls['cantidad']" style="color:blue" required>
+                                            <input matInput [(ngModel)]="valorCantidad_" name="cantidad" placeholder="CANTIDAD" type="number" value="0.00" [formControl]="basicForm.controls['cantidad']" style="color:#3f51b5">
+                                            <mat-error *ngIf="basicForm.controls['cantidad'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+
                                         </mat-form-field>
 
-                                        <!-- unit price input field -->
+                                        <!-- unit price input field 
                                         <mat-form-field fxFlex="10%" fxFlex.xs="grow">
-                                            <input matInput name="peso" placeholder="PESO" type="number" value="0.00" [formControl]="basicForm.controls['peso']" style="color:blue">
-                                        </mat-form-field>
+                                            <input matInput [(ngModel)]="valorPeso_" name="peso" placeholder="PESO" type="number" value="0.00" [formControl]="basicForm.controls['peso']" style="color:blue">
+                                        </mat-form-field>-->
 
                                         <!-- unit total price input field, calculated and not editable -->
                                         <div fxLayout.xs="row">
                                             <mat-form-field class="full-width">
-                                                <mat-select name="unidadMedidaSelected" placeholder="UNIDAD DE MEDIDA" [formControl]="basicForm.controls[ 'unidadMedidaSelected']" requeried>
+                                                <mat-select [compareWith]="compareObjects" [(ngModel)]="valorUMSelected_" name="unidadMedidaSelected" placeholder="UNIDAD DE MEDIDA" [formControl]="basicForm.controls[ 'unidadMedidaSelected']" requeried>
                                                     <mat-option *ngFor="let unidad of comboUnidadMedida" [value]="unidad">
                                                         {{unidad.valor + ' - ' + unidad.descripcion }}
                                                     </mat-option>
                                                 </mat-select>
+                                                <mat-error *ngIf="basicForm.controls['unidadMedidaSelected'].hasError('required')">
+                                                    <strong>* REQUERIDO</strong>
+                                                </mat-error>
                                             </mat-form-field>
 
                                         </div>
@@ -224,13 +250,13 @@
                     </div>
 
                     <!-- SECCION CHOFER Y BALANZA -->
-                    <div fxLayout="row" fxLayoutWrap="wrap">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
                         <!-- SECCION CHOFER -->
                         <div fxFlex="100" fxFlex.gt-xs="50">
                             <mat-card class="p-0">
-                                <mat-card-title class="m-0">
+                                <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
                                     <div align="center">
-                                        <span><b>DATOS DE LA UNIDAD DE TRANSPORTE</b></span>
+                                        <span><b>UNIDAD DE TRANSPORTE</b></span>
                                     </div>
                                     <mat-divider></mat-divider>
                                 </mat-card-title>
@@ -238,41 +264,54 @@
                                 <mat-card-content>
                                     <div class="pb-0">
                                         <br>
-                                        <mat-label [style.fontSize.px]="12"><b>CHOFER</b></mat-label>
                                         <mat-form-field class="full-width" appearance="outline">
-                                            <mat-select name="choferSelected" [formControl]="basicForm.controls['choferSelected']" (selectionChange)="seleccionarChofer($event)" requeried>
+                                            <mat-label><b>CHOFER</b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" [(ngModel)]="valorChoferSelected_" name="choferSelected" [formControl]="basicForm.controls['choferSelected']" (selectionChange)="seleccionarChofer($event)" requeried>
                                                 <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
                                                     {{chofer.nombres + ' ' + chofer.apellidos + ' - DNI ' + chofer.dni }}
                                                 </mat-option>
                                             </mat-select>
+                                            <mat-error *ngIf="basicForm.controls['choferSelected'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b>PLACA TRACTO :</b></mat-label>
-                                        <mat-form-field fxFlex="25%">
-                                            <input matInput name="placaTracto" [formControl]="basicForm.controls['placaTracto']" [(ngModel)]="valorPlacaTracto_" maxlength="10" style="color:blue">
+
+                                        <mat-form-field fxFlex="35%" appearance="outline">
+                                            <mat-label><b>PLACA TRACTO</b></mat-label>
+                                            <input matInput name="placaTracto" [formControl]="basicForm.controls['placaTracto']" [(ngModel)]="valorPlacaTracto_" maxlength="10" style="color:#3f51b5">
+                                            <mat-error *ngIf="basicForm.controls['placaTracto'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
+
                                         <mat-label fxFlex="5%"></mat-label>
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%" class="ml-05"><b>PLACA BOMBONA :</b></mat-label>
-                                        <mat-form-field fxFlex="25%">
-                                            <input matInput name="placaBombona" [formControl]="basicForm.controls['placaBombona']" [(ngModel)]="valorPlacaBombona_" maxlength="10" style="color:blue">
+                                        <mat-form-field fxFlex="40%" appearance="outline">
+                                            <mat-label class="ml-05"><b>PLACA BOMBONA</b></mat-label>
+                                            <input matInput name="placaBombona" [formControl]="basicForm.controls['placaBombona']" [(ngModel)]="valorPlacaBombona_" maxlength="10" style="color:#3f51b5">
+                                            <mat-error *ngIf="basicForm.controls['placaBombona'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
 
                                     </div>
 
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%"><b>NRO. CERT. INSCRIPCION :</b></mat-label>
-                                        <mat-form-field fxFlex="25%" appearance="fill">
-                                            <input matInput name="nroCertificado_" [formControl]="basicForm.controls[ 'nroCertificado_']" [(ngModel)]="valorCertificado_" [disabled]="true" style="color:blue">
+
+                                        <mat-form-field fxFlex="35%" appearance="outline">
+                                            <mat-label><b>NRO. CERT. INSCRIPCION </b></mat-label>
+                                            <input matInput name="nroCertificado_" [formControl]="basicForm.controls[ 'nroCertificado_']" [(ngModel)]="valorCertificado_" [disabled]="true" style="color:#3f51b5">
                                         </mat-form-field>
                                         <mat-label fxFlex="5%"></mat-label>
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="15%" class="ml-05"><b>NRO. LICENCIA CONDUCIR :</b></mat-label>
-                                        <mat-form-field fxFlex="25%" appearance="fill">
-                                            <input matInput name="nroLicencia_" [formControl]="basicForm.controls['nroLicencia_']" [(ngModel)]="valorLicencia_" [disabled]="true" style="color:blue">
+
+                                        <mat-form-field fxFlex="40%" appearance="outline">
+                                            <mat-label class="ml-05"><b>NRO. LICENCIA CONDUCIR</b></mat-label>
+                                            <input matInput name="nroLicencia_" [formControl]="basicForm.controls['nroLicencia_']" [(ngModel)]="valorLicencia_" [disabled]="true" style="color:#3f51b5">
                                         </mat-form-field>
                                     </div>
                                 </mat-card-content>
@@ -282,7 +321,7 @@
                         <!-- SECCION BALANZA -->
                         <div fxFlex="100" fxFlex.gt-xs="50">
                             <mat-card class="p-0 mb-0">
-                                <mat-card-title class="m-0">
+                                <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
                                     <div align="center">
                                         <span><b>BALANZA</b></span>
                                     </div>
@@ -292,38 +331,57 @@
                                 <mat-card-content>
                                     <div class="pb-0">
                                         <br>
-                                        <mat-label [style.fontSize.px]="12"><b>CODIGO BALANZA </b></mat-label>
+
                                         <mat-form-field class="full-width" appearance="outline">
-                                            <mat-select name="balanzaSelected" [formControl]="basicForm.controls['balanzaSelected']" requeried>
+                                            <mat-label><b>CODIGO BALANZA </b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" [(ngModel)]="valorBalanzaSelected_" name="balanzaSelected" [formControl]="basicForm.controls['balanzaSelected']" requeried>
                                                 <mat-option *ngFor="let balanza of comboBalanzas" [value]="balanza">
                                                     {{balanza.descripcion}}
                                                 </mat-option>
                                             </mat-select>
+                                            <mat-error *ngIf="basicForm.controls['balanzaSelected'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="center start">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left start">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="20%"><b>NRO DE TICKET BALANZA :</b></mat-label>
-                                        <mat-form-field fxFlex="20%">
-                                            <input matInput name="nroTicketBal" [formControl]="basicForm.controls['nroTicketBal']" value="" maxlength="10" style="color:blue">
+                                        <mat-form-field fxFlex="40%" appearance="outline">
+                                            <mat-label><b>NRO DE TICKET BALANZA </b></mat-label>
+                                            <input matInput [(ngModel)]="valorTicketBalanza_" name="nroTicketBal" [formControl]="basicForm.controls['nroTicketBal']" value="" maxlength="10" style="color:#3f51b5">
+                                            <mat-error *ngIf="basicForm.controls['nroTicketBal'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+
                                         </mat-form-field>
                                         <mat-label fxFlex="10%"></mat-label>
-                                        <mat-form-field fxFlex="80%" appearance="fill">
+                                        <mat-form-field fxFlex="40%" appearance="outline">
                                             <mat-label><b>FECHA DE RECEPCION</b></mat-label>
-                                            <input matInput name="fechaRecepcion" [formControl]="basicForm.controls['fechaRecepcion']" [matDatepicker]="picker3" style="color:blue">
+                                            <input matInput [(ngModel)]="valorFechaRecepcion_" name="fechaRecepcion" [formControl]="basicForm.controls['fechaRecepcion']" [matDatepicker]="picker3" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
                                             <mat-datepicker touchUi #picker3></mat-datepicker>
+                                            <mat-error *ngIf="basicForm.controls['fechaRecepcion'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
 
                                     </div>
-                                    <div fxLayout="row" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left start" class="p-0 m-0">
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left start" class="p-0 m-0">
                                         <!-- Comapny name input field -->
-                                        <mat-label [style.fontSize.px]="12" fxFlex="20%"><b>GUIA REMISION CLIENTE : </b></mat-label>
-                                        <mat-form-field fxFlex="8%">
-                                            <input matInput name="nroSerieClie" [formControl]="basicForm.controls['nroSerieClie']" value="0000" maxlength="4" style="color:blue">
+
+                                        <mat-form-field fxFlex="30%" appearance="outline">
+                                            <mat-label><b>SERIE GUIA REM. CLIENTE </b></mat-label>
+                                            <input matInput [(ngModel)]="valorSerieCli_" name="nroSerieClie" [formControl]="basicForm.controls['nroSerieClie']" value="00000" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                                            <mat-error *ngIf="basicForm.controls['nroSerieClie'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
-                                        <mat-form-field fxFlex="15%">
-                                            <input matInput name="nroSequenClie" [formControl]="basicForm.controls['nroSequenClie']" value="000000" maxlength="8" style="color:blue">
+                                        <mat-form-field fxFlex="40%" appearance="outline">
+                                            <mat-label><b>SECUENCIA GUIA REM. CLIENTE </b></mat-label>
+                                            <input matInput [(ngModel)]="valorSecuenciaCli_" name="nroSequenClie" [formControl]="basicForm.controls['nroSequenClie']" value="00000000" maxlength="8" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                                            <mat-error *ngIf="basicForm.controls['nroSequenClie'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
                                     </div>
                                 </mat-card-content>

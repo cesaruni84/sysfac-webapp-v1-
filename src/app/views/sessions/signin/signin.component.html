@@ -1,14 +1,15 @@
-<div class=" height-100 mat-bg-primary" [ngStyle]="{'background-image': getUrl()}">
+<div class="page-wrap height-100" style="background-image: url(assets/images/fondo_principal.jpg);background-size:100%;">
     <div class="session-form-hold">
         <mat-progress-bar mode="determinate" class="session-progress"></mat-progress-bar>
         <mat-card>
             <mat-card-content>
                 <div class="text-center pb-1">
-                    <img src="assets/images/logo-full.png" alt="" class="mb-0">
-                    <H2>Módulo de Facturación</H2>
+                    <img src="assets/images/logo-full.png" alt="" width="160" class="mb-0">
+                    <br>
+                    <mat-label [style.fontSize.px]="16" style="color:rgb(62, 139, 228)">MODULO DE FACTURACION ONLINE</mat-label>
                     <p class="text-muted m-0">Inicie sesión en su cuenta</p>
                 </div>
-                <form [formGroup]="signinForm" (ngSubmit)="signin()" [style.fontSize.px]="16">
+                <form [formGroup]="signinForm" (ngSubmit)="signin()" [style.fontSize.px]="14">
                     <div class="">
                         <mat-form-field class="full-width" appearance="outline">
                             <mat-label style="color:rgb(62, 139, 228)">Usuario</mat-label>

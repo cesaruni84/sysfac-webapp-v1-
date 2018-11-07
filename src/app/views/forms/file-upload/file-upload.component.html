@@ -1,110 +1,248 @@
 <mat-card class="p-0">
-  <mat-card-title class="">
-    <div class="card-title-text">File upload</div>
-    <mat-divider></mat-divider>
-  </mat-card-title>
-  <mat-card-content>
-      <div class="mb-1">
-        <p>Multiple</p>
-        <input type="file" ng2FileSelect [uploader]="uploader" multiple  /><br/>
 
-        <p>Single</p>
-        <input type="file" ng2FileSelect [uploader]="uploader" />
-      </div>
+    <mat-card-content>
+        <form [formGroup]="formLiquidacion" novalidate>
+            <div fxLayout="row" fxLayoutWrap="wrap">
+                <div fxFlex="100" fxFlex.gt-xs="100">
+                    <mat-card class="p-0 mt-05">
+                        <mat-card-title class="p-0 m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                            <div align="center"><b>DATOS BASE LIQUIDACION</b></div>
+                        </mat-card-title>
+                        <mat-divider></mat-divider>
+                        <mat-card-content class="pb-05 mt-1">
+                            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="0.5%" fxLayoutAlign="left">
+                                <!-- Comapny name input field -->
+                                <mat-form-field fxFlex="60%" appearance="">
+                                    <mat-label [style.fontSize.px]="16"><b>EMPRESA<br></b></mat-label>
+                                    <input matInput [style.fontSize]="'100%'" name="empresa_" [formControl]="formLiquidacion.controls['empresa_']" [disabled]="true" style="color:#3f51b5">
+                                    <mat-icon matSuffix>store</mat-icon>
+                                </mat-form-field>
+                                <mat-label fxFlex="25%"></mat-label>
+                                <mat-form-field>
+                                    <mat-label><b>FECHA REGISTRO</b></mat-label>
+                                    <input matInput [(ngModel)]="valorFechaRegistro_" name="fechaRegistro" [formControl]="formLiquidacion.controls['fechaRegistro']" [matDatepicker]="appDatepicker3" maxlength="10" style="color:#3f51b5">
+                                    <mat-datepicker-toggle matSuffix [for]="appDatepicker3"></mat-datepicker-toggle>
+                                    <mat-datepicker touchUi #appDatepicker3></mat-datepicker>
+                                </mat-form-field>
+                            </div>
 
-      <div class="mb-1">
-        <div ng2FileDrop
-        [ngClass]="{'dz-file-over': hasBaseDropZoneOver}"
-        (fileOver)="fileOverBase($event)"
-        [uploader]="uploader"
-        class="fileupload-drop-zone">
-        Drop file here
-        </div>
-      </div>
+                            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                                <mat-form-field fxFlex="20%" appearance="outline">
+                                    <mat-label [style.fontSize.px]="14" fxFlex="15%"><b>NRO. DE DOCUMENTO LIQ. </b> </mat-label>
+                                    <input matInput [(ngModel)]="valorNroDocumentoLiq_" name="nroDocumentoLiq" [formControl]="formLiquidacion.controls['nroDocumentoLiq']" maxlength="12" [disabled]="" style="color:green">
+                                </mat-form-field>
+                                <mat-label fxFlex="2%"></mat-label>
+                                <mat-form-field fxFlex="15%" class="full-width" appearance="outline">
+                                    <mat-label><b>MONEDA LIQ.</b></mat-label>
+                                    <mat-select [(ngModel)]="monedaLiquidacion_" name="moneda" [formControl]="formLiquidacion.controls['moneda']">
+                                        <mat-option value="0">Soles</mat-option>
+                                        <mat-option value="1">Dólares </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-label fxFlex="25%"></mat-label>
+                                <mat-form-field appearance="">
+                                    <mat-label><b>ESTADO LIQ. </b></mat-label>
+                                    <mat-select [(ngModel)]="estadoLiquidacion_" name="estado" [formControl]="formLiquidacion.controls['estado']" align="top" [disabled]="">
+                                        <mat-option value="0">Vigente</mat-option>
+                                        <mat-option value="1">Vencido </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field appearance="">
+                                    <mat-label><b>SITUACION LIQ.</b></mat-label>
+                                    <mat-select [(ngModel)]="situacionLiquidacion_" name="situacion" [formControl]="formLiquidacion.controls['situacion']" align="top" [disabled]="">
+                                        <mat-option value="0">Pendiente</mat-option>
+                                        <mat-option value="1">En Proceso</mat-option>
+                                        <mat-option value="2">Procesado</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
 
-      <table class="default-table mat-box-shadow" style="width: 100%">
-        <thead>
-        <tr>
-            <th width="30%">Name</th>
-            <th>Size</th>
-            <th>Progress</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody *ngIf="uploader.queue.length; else tableNoData">
-        <tr *ngFor="let item of uploader.queue">
-            <td>{{ item?.file?.name }}</td>
-            <td nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-            <td>
-                <div class="progress" style="margin-bottom: 0;">
-                    <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
-                    <mat-progress-bar
-                      class=""
-                      color="primary"
-                      mode="determinate"
-                      [value]="item.progress">
-                    </mat-progress-bar>
+
+                            </div>
+
+                            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                                <!-- Comapny name input field -->
+
+                                <mat-form-field fxFlex="40%" class="full-width" appearance="outline">
+                                    <mat-label><b>ORIGEN</b></mat-label>
+                                    <mat-select [compareWith]="" [(ngModel)]="valorOrigenSelected_" name="origen" [formControl]="formLiquidacion.controls['origen']">
+                                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                                            {{factoria.refLarga1}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                                <mat-form-field fxFlex="42.5%" class="full-width" appearance="outline">
+                                    <mat-label><b>DESTINO</b></mat-label>
+                                    <mat-select [compareWith]="" [(ngModel)]="valorDestinoSelected_" name="destino" [formControl]="formLiquidacion.controls['destino']">
+                                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                                            {{factoria.refLarga1}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+
+
+                            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                                <!-- Comapny name input field -->
+
+                                <mat-form-field fxFlex="40%" class="full-width" appearance="outline">
+                                    <mat-label><b>MOTIVO DE TRASLADO</b></mat-label>
+                                    <mat-select [compareWith]="" [(ngModel)]="motivoTrasladoSelected_" name="motivoTraslado" [formControl]="formLiquidacion.controls['motivoTraslado']" requeried>
+                                        <mat-option *ngFor="let motivoTraslado of comboMotivosTraslado" [value]="motivoTraslado.id">
+                                            {{motivoTraslado.codigo + ' - '+ motivoTraslado.descripcion }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                    <mat-label><b>FECHA INICIO TRASLADO</b></mat-label>
+                                    <input matInput [(ngModel)]="valorFechaIniTraslado_" name="fechaIniTraslado" [formControl]="formLiquidacion.controls['fechaIniTraslado']" [matDatepicker]="appDatepicker" maxlength="10" style="color:#3f51b5">
+                                    <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
+                                    <mat-datepicker touchUi #appDatepicker></mat-datepicker>
+                                </mat-form-field>
+                                <mat-form-field appearance="outline">
+                                    <mat-label><b>FECHA FIN DE TRASLADO</b></mat-label>
+                                    <input matInput [(ngModel)]="valorFechaFinTraslado_" name="fechaFinTraslado" [formControl]="formLiquidacion.controls['fechaFinTraslado']" [matDatepicker]="picker" valuemaxlength="10" style="color:#3f51b5">
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+
+
+                            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                                <!-- Comapny name input field -->
+
+                                <mat-form-field fxFlex="59%" appearance="outline">
+                                    <mat-label [style.fontSize.px]="15"><b>GLOSA </b></mat-label>
+                                    <input matInput name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
+                                </mat-form-field>
+                                <mat-label fxFlex="28%"></mat-label>
+                                <div align="right">
+                                    <button mat-raised-button color="primary" (click)="buscarGuiasXLiquidar()"><mat-icon>search</mat-icon>Buscar Guias</button>
+                                </div>
+
+                            </div>
+
+                        </mat-card-content>
+                    </mat-card>
+
+
+                    <mat-card class="p-0 mt-05">
+                        <mat-card-title class="p-0 m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                            <div align="center"><b>LISTA DE GUIAS A LIQUIDAR</b></div>
+                        </mat-card-title>
+                        <mat-divider></mat-divider>
+                        <mat-card-content class="p-05 m-0">
+                            <div class="mat-box-shadow margin-333">
+
+                                <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="50" [rows]="rows">
+                                    <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="90">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
+                                            <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>clear</mat-icon></button>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.id }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="100" prop="fechaTraslado">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.fechaTraslado }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+                                    <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="130" prop="nroguia">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.serie + '-' + row?.secuencia }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="130" prop="nroguia2">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.serieCliente + '-' + row?.secuenciaCliente }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="200" prop="guiaDetalle">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.guiaDetalle[0].producto.nemonico }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="110" prop="ticketBalanza">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.ticketBalanza }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="UM" [flexGrow]="1" [width]="60" prop="unidadMedida">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            {{ row?.guiaDetalle[0].unidadMedida.valor }}
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="80" prop="totalCantidad">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <div align="right">
+                                                {{ row?.totalCantidad }}
+                                            </div>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="90" prop="tarifa">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <div align="right">
+                                                {{ row?.tarifa }}
+                                            </div>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="130" prop="subTotal">
+                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                            <div align="center">
+                                                {{ row?.subTotal }}
+                                            </div>
+                                        </ng-template>
+                                    </ngx-datatable-column>
+
+                                    <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    {{ row?.balance | currency }}
+                                                </ng-template>
+                                            </ngx-datatable-column> -->
+                                </ngx-datatable>
+                            </div>
+
+                        </mat-card-content>
+
+                    </mat-card>
+
+
                 </div>
-            </td>
-            <td class="">
-                <mat-icon *ngIf="item.isSuccess" color="primary">check</mat-icon>
-                <mat-icon *ngIf="item.isCancel" color="accent">cancel</mat-icon>
-                <mat-icon *ngIf="item.isError" color="warn">error</mat-icon>
-            </td>
-            <td nowrap>
-                <button 
-                mat-raised-button
-                class="mat-primary"
-                (click)="item.upload()"
-                [disabled]="item.isReady || item.isUploading || item.isSuccess">Upload</button>
-                <button 
-                mat-raised-button
-                class="mat-accent"
-                (click)="item.cancel()"
-                [disabled]="!item.isUploading">Cancel</button>
 
-                <button 
-                mat-raised-button
-                class="mat-warn"
-                (click)="item.remove()">Remove</button>
-            </td>
-        </tr>
-        </tbody>
-        <ng-template #tableNoData>
-          <p [ngStyle]="{padding: '0 1.2rem'}">Queue is empty</p>
-        </ng-template>
-    </table>
+            </div>
+        </form>
 
 
-      <div>
-        <p>Queue progress:</p>
-        <div class="progress mb-1" >
-            <mat-progress-bar
-              class=""
-              color="primary"
-              mode="determinate"
-              [value]="uploader.progress">
-            </mat-progress-bar>
+
+
+
+
+
+
+        <div>
+            <p>Queue progress:</p>
+            <div class="progress mb-1">
+                <mat-progress-bar class="" color="primary" mode="determinate" [value]="uploader.progress">
+                </mat-progress-bar>
+            </div>
+
+            <button mat-raised-button class="mat-primary" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">Upload all</button>
+
+            <button mat-raised-button class="mat-accent" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">Cancel all</button>
+
+            <button mat-raised-button class="mat-warn" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Remove all</button>
         </div>
-
-      <button 
-      mat-raised-button
-      class="mat-primary"
-      (click)="uploader.uploadAll()"
-      [disabled]="!uploader.getNotUploadedItems().length">Upload all</button>
-
-      <button 
-      mat-raised-button
-      class="mat-accent"
-      (click)="uploader.cancelAll()"
-      [disabled]="!uploader.isUploading">Cancel all</button>
-
-      <button 
-      mat-raised-button
-      class="mat-warn"
-      (click)="uploader.clearQueue()"
-      [disabled]="!uploader.queue.length">Remove all</button>
-    </div>
-  </mat-card-content>
+    </mat-card-content>
 </mat-card>

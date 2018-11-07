@@ -5,27 +5,32 @@ import { Factoria } from './factoria.model';
 import { GuiaDetalle } from './guia_remision_detalle.model';
 
 export class GuiaRemision {
+    id: number;
     serie: string;
     secuencia: string;
     totalCantidad: number;
     totalPeso: number;
+    estado: number;
     motivoTraslado: number;
     tarifa: number;
+    subTotal: number;
+    fechaRemision: Date;
+    fechaTraslado: Date;
+    fechaRecepcion: Date;
     ticketBalanza: string;
-    placaTracto: string;
-    placaBombona: string;
     serieCliente: string;
     secuenciaCliente: string;
+    fechaRegistro: Date;
+    fechaActualiza: Date;
     usuarioRegistro: string;
     usuarioActualiza: string;
-    estado: number;
-    fechaRemision: string;
-    fechaTraslado: string;
-    fechaRecepcion: string;
+    placaTracto: string;
+    placaBombona: string;
     guiaDetalle: GuiaDetalle[];
     balanza: Balanza;
     remitente: Factoria;
     destinatario: Factoria;
+    liquidacion: any;
     empresa: Empresa;
     chofer: Chofer;
 

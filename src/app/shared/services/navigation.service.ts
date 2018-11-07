@@ -521,7 +521,7 @@ export class NavigationService {
       icon: 'monetization_on',
       state: 'forms',
       sub: [
-        { name: 'Registro', state: '404' },
+        { name: 'Registro', state: 'liquidacion' },
         { name: 'Consulta', state: '404' },
       ]
     },

@@ -12,19 +12,19 @@ export const FormsRoutes: Routes = [
     children: [{
       path: 'basic',
       component: BasicFormComponent,
-      data: { title: 'Basic', breadcrumb: 'Registro de Guia' }
+      data: { title: 'Registro', breadcrumb: 'Registro de Guia' }
     }, {
       path: 'paging',
       component: PagingTableComponent,
       data: { title: 'Consulta', breadcrumb: 'Consulta de Guias' }
     }, {
-      path: 'upload',
+      path: 'liquidacion',
       component: FileUploadComponent,
-      data: { title: 'Upload', breadcrumb: 'UPLOAD' }
+      data: { title: 'Liquidación', breadcrumb: 'Registro de Liquidación' }
     }, {
-      path: 'wizard',
+      path: 'facturacion',
       component: WizardComponent,
-      data: { title: 'Wizard', breadcrumb: 'WIZARD' }
+      data: { title: 'Facturación', breadcrumb: 'Registro de Factura' }
     }]
   }
 ];

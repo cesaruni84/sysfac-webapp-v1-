@@ -54,7 +54,6 @@ import { AppDropdownDirective } from './directives/dropdown.directive';
 import { DropdownAnchorDirective } from './directives/dropdown-anchor.directive';
 import { DropdownLinkDirective } from './directives/dropdown-link.directive';
 import { EgretSideNavToggleDirective } from './directives/egret-side-nav-toggle.directive';
-
 // PIPES
 import { RelativeTimePipe } from './pipes/relative-time.pipe';
 import { ExcerptPipe } from "./pipes/excerpt.pipe";
@@ -137,7 +136,7 @@ const classesToInclude = [
     RoutePartsService,
     AuthGuard,
     AppConfirmService,
-    AppLoaderService
+    AppLoaderService,
     // LandingPageService
   ],
   declarations: classesToInclude,

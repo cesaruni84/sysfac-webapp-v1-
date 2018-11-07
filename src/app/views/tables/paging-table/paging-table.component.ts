@@ -18,6 +18,7 @@ import { DatatableComponent } from '../../../../../node_modules/@swimlane/ngx-da
 import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
 import { formatDate } from '../../../../../node_modules/@angular/common';
 import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -55,6 +56,7 @@ export class PagingTableComponent implements OnInit {
     private guiaRemisionService: GuiaRemisionService,
     private choferService: ChoferService,
     private factoriaService: FactoriaService,
+    private router: Router,
     private userService: UsuarioService,
     private loader: AppLoaderService) {
 
@@ -209,14 +211,15 @@ export class PagingTableComponent implements OnInit {
   }
 
   updateFilter(event) {
-
+    console.log(event);
     // this.guiaRemision.serie = this.formFilter.get('nroSerie').value;
     const val = event.target.value.toLowerCase();
+    console.log(val);
     const rows = this.temp.filter(function(d) {
 
-      console.log(d);
-      console.log('eval estado: ' +  (d.estado.toLowerCase().indexOf(val) !== -1));
-      console.log('val ' +  (val));
+      // console.log(d);
+      // console.log('eval estado: ' +  (d.estado.toLowerCase().indexOf(val) !== -1));
+      // console.log('val ' +  (val));
       return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
     });
     this.rows = rows;
@@ -339,8 +342,12 @@ export class PagingTableComponent implements OnInit {
 
   }
   consultarGuia(row) {
-    console.log(row.nroguia);
+    const array = row.nroguia.split('-');
+    const _nroSerie = array[0];
+    const _nroSecuencia = array[1];
 
+    // Envia a Página de Edición de Guia
+    this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
   }
 
 
