@@ -45,7 +45,9 @@ export class GuiaRemision {
 export interface GrillaGuiaRemision {
     id: number;
     nroguia: string;
+    nroSecuencia: string;
     fechaEmision: string;
+    usuarioRegistra: string;
     nroLiq: string;
     ordenServicio: string;
     remitente: string;

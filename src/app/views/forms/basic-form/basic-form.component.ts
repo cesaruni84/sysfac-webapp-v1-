@@ -248,7 +248,7 @@ export class BasicFormComponent implements OnInit {
       ]),
       nroCertificado_: new FormControl({value: '', disabled: true}, Validators.required),
       nroLicencia_: new FormControl({value: '', disabled: true}, Validators.required),
-      balanzaSelected: new FormControl('', Validators.required),
+      balanzaSelected: new FormControl('',),
       nroTicketBal: new FormControl('', [
         Validators.minLength(1),
         Validators.maxLength(30),

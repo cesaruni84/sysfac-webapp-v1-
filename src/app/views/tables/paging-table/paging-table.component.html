@@ -61,10 +61,10 @@
 <div class="mat-box-shadow margin-333">
 
     <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns">
-        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
+        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button>
+                <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
             </ng-template>
         </ngx-datatable-column>
 
@@ -73,9 +73,15 @@
                 {{ row?.id }}
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" prop="nroguia">
+        <ngx-datatable-column name="Nro. Serie Guia" [flexGrow]="1" [width]="105" prop="nroguia">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.nroguia }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Nro. Secuencia" [flexGrow]="1" [width]="110" prop="nroSecuencia">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.nroSecuencia }}
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
@@ -83,6 +89,12 @@
                 {{ row?.fechaEmision }}
             </ng-template>
         </ngx-datatable-column>
+        <ngx-datatable-column name="Usuario Reg." [flexGrow]="1" [width]="110" prop="usuarioRegistra">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row?.usuarioRegistra }}
+            </ng-template>
+        </ngx-datatable-column>
+
         <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1" prop="nroLiq">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row?.nroLiq }}

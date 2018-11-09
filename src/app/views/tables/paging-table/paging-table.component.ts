@@ -342,9 +342,9 @@ export class PagingTableComponent implements OnInit {
 
   }
   consultarGuia(row) {
-    const array = row.nroguia.split('-');
-    const _nroSerie = array[0];
-    const _nroSecuencia = array[1];
+    // const array = row.nroguia.split('-');
+    const _nroSerie = row.nroguia;
+    const _nroSecuencia = row.nroSecuencia;
 
     // Envia a Página de Edición de Guia
     this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
