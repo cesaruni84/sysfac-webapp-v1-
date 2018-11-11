@@ -126,7 +126,7 @@ export class FileUploadComponent implements OnInit {
 
   cargarCombosFormulario() {
 
-    this.factoriaService.listarComboFactorias().subscribe(data1 => {
+    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
     });
 

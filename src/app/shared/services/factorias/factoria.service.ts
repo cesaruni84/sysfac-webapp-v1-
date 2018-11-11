@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Factoria } from '../../models/factoria.model';
 
 @Injectable({
@@ -8,12 +8,13 @@ import { Factoria } from '../../models/factoria.model';
 })
 export class FactoriaService {
 
-  url = `${HOST}/clientes/factorias`;
+  url = `${HOST}/clientes/factorias/SRV1`;
 
   constructor(private http: HttpClient) { }
 
 
-  listarComboFactorias() {
-    return this.http.get<Factoria[]>(this.url);
+  listarComboFactorias( tipoFactoria: string) {
+    const params = new HttpParams().set('tipoFactoria', tipoFactoria);
+    return this.http.get<Factoria[]>(this.url, {params: params});
   }
 }

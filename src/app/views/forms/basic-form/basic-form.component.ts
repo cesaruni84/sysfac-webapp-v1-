@@ -90,6 +90,9 @@ export class BasicFormComponent implements OnInit {
 
   // Variables para el listado de los Combos
   comboFactorias: Factoria[];
+  comboFactoriasDestino: Factoria[];
+
+
   comboProductos: Producto[];
   comboUnidadMedida: UnidadMedida[];
   comboChoferes: Chofer[];
@@ -280,10 +283,17 @@ export class BasicFormComponent implements OnInit {
   }
 
   cargarCombosFormulario() {
-    // Carga de Combos Factorias
-    this.factoriaService.listarComboFactorias().subscribe(data1 => {
-      this.comboFactorias = data1;
+    // Carga de Combos Factorias- Remitente
+    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+          this.comboFactorias = data1;
     });
+
+    // Carga de Combos Factorias- Destinatario
+    this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
+      this.comboFactoriasDestino = data7;
+});
+
+
 
     // Carga de Combos Productos
     this.productoService.listarComboProductos().subscribe(data2 => {
@@ -311,13 +321,13 @@ export class BasicFormComponent implements OnInit {
   }
 
   seleccionarFactoriaRemitente(e: any) {
-      this.valorRucRemitente_ = e.value.cliente.ruc;
-      this.valorDirRemitente_ = e.value.cliente.direccion;
+      this.valorRucRemitente_ = e.value.ruc;
+      this.valorDirRemitente_ = e.value.direccion;
   }
 
   seleccionarFactoriaDestinatario(e: any) {
-    this.valorRucDestinatario_ = e.value.cliente.ruc;
-    this.valorDirDestinatario_ = e.value.cliente.direccion;
+    this.valorRucDestinatario_ = e.value.ruc;
+    this.valorDirDestinatario_ = e.value.direccion;
   }
 
   seleccionarChofer(e: any) {

@@ -161,7 +161,7 @@
                                         <mat-form-field class="full-width" appearance="outline">
                                             <mat-label><b>RAZON SOCIAL / PLANTA </b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorDestinatarioSelected_" name="destinatarioSelected" [formControl]="basicForm.controls['destinatarioSelected']" (selectionChange)="seleccionarFactoriaDestinatario($event)">
-                                                <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
+                                                <mat-option *ngFor="let factoria of comboFactoriasDestino" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>

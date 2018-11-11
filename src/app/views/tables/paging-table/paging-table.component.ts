@@ -102,7 +102,7 @@ export class PagingTableComponent implements OnInit {
     this.loader.open();
 
     // Carga de Combos Factorias
-    this.factoriaService.listarComboFactorias().subscribe(data1 => {
+    this.factoriaService.listarComboFactorias('D').subscribe(data1 => {
       this.comboFactorias = data1;
     });
 

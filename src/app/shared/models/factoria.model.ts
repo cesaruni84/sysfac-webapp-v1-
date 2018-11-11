@@ -11,6 +11,9 @@ export class Factoria {
     referencia: string;
     estado: number;
     cliente: Cliente;
+    ruc: string;
+    direccion: string;
+    tipo: string;
 
     constructor () {
 
