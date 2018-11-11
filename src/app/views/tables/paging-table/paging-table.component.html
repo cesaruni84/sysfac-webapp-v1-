@@ -4,10 +4,10 @@
         <form [formGroup]="formFilter" novalidate>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
                 <mat-form-field fxFlex="10%" class="pl-1">
-                    <input matInput name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="NRO. DE SERIE" maxlength="4" style="color:blue" (keyup)='updateFilter($event)'>
+                    <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="NRO. DE SERIE" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
-                    <input matInput name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="NRO. DE GUIA" maxlength="7" style="color:red" (keyup)='updateFilter($event)'>
+                    <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="NRO. DE GUIA" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
                 </mat-form-field>
                 <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
                 <mat-form-field class="pl-1 ml-2" fxFlex="40%">
@@ -24,14 +24,14 @@
             <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                 <mat-form-field class="pl-1">
-                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="ESTADO" (selectionChange)='updateFilter4($event)'>
+                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="ESTADO">
                         <mat-option value="">Todos</mat-option>
                         <mat-option value="Registrado">Registrado</mat-option>
                         <mat-option value="Anulado">Anulado</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
-                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="CHOFER" (selectionChange)="seleccionarChofer4($event)">
+                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="CHOFER">
                         <mat-option value="">Todos</mat-option>
                         <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
                             {{chofer.nombres + ' ' + chofer.apellidos}}
@@ -39,7 +39,7 @@
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
-                    <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']" placeholder="DESTINO" (selectionChange)="seleccionarFactoriaDestinatario4($event)">
+                    <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']" placeholder="DESTINO">
                         <mat-option value="">Todos</mat-option>
                         <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.refLarga2">
                             {{factoria.refLarga2}}
@@ -50,8 +50,9 @@
                     <mat-checkbox name="esFacturado" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
                 </section>
             </div>
-            <div class="pl-1 full-width" align="right">
-                <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()">Exportar</button>
+            <div class="p-1 full-width" align="right">
+                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrarGuias()"><mat-icon>search</mat-icon>Buscar</button>
+                <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
             </div>
 
         </form>
@@ -70,51 +71,51 @@
 
         <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.id }}
+                <div [style.fontSize.px]="13">{{ row?.id }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Nro. Serie Guia" [flexGrow]="1" [width]="105" prop="nroguia">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.nroguia }}
+                <div [style.fontSize.px]="13"> {{ row?.nroguia }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Nro. Secuencia" [flexGrow]="1" [width]="110" prop="nroSecuencia">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.nroSecuencia }}
+                <div [style.fontSize.px]="13"> {{ row?.nroSecuencia }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.fechaEmision }}
+                <div [style.fontSize.px]="13"> {{ row?.fechaEmision }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Usuario Reg." [flexGrow]="1" [width]="110" prop="usuarioRegistra">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.usuarioRegistra }}
+                <div [style.fontSize.px]="13"> {{ row?.usuarioRegistra }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1" prop="nroLiq">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.nroLiq }}
+                <div [style.fontSize.px]="13"> {{ row?.nroLiq }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" prop="ordenServicio">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.ordenServicio }}
+                <div [style.fontSize.px]="13"> {{ row?.ordenServicio }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270" prop="remitente">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.remitente }}
+                <div [style.fontSize.px]="13"> {{ row?.remitente }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Razón Soc. Dest" [flexGrow]="1" [width]="250" prop="destinatario">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.destinatario }}
+                <div [style.fontSize.px]="13"> {{ row?.destinatario }} </div>
             </ng-template>
         </ngx-datatable-column>
 
@@ -126,19 +127,19 @@
 
         <ngx-datatable-column name="Producto" [flexGrow]="1" [width]="240" prop="producto">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.producto }}
+                <div [style.fontSize.px]="13"> {{ row?.producto }}</div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="130" prop="cantidad">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.cantidad }}
+                <div [style.fontSize.px]="13">{{ row?.cantidad }}</div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Chofer" [flexGrow]="1" [width]="240" prop="chofer">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.chofer }}
+                <div [style.fontSize.px]="13"> {{ row?.chofer }}</div>
             </ng-template>
         </ngx-datatable-column>
 
@@ -149,12 +150,12 @@
         </ngx-datatable-column> -->
         <ngx-datatable-column name="Guía Rem. Cliente" [flexGrow]="1">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.nroGuiaCliente }}
+                <div [style.fontSize.px]="13">{{ row?.nroGuiaCliente }}</div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Fec. Recepción" [flexGrow]="1" [width]="130">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                {{ row?.fechaRecepcion }}
+                <div [style.fontSize.px]="13"> {{ row?.fechaRecepcion }}</div>
             </ng-template>
         </ngx-datatable-column>
 

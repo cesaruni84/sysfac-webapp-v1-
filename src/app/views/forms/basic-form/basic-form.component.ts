@@ -344,7 +344,13 @@ export class BasicFormComponent implements OnInit {
    if (this.basicForm.invalid) {
       console.log('hay errores aun');
    }else {
-      // console.log('Form data are: '+ JSON.stringify(model));
+      // Actualiza valores formateados
+      this.valorNroSerie_ = this.pad(this.valorNroSerie_, 5) ;
+      this.valorNroSecuencia_ = this.pad(this.valorNroSecuencia_, 8) ;
+      this.valorSerieCli_ = this.pad(this.valorSerieCli_, 5) ;
+      this.valorSecuenciaCli_ = this.pad(this.valorSecuenciaCli_, 8) ;
+
+      // Efectos del cursor.
       this.submitButton.disabled = true;
       this.basicForm.disable();
       this.progressBar.mode = 'indeterminate';
@@ -354,8 +360,8 @@ export class BasicFormComponent implements OnInit {
       this.guiaDetalle_ = new GuiaDetalle();
       const listaGuias = [];
 
-      this.guiaRemision.serie = this.basicForm.get('nroSerie').value;
-      this.guiaRemision.secuencia = this.basicForm.get('nroSecuencia').value;
+      this.guiaRemision.serie =  this.valorNroSerie_;
+      this.guiaRemision.secuencia = this.valorNroSecuencia_;
       this.guiaRemision.balanza = this.basicForm.get('balanzaSelected').value;
       this.guiaRemision.totalCantidad = this.basicForm.get('cantidad').value;
       // this.guiaRemision.totalPeso = this.basicForm.get('peso').value;
@@ -374,8 +380,8 @@ export class BasicFormComponent implements OnInit {
       this.guiaRemision.ticketBalanza = this.basicForm.get('nroTicketBal').value;
       this.guiaRemision.placaTracto = this.basicForm.get('placaTracto').value;
       this.guiaRemision.placaBombona = this.basicForm.get('placaBombona').value;
-      this.guiaRemision.serieCliente = this.basicForm.get('nroSerieClie').value;
-      this.guiaRemision.secuenciaCliente = this.basicForm.get('nroSequenClie').value;
+      this.guiaRemision.serieCliente = this.valorSerieCli_;
+      this.guiaRemision.secuenciaCliente = this.valorSecuenciaCli_;
       this.guiaRemision.usuarioRegistro = this.usuarioSession.codigo;
       this.guiaRemision.usuarioActualiza = this.usuarioSession.codigo;
       this.guiaRemision.estado = this.basicForm.get('estadoSelected').value;

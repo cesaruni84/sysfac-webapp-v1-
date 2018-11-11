@@ -43,6 +43,8 @@ export class PagingTableComponent implements OnInit {
   formFilter: FormGroup;
   estadoSelected: string;
   fechaIniTraslado_: Date;
+  valorNroSerie_: string;
+  valorNroSecuencia_: string;
 
 
   // Combos para filtros de búsqueda
@@ -121,6 +123,42 @@ export class PagingTableComponent implements OnInit {
 
 
   }
+
+
+  // Validar Digitos
+  validaDigitos(event) {
+    const key = window.event ? event.keyCode : event.which;
+      if (event.keyCode === 8 || event.keyCode === 46) {
+          return true;
+      } else if ( key < 48 || key > 57 ) {
+        return false;
+      } else {
+          return true;
+      }
+  }
+
+  // Completar Zeros
+  completarZerosNroSerie(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    this.valorNroSerie_ = this.pad(valorDigitado, 5);
+  }
+
+  // Completar Zeros
+ completarZerosNroSecuencia(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
+  }
+
+  pad(number: string, length: number): string {
+    let str = '' + number;
+    while (str.length < length) {
+        str = '0' + str;
+    }
+    return str;
+}
+
+
+
 
   // Filtros para busqueda
   updateFilterEstado(event) {
@@ -226,6 +264,9 @@ export class PagingTableComponent implements OnInit {
     this.table.offset = 0;
   }
 
+  filtrarGuias() {
+
+  }
 
   updateFilter2(event) {
 

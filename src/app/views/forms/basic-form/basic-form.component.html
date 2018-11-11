@@ -15,7 +15,7 @@
                                         <!-- Comapny name input field -->
                                         <mat-form-field fxFlex="100%" appearance="">
                                             <mat-label [style.fontSize.px]="16"><b>EMPRESA :</b></mat-label>
-                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [disabled]="true" style="color:#3f51b5">
+                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [disabled]="true" [style.fontSize.px]="13" style="color:#3f51b5">
                                             <mat-icon matSuffix>store</mat-icon>
                                         </mat-form-field>
 
@@ -26,7 +26,7 @@
 
                                         <mat-form-field fxFlex="100%" appearance="">
                                             <mat-label [style.fontSize.px]="16" fxFlex="15%"><b>DIRECCION :</b></mat-label>
-                                            <input matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [disabled]="true" style="color:#3f51b5">
+                                            <input matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [disabled]="true" [style.fontSize.px]="13" style="color:#3f51b5">
                                             <mat-icon matSuffix>directions</mat-icon>
                                         </mat-form-field>
                                     </div>
@@ -136,11 +136,11 @@
                                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                         <mat-form-field fxFlex="25%" appearance="outline">
                                             <mat-label><b>RUC</b></mat-label>
-                                            <input matInput name="rucRemitente_" [formControl]="basicForm.controls['rucRemitente_']" [(ngModel)]="valorRucRemitente_" [disabled]="true" style="color:#3f51b5">
+                                            <input matInput name="rucRemitente_" [formControl]="basicForm.controls['rucRemitente_']" [(ngModel)]="valorRucRemitente_" [disabled]="true" [style.fontSize.px]="13" style="color:#3f51b5">
                                         </mat-form-field>
                                         <mat-form-field fxFlex="90%" appearance="outline">
                                             <mat-label><b>DIRECCION</b></mat-label>
-                                            <textarea matInput name="direRemitente_" [formControl]="basicForm.controls['direRemitente_']" [(ngModel)]="valorDirRemitente_" [disabled]="true" style="color:#3f51b5"></textarea>
+                                            <textarea matInput name="direRemitente_" [formControl]="basicForm.controls['direRemitente_']" [(ngModel)]="valorDirRemitente_" [disabled]="true" [style.fontSize.px]="12" style="color:#3f51b5"></textarea>
                                         </mat-form-field>
                                     </div>
                                 </mat-card-content>
@@ -174,11 +174,11 @@
                                         <!-- Comapny name input field -->
                                         <mat-form-field fxFlex="25%" appearance="outline">
                                             <mat-label><b>RUC</b></mat-label>
-                                            <input matInput name="rucDestinatario_" [formControl]="basicForm.controls['rucDestinatario_']" [(ngModel)]="valorRucDestinatario_" [disabled]="true" style="color:#3f51b5">
+                                            <input matInput name="rucDestinatario_" [formControl]="basicForm.controls['rucDestinatario_']" [(ngModel)]="valorRucDestinatario_" [disabled]="true" [style.fontSize.px]="13" style="color:#3f51b5">
                                         </mat-form-field>
                                         <mat-form-field fxFlex="90%" appearance="outline">
                                             <mat-label><b>DIRECCION</b></mat-label>
-                                            <textarea matInput name="direDestinatario_" [formControl]="basicForm.controls['direDestinatario_']" [(ngModel)]="valorDirDestinatario_" [disabled]="true" style="color:#3f51b5"></textarea>
+                                            <textarea matInput name="direDestinatario_" [formControl]="basicForm.controls['direDestinatario_']" [(ngModel)]="valorDirDestinatario_" [disabled]="true" [style.fontSize.px]="12" style="color:#3f51b5"></textarea>
                                         </mat-form-field>
                                     </div>
 
@@ -354,7 +354,7 @@
                                         <mat-label fxFlex="10%"></mat-label>
                                         <mat-form-field fxFlex="40%" appearance="outline">
                                             <mat-label><b>FECHA DE RECEPCION</b></mat-label>
-                                            <input matInput [(ngModel)]="valorFechaRecepcion_" name="fechaRecepcion" [formControl]="basicForm.controls['fechaRecepcion']" [matDatepicker]="picker3" style="color:#3f51b5">
+                                            <input matInput [(ngModel)]="valorFechaRecepcion_" name="fechaRecepcion" [formControl]="basicForm.controls['fechaRecepcion']" maxlength="10" [matDatepicker]="picker3" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
                                             <mat-datepicker touchUi #picker3></mat-datepicker>
                                             <mat-error *ngIf="basicForm.controls['fechaRecepcion'].hasError('required')">
