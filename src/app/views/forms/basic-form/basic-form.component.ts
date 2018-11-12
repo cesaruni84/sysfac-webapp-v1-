@@ -345,8 +345,11 @@ export class BasicFormComponent implements OnInit {
       console.log('hay errores aun');
    }else {
       // Actualiza valores formateados
-      this.valorNroSerie_ = this.pad(this.valorNroSerie_, 5) ;
-      this.valorNroSecuencia_ = this.pad(this.valorNroSecuencia_, 8) ;
+      if (!this.edicion){
+        this.valorNroSerie_ = this.pad(this.valorNroSerie_, 5) ;
+        this.valorNroSecuencia_ = this.pad(this.valorNroSecuencia_, 8) ;
+      }
+
       this.valorSerieCli_ = this.pad(this.valorSerieCli_, 5) ;
       this.valorSecuenciaCli_ = this.pad(this.valorSecuenciaCli_, 8) ;
 
@@ -386,13 +389,16 @@ export class BasicFormComponent implements OnInit {
       this.guiaRemision.usuarioActualiza = this.usuarioSession.codigo;
       this.guiaRemision.estado = this.basicForm.get('estadoSelected').value;
 
-      console.log(new Date(this.basicForm.get('fechaEmision').value).toLocaleDateString());
+      const fe = new Date(this.basicForm.get('fechaEmision').value);
+      fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      this.guiaRemision.fechaRemision = fe;
+      console.log('fe: ' + this.guiaRemision.fechaRemision);
 
-      this.guiaRemision.fechaRemision = new Date(this.basicForm.get('fechaEmision').value);
+      const ft = new Date(this.basicForm.get('fechaIniTraslado').value);
+      ft.setTime(ft.getTime() + ft.getTimezoneOffset() * 60 * 1000);
+      this.guiaRemision.fechaTraslado = ft;
+      console.log('ft: ' + this.guiaRemision.fechaTraslado);
 
-      console.log(this.guiaRemision.fechaRemision);
-
-      this.guiaRemision.fechaTraslado = new Date(this.basicForm.get('fechaIniTraslado').value);
       this.guiaRemision.fechaRecepcion = new Date(this.basicForm.get('fechaRecepcion').value);
 
       this.guiaRemision.balanza = this.basicForm.get('balanzaSelected').value;

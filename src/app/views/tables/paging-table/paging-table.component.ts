@@ -21,6 +21,7 @@ import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
 
 
+
 @Component({
   selector: 'app-paging-table',
   templateUrl: './paging-table.component.html',
@@ -41,10 +42,17 @@ export class PagingTableComponent implements OnInit {
   usuarioSession: Usuario;
   listaGrillaGuias: GrillaGuiaRemision[];
   formFilter: FormGroup;
-  estadoSelected: string;
-  fechaIniTraslado_: Date;
-  valorNroSerie_: string;
-  valorNroSecuencia_: string;
+
+  // Ng Model
+  public valorNroSerie_: string;
+  public valorNroSecuencia_: string;
+  public fechaIniTraslado_: Date;
+  public fechaFinTraslado_: Date;
+  public estadoSelected_: string;
+  public choferSelected_: any;
+  public destinatarioSelected_: any;
+  public facturado: boolean = false;
+
 
 
   // Combos para filtros de búsqueda
@@ -69,7 +77,7 @@ export class PagingTableComponent implements OnInit {
 
     const fechaActual_ = new Date();
     const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
+    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
     
     // const dateFormatPipeFilter = new DateFormatPipe();
     // console.log(fechaIniTraslado_);
@@ -88,10 +96,10 @@ export class PagingTableComponent implements OnInit {
       nroSecuencia: new FormControl('', CustomValidators.digits),
       fechaIniTraslado: new FormControl(fechaIniTraslado_, ),
       fechaFinTraslado: new FormControl(fechaActual_, ),
-      estadoSelected: new FormControl({value: '', disabled: false}, ),
+      estadoSelected: new FormControl('', ),
       choferSelected: new FormControl('', ),
       destinatarioSelected: new FormControl('', ),
-      esFacturado: new FormControl('', ),
+      esFacturado: new FormControl(this.facturado, ),
    });
 
 
@@ -161,65 +169,6 @@ export class PagingTableComponent implements OnInit {
 
 
   // Filtros para busqueda
-  updateFilterEstado(event) {
-    console.log(this.rows);
-    const val = event.value.toLowerCase();
-
-    console.log('val: ' + val);
-    const columns = Object.keys(this.temp[0]);
-    // Removes last "$$index" from "column"
-    columns.splice(columns.length - 1);
-
-    console.log('columnas: ' + columns[0]);
-    if (!columns.length)
-      return;
-
-    const rows = this.temp.filter(function(d) {
-      for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];
-        // console.log(d[column]);
-        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
-          return true;
-        }
-      }
-    });
-
-    this.rows = rows;
-    if (rows != null) {
-      console.log('paso estado');
-    } else  {
-      this.temp = this.rows = this.total_rows_bd;
-    }
-  }
-
-  seleccionarChofer(event) {
-    console.log(event);
-    //const val = event.target.value.toLowerCase();
-    const val = event.value.toLowerCase();
-
-    console.log('val: ' + val);
-    var columns = Object.keys(this.temp[0]);
-    // Removes last "$$index" from "column"
-    columns.splice(columns.length - 1);
-
-    console.log('columnas: '+ columns[0]);
-    if (!columns.length)
-      return;
-
-    const rows = this.temp.filter(function(d) {
-      for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];
-        // console.log(d[column]);
-        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
-          return true;
-        }
-      }
-    });
-
-    this.rows = rows;
-
-  }
-
   seleccionarFactoriaDestinatario(event) {
     console.log(event);
     //const val = event.target.value.toLowerCase();
@@ -264,82 +213,104 @@ export class PagingTableComponent implements OnInit {
     this.table.offset = 0;
   }
 
+
   filtrarGuias() {
 
-  }
+    this.temp =  this.total_rows_bd;
 
-  updateFilter2(event) {
+    console.log(this.formFilter);
+
+    const valorNroSerie_  =  this.formFilter.controls['nroSerie'].value;
+    const valorNroSecuencia_  =  this.formFilter.controls['nroSecuencia'].value;
+    const fechaIniTraslado_  =  new Date(this.formFilter.controls['fechaIniTraslado'].value);
+    const fechaFinTraslado_  =  new Date(this.formFilter.controls['fechaFinTraslado'].value);
+    const estadoSelected_  =  this.formFilter.controls['estadoSelected'].value;
+    const choferSelected_  =  this.formFilter.controls['choferSelected'].value;
+    const destinatarioSelected_  =  this.formFilter.controls['destinatarioSelected'].value;
+    const mostrarGuiasFacturadas  =  this.formFilter.controls['esFacturado'].value;
+
+    console.log(valorNroSerie_);
+    console.log(valorNroSecuencia_);
+    console.log(fechaIniTraslado_);
+    console.log(fechaFinTraslado_);
+    console.log(estadoSelected_);
+    console.log(choferSelected_);
+    console.log(destinatarioSelected_);
+    console.log(mostrarGuiasFacturadas);
 
     // this.guiaRemision.serie = this.formFilter.get('nroSerie').value;
+    // const columns = Object.keys(this.temp[0]);
+    // // Removes last "$$index" from "column"
+    // columns.splice(columns.length - 1);
 
-    const val = event.target.value.toLowerCase();
-
-    console.log('val : ' + val);
-    const columns = Object.keys(this.temp[0]);
-    // Removes last "$$index" from "column"
-    columns.splice(columns.length - 1);
-
-    if (!columns.length) {
-      return;
-    }
-
-    console.log('formulario: ' + this.formFilter);
+    // if (!columns.length) {
+    //   return;
+    // }
 
     const rows2 = this.temp.filter(function(d) {
 
       console.log(d);
-      console.log('eval estado: ' +  (d.estado.toLowerCase().indexOf(val) !== -1));
-      console.log('val ' +  (val));
-      console.log('fechaEmision: ' + d.fechaEmision);
-      
 
-      return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
+      const mostrarSerie = (d.nroguia.toLowerCase().indexOf(valorNroSerie_) !== -1) || !valorNroSerie_;
+      console.log('eval serie: ' + mostrarSerie) ;
 
-      // return (d.estado.toLowerCase().indexOf(val) !== -1) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 ) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 ) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 ) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 ) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 ) &&
-      //        (d.nroguia.toLowerCase().indexOf(val_filtro1) !== -1 )
+      const mostrarSecuencia = (d.nroSecuencia.toLowerCase().indexOf(valorNroSecuencia_) !== -1) || !valorNroSecuencia_ ;
+      console.log('eval secuencia: ' +  mostrarSecuencia);
 
-            // (val_filtro1 || val);
+      const fechaEmisionRow = new Date(d.fechaEmision);
+      fechaEmisionRow.setTime(fechaEmisionRow.getTime() + fechaEmisionRow.getTimezoneOffset() * 60 * 1000);
+
+      console.log('fechaEmisionRow: ' + fechaEmisionRow);
+      console.log('fechaIniTraslado_: ' + fechaIniTraslado_);
+      console.log('fechaFinTraslado_: ' + fechaFinTraslado_);
+      const mostrarFechaRow = ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) ;
+      // if ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) {
+      //   mostrarFechaRow = true;
+      // }
+      console.log('eval Fecha Emision: ' + mostrarFechaRow);
+
+      const mostrarEstado = (d.estado.indexOf(estadoSelected_) !== -1) ;
+      console.log('eval estado: ' +  mostrarEstado);
+
+      const mostrarChofer = (d.chofer.indexOf(choferSelected_) !== -1);
+      console.log('eval chofer: ' +  mostrarChofer);
+
+      const mostrarDestinatario = (d.destinatario.indexOf(destinatarioSelected_) !== -1) ;
+      console.log('eval destinatario: ' + mostrarDestinatario );
+
+      const guiaFacturada = d.ordenServicio.toLowerCase() !== '---------' ;
+      const guiaNoFacturada = d.ordenServicio.toLowerCase() === '---------' ;
+
+      // console.log('filtro facturada: ' + mostrarGuiasFacturadas);
+      // console.log('guiaFacturada: ' + guiaFacturada);
+      // console.log('guiaNoFacturada: ' + guiaNoFacturada);
+
+      let mostrarRegistro = false;
+      if (!mostrarGuiasFacturadas) {
+        if (guiaNoFacturada) {
+          mostrarRegistro = true;
+        }
+      } else {
+        if (guiaFacturada) {
+          mostrarRegistro = true;
+        }
+      }
+
+      console.log('eval facturado?: ' +  (mostrarRegistro));
+
+      // return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
+      // return true;
+       return  mostrarSerie &&
+               mostrarSecuencia &&
+               mostrarFechaRow &&
+               mostrarEstado &&
+               mostrarChofer &&
+               mostrarDestinatario &&
+               mostrarRegistro;
     });
 
     this.rows = rows2;
     this.table.offset = 0;
-
-  }
-
-
-
-
-
-  updateFilter4(event) {
-    const val = event.target.value.toLowerCase();
-    var columns = Object.keys(this.temp[0]);
-    // Removes last "$$index" from "column"
-    columns.splice(columns.length - 1);
-
-    if (!columns.length)
-      return;
-
-    const rows = this.temp.filter(function(d) {
-      for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];
-        // console.log(d[column]);
-        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
-          return true;
-        }
-      }
-    });
-    console.log(rows);
-    this.rows = rows;
-    if (rows != null) {
-      console.log('paso update');
-    } else  {
-      this.temp = this.rows = this.total_rows_bd;
-    }
 
   }
 

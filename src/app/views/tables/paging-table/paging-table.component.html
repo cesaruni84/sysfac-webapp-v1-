@@ -24,16 +24,16 @@
             <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                 <mat-form-field class="pl-1">
-                    <mat-select [(value)]="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="ESTADO">
+                    <mat-select name="estadoSelected" [formControl]="formFilter.controls['estadoSelected']" placeholder="ESTADO">
                         <mat-option value="">Todos</mat-option>
-                        <mat-option value="Registrado">Registrado</mat-option>
-                        <mat-option value="Anulado">Anulado</mat-option>
+                        <mat-option value="REGISTRADO">Registrado</mat-option>
+                        <mat-option value="ANULADO">Anulado</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
                     <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']" placeholder="CHOFER">
                         <mat-option value="">Todos</mat-option>
-                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
+                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.nombres + ' ' + chofer.apellidos">
                             {{chofer.nombres + ' ' + chofer.apellidos}}
                         </mat-option>
                     </mat-select>
