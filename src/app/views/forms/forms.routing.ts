@@ -12,7 +12,7 @@ export const FormsRoutes: Routes = [
     children: [{
       path: 'basic',
       component: BasicFormComponent,
-      data: { title: 'Registro', breadcrumb: 'Registro de Guia' }
+      data: { title: 'Registro', breadcrumb: 'Registro de Guias' }
     }, {
       path: 'paging',
       component: PagingTableComponent,
