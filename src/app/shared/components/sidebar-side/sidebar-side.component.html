@@ -1,15 +1,15 @@
 <div class="sidebar-panel">
     <div id="scroll-area" [perfectScrollbar] class="navigation-hold" fxLayout="column">
         <!-- App Logo -->
-        <div class="branding default-bg">
-            <img src="assets/images/logo.png" alt="" class="app-logo">
+        <div class="branding default-bg mt-1">
+            <br>
             <!-- Two different logos for dark and light themes -->
-            <img src="assets/images/logo-text-white.png" alt="" class="app-logo-text" *ngIf="themeService.activatedTheme?.name?.indexOf('dark') !== -1">
-            <img src="assets/images/logo-text.png" alt="" class="app-logo-text" *ngIf="themeService.activatedTheme?.name?.indexOf('dark') === -1">
+            <!-- <img src="assets/images/logo-text-white.png" alt="" class="app-logo-text" *ngIf="themeService.activatedTheme?.name?.indexOf('dark') !== -1"> -->
+            <img src="assets/images/logo-text.png" alt="" width="100" *ngIf="themeService.activatedTheme?.name?.indexOf('dark') === -1">
         </div>
-
+        <br>
         <!-- Sidebar user -->
-        <div class="app-user">
+        <div class="app-user mt-2">
             <div class="app-user-photo">
                 <img src="assets/images/user.jpg" alt="">
             </div>
@@ -19,8 +19,8 @@
         <div *ngIf="usuarioSession">
             {{usuarioSession.codigo + ' - ' + usuarioSession.nombres + ' '+  usuarioSession.apellidos}}
         </div>
-        <mat-icon class="icon-xs text-muted">lock</mat-icon>
         <div *ngIf="usuarioSession">
+            <mat-icon class="icon-xs text-muted">lock</mat-icon>
            <b> {{usuarioSession.cargo}}</b>  
         </div>
       </span>

@@ -1,13 +1,19 @@
-<mat-card>
-
+<mat-card class="p-0">
+    <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+        <div align="center" [style.fontSize.px]="14">
+            <span><b>FILTROS PARA BUSQUEDA</b></span>
+        </div>
+    </mat-card-title>
     <mat-card-content class="mb-0 p-05">
         <form [formGroup]="formFilter" novalidate>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
                 <mat-form-field fxFlex="10%" class="pl-1">
-                    <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" placeholder="NRO. DE SERIE" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
-                    <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" placeholder="NRO. DE GUIA" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SECUENCIA</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
                 </mat-form-field>
                 <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
                 <mat-form-field class="pl-1 ml-2" fxFlex="40%">
@@ -71,51 +77,51 @@
 
         <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13">{{ row?.id }} </div>
+                <div [style.fontSize.px]="12">{{ row?.id }} </div>
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Nro. Serie Guia" [flexGrow]="1" [width]="105" prop="nroguia">
+        <ngx-datatable-column name="Nro. Serie" [flexGrow]="1" [width]="80" prop="nroguia">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.nroguia }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.nroguia }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Nro. Secuencia" [flexGrow]="1" [width]="110" prop="nroSecuencia">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.nroSecuencia }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.nroSecuencia }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.fechaEmision }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.fechaEmision }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Usuario Reg." [flexGrow]="1" [width]="110" prop="usuarioRegistra">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.usuarioRegistra }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.usuarioRegistra }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Nro. de Liquid." [flexGrow]="1" prop="nroLiq">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.nroLiq }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.nroLiq }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" prop="ordenServicio">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.ordenServicio }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.ordenServicio }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270" prop="remitente">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.remitente }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.remitente }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Razón Soc. Dest" [flexGrow]="1" [width]="250" prop="destinatario">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.destinatario }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.destinatario }} </div>
             </ng-template>
         </ngx-datatable-column>
 
@@ -127,19 +133,19 @@
 
         <ngx-datatable-column name="Producto" [flexGrow]="1" [width]="240" prop="producto">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.producto }}</div>
+                <div [style.fontSize.px]="12"> {{ row?.producto }}</div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="130" prop="cantidad">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13">{{ row?.cantidad }}</div>
+                <div [style.fontSize.px]="12">{{ row?.cantidad }}</div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Chofer" [flexGrow]="1" [width]="240" prop="chofer">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.chofer }}</div>
+                <div [style.fontSize.px]="12"> {{ row?.chofer }}</div>
             </ng-template>
         </ngx-datatable-column>
 
@@ -150,12 +156,12 @@
         </ngx-datatable-column> -->
         <ngx-datatable-column name="Guía Rem. Cliente" [flexGrow]="1">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13">{{ row?.nroGuiaCliente }}</div>
+                <div [style.fontSize.px]="12">{{ row?.nroGuiaCliente }}</div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Fec. Recepción" [flexGrow]="1" [width]="130">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.fechaRecepcion }}</div>
+                <div [style.fontSize.px]="12"> {{ row?.fechaRecepcion }}</div>
             </ng-template>
         </ngx-datatable-column>
 

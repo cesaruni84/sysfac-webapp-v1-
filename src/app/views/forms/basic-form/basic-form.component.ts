@@ -177,7 +177,7 @@ export class BasicFormComponent implements OnInit {
       this.valorDirDestinatario_ = data_.destinatario.cliente.direccion;
       this.valorIdGuiaDetalle_ = data_.guiaDetalle[0].id;
       this.valorProductoSelected_ = data_.guiaDetalle[0].producto;
-      this.valorCantidad_ = data_.guiaDetalle[0].cantidad;
+      this.valorCantidad_ = data_.totalCantidad;
       // this.valorPeso_ = data_.guiaDetalle[0].peso;
       this.valorUMSelected_ = data_.guiaDetalle[0].unidadMedida;
       this.valorChoferSelected_ = data_.chofer;
@@ -255,7 +255,6 @@ export class BasicFormComponent implements OnInit {
       nroTicketBal: new FormControl('', [
         Validators.minLength(1),
         Validators.maxLength(30),
-        Validators.required
       ]),
       nroSerieClie: new FormControl('', [
         Validators.minLength(1),

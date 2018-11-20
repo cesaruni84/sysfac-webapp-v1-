@@ -1,5 +1,5 @@
 import { GuiaRemision } from './../../../shared/models/guia_remision.model';
-import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
@@ -13,6 +13,7 @@ import { Factoria } from '../../../shared/models/factoria.model';
 import { MotivoTrasladoService } from '../../../shared/services/motivos-traslado/motivo-traslado.service';
 import { MotivoTraslado } from '../../../shared/models/motivo_traslado.model';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
+import { MatSort, MatTableDataSource, MatSnackBar, MatPaginator } from '@angular/material';
 import { formatDate } from '@angular/common';
 
 
@@ -26,7 +27,16 @@ import { formatDate } from '@angular/common';
   ]
 })
 export class FileUploadComponent implements OnInit {
-  
+
+  displayedColumns = ['acciones', 'item', 'fechaTraslado', 'nroguia', 'nroguia2', 'producto', 'ticketBalanza'
+                      , 'totalCantidad', 'unidadMedida', 'tarifa', 'subTotal'];
+
+ displayedColumnsFooter = ['ticketBalanza', 'totalCantidad', 'unidadMedida' , 'tarifa', 'subTotal'];
+
+  dataSource: MatTableDataSource<GuiaRemision>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
 
   public uploader: FileUploader = new FileUploader({ url: 'https://evening-anchorage-315.herokuapp.com/api/' });
   public hasBaseDropZoneOver: boolean = false;
@@ -39,6 +49,7 @@ export class FileUploadComponent implements OnInit {
 
   // Combos de Formularios
   comboFactorias: Factoria[];
+  comboFactoriasDestino: Factoria[];
   comboMotivosTraslado: MotivoTraslado[];
 
 
@@ -79,14 +90,14 @@ export class FileUploadComponent implements OnInit {
   initForm() {
 
     this.formLiquidacion = new FormGroup({
-      empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true}, Validators.required),
-      nroDocumentoLiq: new FormControl( '', Validators.required),
+      empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true},),
+      nroDocumentoLiq: new FormControl( '0000000000000', Validators.required),
       fechaRegistro: new FormControl({value: '', disabled: true}),
-      estado: new FormControl({value: '0', disabled: true}, Validators.required),
-      situacion: new FormControl({value: '0', disabled: true}, Validators.required),
-      moneda: new FormControl({value: '0', disabled: false}, Validators.required),
-      origen: new FormControl('', ),
-      destino: new FormControl('', ),
+      estado: new FormControl({value: '0', disabled: true}, ),
+      situacion: new FormControl({value: '0', disabled: true}, ),
+      moneda: new FormControl({value: '0', disabled: false}, ),
+      origen: new FormControl('', Validators.required),
+      destino: new FormControl('', Validators.required ),
       motivoTraslado: new FormControl('', ),
       fechaIniTraslado: new FormControl('', [
         Validators.minLength(10),
@@ -118,9 +129,9 @@ export class FileUploadComponent implements OnInit {
     this.valorFechaFinTraslado_ = new Date();
     this.valorFechaRegistro_ = new Date();
     this.valorFechaIniTraslado_.setDate((this.valorFechaIniTraslado_ .getDate()) - 30);
-    this.valorOrigenSelected_ = 1;
-    this.valorDestinoSelected_ = 2;
-    this.motivoTrasladoSelected_ = 2; 
+    this.valorOrigenSelected_ = 8;
+    this.valorDestinoSelected_ = 1;
+    this.motivoTrasladoSelected_ = 2;
 
   }
 
@@ -128,6 +139,10 @@ export class FileUploadComponent implements OnInit {
 
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
+    });
+
+    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
+      this.comboFactoriasDestino = data3;
     });
 
     this.motivoTrasladoService.listarComboMotivosTraslado().subscribe(data2 => {
@@ -142,19 +157,32 @@ export class FileUploadComponent implements OnInit {
     const fechaIni = formatDate(this.valorFechaIniTraslado_, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.valorFechaFinTraslado_, 'yyyy-MM-dd', this.locale);
 
-    console.log(fechaIni);
-    console.log(fechaFin);
     this.guiaRemisionService.listarGuiasRemisionPorLiquidar(this.usuarioSession.empresa.id,
                                 this.valorOrigenSelected_,
                                 this.valorDestinoSelected_,
                                 fechaIni,
                                 fechaFin).subscribe(data_ => {
       this.listadoGuias = data_;
+      this.dataSource = new MatTableDataSource(data_);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
       this.rows = data_;
       console.log(data_);
     });
 
   }
+
+
+    /** Gets the total cost of all transactions. */
+    sumTotalCantidad() {
+      return this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+    }
+
+     /** Gets the total cost of all transactions. */
+     sumSubTotalImporte() {
+      return this.rows.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+    }
+   
 
 
   public fileOverBase(e: any): void {

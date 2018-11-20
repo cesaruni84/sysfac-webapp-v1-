@@ -74,7 +74,7 @@
                                 <mat-form-field fxFlex="42.5%" class="full-width" appearance="outline">
                                     <mat-label><b>DESTINO</b></mat-label>
                                     <mat-select [compareWith]="" [(ngModel)]="valorDestinoSelected_" name="destino" [formControl]="formLiquidacion.controls['destino']">
-                                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                                        <mat-option *ngFor="let factoria of comboFactoriasDestino" [value]="factoria.id">
                                             {{factoria.refLarga1}}
                                         </mat-option>
                                     </mat-select>
@@ -131,10 +131,114 @@
                             <div align="center"><b>LISTA DE GUIAS A LIQUIDAR</b></div>
                         </mat-card-title>
                         <mat-divider></mat-divider>
-                        <mat-card-content class="p-05 m-0">
+                        <mat-card-content class="p-0 m-0">
                             <div class="mat-box-shadow margin-333">
 
-                                <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="50" [rows]="rows">
+                                <mat-table #table [dataSource]="dataSource" matSort class="example-container mat-elevation-z8">
+
+                                    <!-- Accciones  -->
+                                    <ng-container matColumnDef="acciones">
+                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef>Acciones</mat-header-cell>
+                                        <mat-cell fxFlex="90px" *matCellDef="let row">
+                                            <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
+                                            <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>clear</mat-icon></button>
+                                        </mat-cell>
+                                        <mat-footer-cell fxFlex="90px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Item Correlativo -->
+                                    <ng-container matColumnDef="item">
+                                        <mat-header-cell fxFlex="50px" *matHeaderCellDef mat-sort-header>| Item </mat-header-cell>
+                                        <mat-cell fxFlex="50px" *matCellDef="let row; let i = item;">{{i}}</mat-cell>
+                                        <mat-footer-cell fxFlex="50px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Fecha de Traslado -->
+                                    <ng-container matColumnDef="fechaTraslado">
+                                        <mat-header-cell fxFlex="80px" *matHeaderCellDef mat-sort-header>| F.Traslado </mat-header-cell>
+                                        <mat-cell fxFlex="80px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{row.fechaTraslado}} </mat-cell>
+                                        <mat-footer-cell fxFlex="80px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Nro de Guia de Remisión -->
+                                    <ng-container matColumnDef="nroguia">
+                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header> | Guia de Remisión </mat-header-cell>
+                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">{{ row?.serie + '-' + row?.secuencia }} </mat-cell>
+                                        <mat-footer-cell fxFlex="110px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Guia Remisión Cliente -->
+                                    <ng-container matColumnDef="nroguia2">
+                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header>| Guia Rem. Cliente </mat-header-cell>
+                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">{{ row?.serieCliente + '-' + row?.secuenciaCliente }} </mat-cell>
+                                        <mat-footer-cell fxFlex="110px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Producto-->
+                                    <ng-container matColumnDef="producto">
+                                        <mat-header-cell fxFlex="180px" *matHeaderCellDef mat-sort-header> | Descripción </mat-header-cell>
+                                        <mat-cell fxFlex="180px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.guiaDetalle[0].producto.nemonico }}</mat-cell>
+                                        <mat-footer-cell fxFlex="180px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Balanza  -->
+                                    <ng-container matColumnDef="ticketBalanza">
+                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef mat-sort-header> | Ticket Balanza </mat-header-cell>
+                                        <mat-cell fxFlex="90px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">
+                                            <div align="right">
+                                                {{ row?.ticketBalanza }}
+                                            </div>
+                                        </mat-cell>
+                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef>Total cantidad: </mat-footer-cell>
+                                    </ng-container>
+
+
+                                    <!-- Total Cantidad -->
+                                    <ng-container matColumnDef="totalCantidad">
+                                        <mat-header-cell fxFlex="70px" *matHeaderCellDef mat-sort-header> | Cantidad </mat-header-cell>
+                                        <mat-cell fxFlex="70px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5; text-align:right;">
+                                            {{ row?.totalCantidad }}
+                                        </mat-cell>
+                                        <mat-footer-cell fxFlex="70px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumTotalCantidad() }} </mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Unidad de Medida -->
+                                    <ng-container matColumnDef="unidadMedida">
+                                        <mat-header-cell fxFlex="35px" *matHeaderCellDef mat-sort-header> | UM </mat-header-cell>
+                                        <mat-cell fxFlex="35px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5; text-align: center;"> {{ row?.guiaDetalle[0].unidadMedida.valor }} </mat-cell>
+                                        <mat-footer-cell fxFlex="35px" *matFooterCellDef></mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Precio Unitario-->
+                                    <ng-container matColumnDef="tarifa">
+                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef mat-sort-header> | P. Unitario </mat-header-cell>
+                                        <mat-cell fxFlex="90px" *matCellDef="let row">
+                                            <mat-form-field fxFlex="80%" floatLabel="never" [style.fontSize.px]="12" style="color:#3f51b5;text-align:center;">
+                                                <input matInput [value]="row.tarifa" align="center">
+                                            </mat-form-field>
+                                        </mat-cell>
+                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef>Subtotal: </mat-footer-cell>
+                                    </ng-container>
+
+                                    <!--Sub Total-->
+                                    <ng-container matColumnDef="subTotal" mat-sort-header>
+                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header>| Sub Total </mat-header-cell>
+                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5;text-align:center">
+                                            {{ row?.subTotal }}
+                                        </mat-cell>
+                                        <mat-footer-cell fxFlex="110px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumSubTotalImporte() }}</mat-footer-cell>
+                                    </ng-container>
+
+
+                                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                                    <mat-row *matRowDef="let row; columns: displayedColumns;let i = index"></mat-row>
+                                    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+
+                                </mat-table>
+
+                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+
+                                <!-- <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="50" [rows]="rows">
                                     <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="90">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
@@ -206,12 +310,8 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
-                                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    {{ row?.balance | currency }}
-                                                </ng-template>
-                                            </ngx-datatable-column> -->
-                                </ngx-datatable>
+
+                                </ngx-datatable> -->
                             </div>
 
                         </mat-card-content>
