@@ -29,7 +29,7 @@
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <mat-form-field fxFlex="20%" appearance="outline">
                                     <mat-label [style.fontSize.px]="14" fxFlex="15%"><b>NRO. DE DOCUMENTO LIQ. </b> </mat-label>
-                                    <input matInput [(ngModel)]="valorNroDocumentoLiq_" name="nroDocumentoLiq" [formControl]="formLiquidacion.controls['nroDocumentoLiq']" maxlength="12" [disabled]="" style="color:green">
+                                    <input matInput [(ngModel)]="valorNroDocumentoLiq_" name="nroDocumentoLiq" [formControl]="formLiquidacion.controls['nroDocumentoLiq']" maxlength="12" style="color:green">
                                 </mat-form-field>
                                 <mat-label fxFlex="2%"></mat-label>
                                 <mat-form-field fxFlex="15%" class="full-width" appearance="outline">
@@ -111,7 +111,7 @@
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <!-- Comapny name input field -->
 
-                                <mat-form-field fxFlex="59%" appearance="outline">
+                                <mat-form-field fxFlex="59%">
                                     <mat-label [style.fontSize.px]="15"><b>GLOSA </b></mat-label>
                                     <input matInput name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
                                 </mat-form-field>
@@ -217,7 +217,7 @@
                                                 <input matInput [value]="row.tarifa" align="center">
                                             </mat-form-field>
                                         </mat-cell>
-                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef>Subtotal: </mat-footer-cell>
+                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef> Subtotal: </mat-footer-cell>
                                     </ng-container>
 
                                     <!--Sub Total-->
@@ -229,10 +229,35 @@
                                         <mat-footer-cell fxFlex="110px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumSubTotalImporte() }}</mat-footer-cell>
                                     </ng-container>
 
+                                    <!-- Disclaimer IGV -->
+                                    <ng-container matColumnDef="disc-label-igv">
+                                        <mat-footer-cell fxFlex="390px" *matFooterCellDef colspan="2">ssssssssssssssss I.G.V :sssssssssssssssssss </mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Disclaimer IGV  -->
+                                    <ng-container matColumnDef="disc-value-igv">
+                                        <mat-footer-cell *matFooterCellDef> {{calcularImporteIGV()}} </mat-footer-cell>
+                                    </ng-container>
+
+
+                                    <!-- Disclaimer TOTAL -->
+                                    <ng-container matColumnDef="disc-label-total">
+                                        <mat-footer-cell *matFooterCellDef> Total : </mat-footer-cell>
+                                    </ng-container>
+
+                                    <!-- Disclaimer TOTAL -->
+                                    <ng-container matColumnDef="disc-value-total">
+                                        <mat-footer-cell *matFooterCellDef> {{calcularImporteTotal()}} </mat-footer-cell>
+                                    </ng-container>
 
                                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                                     <mat-row *matRowDef="let row; columns: displayedColumns;let i = index"></mat-row>
+
                                     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
+                                    <mat-footer-row *matFooterRowDef="['disc-label-igv']"></mat-footer-row>
+
+                                    <!-- <mat-footer-row *matFooterRowDef="['disc-label-total','disc-value-total']"></mat-footer-row> -->
+
 
                                 </mat-table>
 

@@ -91,7 +91,7 @@ export class FileUploadComponent implements OnInit {
 
     this.formLiquidacion = new FormGroup({
       empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true},),
-      nroDocumentoLiq: new FormControl( '0000000000000', Validators.required),
+      nroDocumentoLiq: new FormControl( '', Validators.required),
       fechaRegistro: new FormControl({value: '', disabled: true}),
       estado: new FormControl({value: '0', disabled: true}, ),
       situacion: new FormControl({value: '0', disabled: true}, ),
@@ -121,7 +121,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   defaultValues() {
-    this.valorNroDocumentoLiq_ = '0000000000000';
+    this.valorNroDocumentoLiq_ = '000000000000';
     this.estadoLiquidacion_ = '0';
     this.situacionLiquidacion_ = '0';
     this.monedaLiquidacion_ = '0';
@@ -173,17 +173,23 @@ export class FileUploadComponent implements OnInit {
   }
 
 
-    /** Gets the total cost of all transactions. */
-    sumTotalCantidad() {
-      return this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
-    }
+  /** Gets the total cost of all transactions. */
+  sumTotalCantidad() {
+    return this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+  }
 
-     /** Gets the total cost of all transactions. */
-     sumSubTotalImporte() {
-      return this.rows.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
-    }
-   
+  /** Gets the total cost of all transactions. */
+  sumSubTotalImporte() {
+    return this.rows.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+  }
 
+  calcularImporteIGV() {
+    return 18.00;
+  }
+
+  calcularImporteTotal() {
+    return 2300.35;
+  }
 
   public fileOverBase(e: any): void {
     this.hasBaseDropZoneOver = e;

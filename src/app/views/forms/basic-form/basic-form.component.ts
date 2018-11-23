@@ -220,8 +220,8 @@ export class BasicFormComponent implements OnInit {
       ]),
       // fechaIniTraslado: new FormControl({value: 'fechaEmision', disabled: true}, Validators.required),
       fechaIniTraslado: new FormControl({value: 'fechaEmision', disabled: true}, Validators.required),
-      nroSerie: new FormControl({value: '00000', disabled: this.edicion}, [CustomValidators.digits, Validators.required]),
-      nroSecuencia: new FormControl({value: '00000000', disabled: this.edicion} , [CustomValidators.digits, Validators.required]),
+      nroSerie: new FormControl({value: '', disabled: false}, [CustomValidators.digits, Validators.required]),
+      nroSecuencia: new FormControl({value: '', disabled: false} , [CustomValidators.digits, Validators.required]),
       remitenteSelected: new FormControl( '', Validators.required),
       rucRemitente_: new FormControl({value: '', disabled: true}, Validators.required),
       direRemitente_: new FormControl({value: '', disabled: true}, Validators.required),
@@ -256,13 +256,13 @@ export class BasicFormComponent implements OnInit {
         Validators.minLength(1),
         Validators.maxLength(30),
       ]),
-      nroSerieClie: new FormControl('', [
+      nroSerieClie: new FormControl('0', [
         Validators.minLength(1),
         Validators.maxLength(5),
         Validators.required,
         CustomValidators.digits
       ]),
-      nroSequenClie: new FormControl('', [
+      nroSequenClie: new FormControl('0', [
         Validators.minLength(1),
         Validators.maxLength(8),
         Validators.required,
@@ -475,7 +475,7 @@ export class BasicFormComponent implements OnInit {
 
       // Resetea Formulario
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        window.location.reload();
+        this.router.navigate(['/forms/paging']);
       });
     },
     (error: HttpErrorResponse) => {
