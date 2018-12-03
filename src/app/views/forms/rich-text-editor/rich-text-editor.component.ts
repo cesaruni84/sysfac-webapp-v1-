@@ -118,4 +118,8 @@ export class RichTextEditorComponent implements OnInit {
   }
   onContentChanged() { }
   onSelectionChanged() { }
+  filtrarLiquidaciones(){}
+  ExportTOExcel(){}
+
+
 }
