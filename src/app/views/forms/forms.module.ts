@@ -1,3 +1,4 @@
+import { InlineEditComponent } from './file-upload/inline-edit/inline-edit.component';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -8,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTabsModule} from '@angular/material/tabs';
 import { TablesModule } from '../tables/tables.module';
+import { SatPopoverModule } from '@ncstate/sat-popover';
 
 
 import { 
@@ -24,7 +26,8 @@ import {
   MatButtonModule,
   MatIconModule,
   MatSelectModule,
-  MatStepperModule
+  MatStepperModule,
+  MatChipsModule,
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
@@ -49,13 +52,15 @@ import { WizardComponent } from './wizard/wizard.component';
     MatInputModule,
     MatListModule,
     MatCardModule,
-    MatDatepickerModule, 
+    MatChipsModule,
+    MatDatepickerModule,
     MatNativeDateModule,
     MatProgressBarModule,
     MatRadioModule,
     MatTableModule,
     MatPaginatorModule,
     MatCheckboxModule,
+    SatPopoverModule,
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
@@ -67,6 +72,6 @@ import { WizardComponent } from './wizard/wizard.component';
     FileUploadModule,
     RouterModule.forChild(FormsRoutes)
   ],
-  declarations: [BasicFormComponent, RichTextEditorComponent, FileUploadComponent, WizardComponent]
+  declarations: [BasicFormComponent, RichTextEditorComponent, FileUploadComponent, WizardComponent, InlineEditComponent]
 })
 export class AppFormsModule { }

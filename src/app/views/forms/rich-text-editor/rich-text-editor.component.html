@@ -1,10 +1,139 @@
 <mat-card class="p-0">
-  
-  <mat-card-content class="p-0">
-    <quill-editor 
-    theme="snow" 
-    [(ngModel)]="editorData" 
-    (onContentChanged)="onContentChanged()" 
-    onSelectionChanged="onSelectionChanged()"></quill-editor>
-  </mat-card-content>
+    <mat-card-title class="m-05" [style.backgroundColor]="'rgb(235, 235, 235)'">
+        <div align="center" [style.fontSize.px]="14">
+            <span><b>FILTROS PARA BUSQUEDA DE LIQUIDACIONES</b></span>
+        </div>
+    </mat-card-title>
+    <mat-card-content class="mb-0 p-05">
+        <form [formGroup]="formFilter" novalidate>
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
+                <mat-form-field fxFlex="20%" class="pl-1">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE LIQUIDACION</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSerieLiq_" name="nroSerieLiq" [formControl]="formFilter.controls['nroSerieLiq']" maxlength="12" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieLiq($event)'>
+                </mat-form-field>
+                <mat-form-field class="pl-1">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
+                    <mat-select name="estadoSelected" [formControl]="formFilter.controls['estadoSelected']">
+                        <mat-option value="">Todos</mat-option>
+                        <mat-option value="0">Pendiente</mat-option>
+                        <mat-option value="1">En Proceso</mat-option>
+                        <mat-option value="2">Procesado</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <!-- <mat-label class="pl-1 ml-2" fxFlex="30%"> </mat-label> -->
+                <mat-form-field class="pl-1 ml-2" fxFlex="20%">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO (LIQ.)</b></mat-label>
+                    <input matInput name="fechaIniLiq" [formControl]="formFilter.controls['fechaIniLiq']" [matDatepicker]="picker" maxlength="10">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="pl-1" fxFlex="20%">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN (LIQ.)</b></mat-label>
+                    <input matInput name="fechaFinLiq" [formControl]="formFilter.controls['fechaFinLiq']" [matDatepicker]="picker2" maxlength="10">
+                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                    <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <br>
+
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
+                <mat-form-field fxFlex="35%" class="pl-1">
+                    <mat-label><b>ORIGEN</b></mat-label>
+                    <mat-select [compareWith]="" [(ngModel)]="valorOrigenSelected_" name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                            {{factoria.refLarga1}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field fxFlex="35%" class="full-width">
+                    <mat-label><b>DESTINO</b></mat-label>
+                    <mat-select [compareWith]="" [(ngModel)]="valorDestinoSelected_" name="destinoSelected" [formControl]="formFilter.controls['destinoSelected']">
+                        <mat-option *ngFor="let factoria of comboFactoriasDestino" [value]="factoria.id">
+                            {{factoria.refLarga1}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <section class="pl-1 ml-05">
+                    <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
+                </section>
+            </div>
+            <div class="p-1 full-width" align="right">
+                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrarLiquidaciones()"><mat-icon>search</mat-icon>Buscar</button>
+                <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
+            </div>
+
+        </form>
+    </mat-card-content>
 </mat-card>
+
+<div class="mat-box-shadow margin-333">
+
+    <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns">
+        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarLiquidacion(row)"><mat-icon>description</mat-icon></button>
+                <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13">{{ row?.item }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Nro. Liquidación" [flexGrow]="1" [width]="80" prop="nroLiquid">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13"> {{ row?.nroguia }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Fecha de Emisión Liq." [flexGrow]="1" [width]="130" prop="fechaEmisionLiq">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13"> {{ row?.fechaEmisionLiq }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" prop="ordenServicio">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13"> {{ row?.ordenServicio }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Origen" [flexGrow]="1" [width]="270" prop="origen">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13"> {{ row?.origen }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="250" prop="destino">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13"> {{ row?.destino }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110" prop="estado">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <mat-chip mat-sm-chip class="full-width" [color]="'primary'" [selected]="row.estado =='Pendiente'">{{row.estado == 'Pendiente' ? 'Registrado' : 'Procesado'}}</mat-chip>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Total Cantidad" [flexGrow]="1" [width]="265" prop="totalCantidad">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="12"> {{ row?.totalCantidad }}</div>
+            </ng-template>
+        </ngx-datatable-column>
+
+
+        <ngx-datatable-column name="Total Importe" [flexGrow]="1" [width]="240" prop="totalImporte">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="12"> {{ row?.totalImporte | currency: 'PEN'}}</div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row?.balance | currency }}
+          </ng-template>
+      </ngx-datatable-column> -->
+    </ngx-datatable>
+</div>

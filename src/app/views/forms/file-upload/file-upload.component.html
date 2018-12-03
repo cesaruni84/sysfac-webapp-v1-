@@ -81,10 +81,8 @@
                                 </mat-form-field>
                             </div>
 
-
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <!-- Comapny name input field -->
-
                                 <mat-form-field fxFlex="40%" class="full-width" appearance="outline">
                                     <mat-label><b>MOTIVO DE TRASLADO</b></mat-label>
                                     <mat-select [compareWith]="" [(ngModel)]="motivoTrasladoSelected_" name="motivoTraslado" [formControl]="formLiquidacion.controls['motivoTraslado']" requeried>
@@ -107,10 +105,8 @@
                                 </mat-form-field>
                             </div>
 
-
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <!-- Comapny name input field -->
-
                                 <mat-form-field fxFlex="59%">
                                     <mat-label [style.fontSize.px]="15"><b>GLOSA </b></mat-label>
                                     <input matInput name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
@@ -119,9 +115,7 @@
                                 <div align="right">
                                     <button mat-raised-button color="primary" (click)="buscarGuiasXLiquidar()"><mat-icon>search</mat-icon>Buscar Guias</button>
                                 </div>
-
                             </div>
-
                         </mat-card-content>
                     </mat-card>
 
@@ -177,7 +171,7 @@
                                     <!-- Producto-->
                                     <ng-container matColumnDef="producto">
                                         <mat-header-cell fxFlex="180px" *matHeaderCellDef mat-sort-header> | Descripción </mat-header-cell>
-                                        <mat-cell fxFlex="180px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.guiaDetalle[0].producto.nemonico }}</mat-cell>
+                                        <mat-cell fxFlex="180px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.guiaDetalle[0].producto.nombre }}</mat-cell>
                                         <mat-footer-cell fxFlex="180px" *matFooterCellDef></mat-footer-cell>
                                     </ng-container>
 
@@ -229,39 +223,39 @@
                                         <mat-footer-cell fxFlex="110px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumSubTotalImporte() }}</mat-footer-cell>
                                     </ng-container>
 
-                                    <!-- Disclaimer IGV -->
+                                    <!-- Disclaimer label IGV -->
                                     <ng-container matColumnDef="disc-label-igv">
-                                        <mat-footer-cell fxFlex="390px" *matFooterCellDef colspan="2">ssssssssssssssss I.G.V :sssssssssssssssssss </mat-footer-cell>
+                                        <td mat-footer-cell fxFlex="390px" *matFooterCellDef> I.G.V : </td>
                                     </ng-container>
 
-                                    <!-- Disclaimer IGV  -->
+                                    <!-- Disclaimer valor IGV  -->
                                     <ng-container matColumnDef="disc-value-igv">
-                                        <mat-footer-cell *matFooterCellDef> {{calcularImporteIGV()}} </mat-footer-cell>
+                                        <td mat-footer-cell *matFooterCellDef> {{calcularImporteIGV()}} </td>
                                     </ng-container>
 
 
-                                    <!-- Disclaimer TOTAL -->
+                                    <!-- Disclaimer label TOTAL -->
                                     <ng-container matColumnDef="disc-label-total">
-                                        <mat-footer-cell *matFooterCellDef> Total : </mat-footer-cell>
+                                        <td mat-footer-cell *matFooterCellDef> Total : </td>
                                     </ng-container>
 
-                                    <!-- Disclaimer TOTAL -->
+                                    <!-- Disclaimer valor TOTAL -->
                                     <ng-container matColumnDef="disc-value-total">
-                                        <mat-footer-cell *matFooterCellDef> {{calcularImporteTotal()}} </mat-footer-cell>
+                                        <td mat-footer-cell *matFooterCellDef> {{calcularImporteTotal()}} </td>
                                     </ng-container>
 
                                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                                     <mat-row *matRowDef="let row; columns: displayedColumns;let i = index"></mat-row>
 
-                                    <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
-                                    <mat-footer-row *matFooterRowDef="['disc-label-igv']"></mat-footer-row>
 
-                                    <!-- <mat-footer-row *matFooterRowDef="['disc-label-total','disc-value-total']"></mat-footer-row> -->
+                                    <tr mat-footer-row *matFooterRowDef="['disc-label-igv','disc-value-igv']"></tr>
+                                    <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+                                    <tr mat-footer-row *matFooterRowDef="['disc-label-total','disc-value-total']"></tr>
 
 
                                 </mat-table>
 
-                                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                                <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
                                 <!-- <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="50" [rows]="rows">
                                     <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="90">

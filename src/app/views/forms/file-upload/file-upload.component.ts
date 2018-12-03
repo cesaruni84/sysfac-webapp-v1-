@@ -1,4 +1,4 @@
-import { GuiaRemision } from './../../../shared/models/guia_remision.model';
+import { GuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -164,7 +164,7 @@ export class FileUploadComponent implements OnInit {
                                 fechaFin).subscribe(data_ => {
       this.listadoGuias = data_;
       this.dataSource = new MatTableDataSource(data_);
-      this.dataSource.paginator = this.paginator;
+     // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.rows = data_;
       console.log(data_);

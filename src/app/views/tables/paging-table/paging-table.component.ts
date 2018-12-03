@@ -1,5 +1,5 @@
-import { FactoriaService } from './../../../shared/services/factorias/factoria.service';
-import { UsuarioService } from './../../../shared/services/auth/usuario.service';
+import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
+import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TablesService } from '../tables.service';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
@@ -14,9 +14,9 @@ import { AppLoaderService } from '../../../shared/services/app-loader/app-loader
 import { write } from 'xlsx-style';
 import * as XLSX from 'xlsx';
 import { CustomValidators } from 'ng2-validation';
-import { DatatableComponent } from '../../../../../node_modules/@swimlane/ngx-datatable';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
-import { formatDate } from '../../../../../node_modules/@angular/common';
+import { formatDate } from '@angular/common';
 import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
 
@@ -78,18 +78,6 @@ export class PagingTableComponent implements OnInit {
     const fechaActual_ = new Date();
     const fechaIniTraslado_ = new Date();
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
-    
-    // const dateFormatPipeFilter = new DateFormatPipe();
-    // console.log(fechaIniTraslado_);
-    // console.log(dateFormatPipeFilter.transform(fechaIniTraslado_));
-
-    // const nueva_fecha = new Intl.DateTimeFormat().format(fechaIniTraslado_);
-    // console.log(nueva_fecha);
-    // this.fechaIniTraslado_ = fechaIniTraslado_;
-  
-  
-    // const fechaActual2_ = Date.parse(formatDate(new Date(), 'yyyy/MM/dd', 'en'));
-    // console.log(fechaActual2_);
 
     this.formFilter = new FormGroup({
       nroSerie: new FormControl('', CustomValidators.digits),
@@ -100,12 +88,13 @@ export class PagingTableComponent implements OnInit {
       choferSelected: new FormControl('', ),
       destinatarioSelected: new FormControl('', ),
       esFacturado: new FormControl(this.facturado, ),
+
    });
 
 
 
 
-    this.columns = this.service.getDataConf();
+   // this.columns = this.service.getDataConf();
     // this.rows = this.service.getAll();
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
@@ -326,7 +315,7 @@ export class PagingTableComponent implements OnInit {
     ws['!cols'] = wscols;
 
     /* save to file */
-    XLSX.writeFile(wb, 'ReporteGuias_.xlsx', { cellStyles: true });
+    XLSX.writeFile(wb, 'ReporteGuias_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
   }
 
   onSelect({ selected }) {

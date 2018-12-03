@@ -16,7 +16,7 @@
     "dependencies": {
         "@agm/core": "1.0.0-beta.2",
         "@angular/animations": "6.0.1",
-        "@angular/cdk": "6.0.1",
+        "@angular/cdk": "^6.0.1",
         "@angular/cli": "6.0.1",
         "@angular/common": "6.0.1",
         "@angular/compiler": "6.0.1",
@@ -30,6 +30,7 @@
         "@angular/platform-browser": "6.0.1",
         "@angular/platform-browser-dynamic": "6.0.1",
         "@angular/router": "6.0.1",
+        "@ncstate/sat-popover": "^3.0.0",
         "@ngu/carousel": "1.4.2",
         "@ngx-translate/core": "10.0.1",
         "@ngx-translate/http-loader": "3.0.1",
@@ -60,7 +61,7 @@
         "rxjs-compat": "6.1.0",
         "typescript": "2.7.2",
         "web-animations-js": "2.3.1",
-        "xlsx": "^0.14.0",
+        "xlsx": "^0.14.1",
         "xlsx-style": "^0.8.13",
         "zone.js": "0.8.26"
     },

@@ -1,4 +1,4 @@
-import { Usuario } from './../../../shared/models/usuario.model';
+import { Usuario } from '../../../shared/models/usuario.model';
 import { BalanzaService } from '../../../shared/services/balanza/balanza.service';
 import { ChoferService } from '../../../shared/services/chofer/chofer.service';
 import { UnidadMedidaService } from '../../../shared/services/unidad-medida/unidad-medida.service';
@@ -290,7 +290,7 @@ export class BasicFormComponent implements OnInit {
     // Carga de Combos Factorias- Destinatario
     this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
       this.comboFactoriasDestino = data7;
-});
+    });
 
 
 
@@ -309,6 +309,7 @@ export class BasicFormComponent implements OnInit {
     });
 
      // Carga de Combos Choferes
+    console.log(this.usuarioSession.empresa.id);
     this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
      });

@@ -522,7 +522,7 @@ export class NavigationService {
       state: 'forms',
       sub: [
         { name: 'Registro', state: 'liquidacion' },
-        { name: 'Consulta', state: '404' },
+        { name: 'Consulta', state: 'busquedaLiquidaciones' },
       ]
     },
     {
