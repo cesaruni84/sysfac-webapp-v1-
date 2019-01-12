@@ -7,8 +7,9 @@ import { Usuario } from '../../../shared/models/usuario.model';
 import { Factoria } from '../../../shared/models/factoria.model';
 import { Chofer } from '../../../shared/models/chofer.model';
 import { ChoferService } from '../../../shared/services/chofer/chofer.service';
-import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { write } from 'xlsx-style';
@@ -26,10 +27,14 @@ import { Router } from '@angular/router';
   selector: 'app-paging-table',
   templateUrl: './paging-table.component.html',
   styleUrls: ['./paging-table.component.css'],
-  providers: [TablesService, {provide: MAT_DATE_LOCALE, useValue: 'es-ES'},
-  {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-  {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
-  ]
+  providers: [ TablesService,
+    {
+        provide: DateAdapter, useClass: AppDateAdapter
+    },
+    {
+        provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
+    }
+    ],
 })
 
 
@@ -53,7 +58,17 @@ export class PagingTableComponent implements OnInit {
   public destinatarioSelected_: any;
   public facturado: boolean = false;
 
+  messages: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: 'No hay registros a mostrar',
 
+    // Footer total message
+    totalMessage: 'total',
+
+    // Footer selected message
+    selectedMessage: 'selected'
+  };
 
   // Combos para filtros de búsqueda
   comboFactorias: Factoria[];
@@ -331,17 +346,6 @@ export class PagingTableComponent implements OnInit {
 
   }
 
-
-
-  seleccionarChofer4(event) {
-
-
-  }
-
-  seleccionarFactoriaDestinatario4(event) {
-
-
-  }
   consultarGuia(row) {
     // const array = row.nroguia.split('-');
     const _nroSerie = row.nroguia;
@@ -350,8 +354,5 @@ export class PagingTableComponent implements OnInit {
     // Envia a Página de Edición de Guia
     this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
   }
-
-
-
 
 }

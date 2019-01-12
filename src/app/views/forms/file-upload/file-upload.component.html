@@ -1,7 +1,6 @@
-<mat-card class="p-0">
-
+<mat-card class="p-0 m-0">
     <mat-card-content>
-        <form [formGroup]="formLiquidacion" novalidate>
+        <form [formGroup]="formLiquidacion" novalidate (ngSubmit)="grabaFormulario(formLiquidacion.value, formLiquidacion.valid, $event)">
             <div fxLayout="row" fxLayoutWrap="wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100">
                     <mat-card class="p-0 mt-05">
@@ -29,8 +28,11 @@
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <mat-form-field fxFlex="20%" appearance="outline">
                                     <mat-label [style.fontSize.px]="14" fxFlex="15%"><b>NRO. DE DOCUMENTO LIQ. </b> </mat-label>
-                                    <input matInput [(ngModel)]="valorNroDocumentoLiq_" name="nroDocumentoLiq" [formControl]="formLiquidacion.controls['nroDocumentoLiq']" maxlength="12" style="color:green">
+                                    <input matInput [(ngModel)]="valorNroDocumentoLiq_" name="nroDocumentoLiq" [formControl]="formLiquidacion.controls['nroDocumentoLiq']" maxlength="12" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroDoc($event)'>
                                 </mat-form-field>
+                                <mat-error [style.fontSize.px]="10" *ngIf="formLiquidacion.controls['nroDocumentoLiq'].hasError('required')">
+                                    <strong>*REQUERIDO</strong>
+                                </mat-error>
                                 <mat-label fxFlex="2%"></mat-label>
                                 <mat-form-field fxFlex="15%" class="full-width" appearance="outline">
                                     <mat-label><b>MONEDA LIQ.</b></mat-label>
@@ -40,19 +42,19 @@
                                     </mat-select>
                                 </mat-form-field>
                                 <mat-label fxFlex="25%"></mat-label>
-                                <mat-form-field appearance="">
+                                <mat-form-field appearance="outline">
                                     <mat-label><b>ESTADO LIQ. </b></mat-label>
-                                    <mat-select [(ngModel)]="estadoLiquidacion_" name="estado" [formControl]="formLiquidacion.controls['estado']" align="top" [disabled]="">
-                                        <mat-option value="0">Vigente</mat-option>
-                                        <mat-option value="1">Vencido </mat-option>
+                                    <mat-select [(ngModel)]="estadoLiquidacion_" name="estado" [formControl]="formLiquidacion.controls['estado']" align="top" [disabled]="!edicion">
+                                        <mat-option value="1">Vigente</mat-option>
+                                        <mat-option value="2">Vencido </mat-option>
                                     </mat-select>
                                 </mat-form-field>
-                                <mat-form-field appearance="">
+                                <mat-form-field appearance="outline">
                                     <mat-label><b>SITUACION LIQ.</b></mat-label>
-                                    <mat-select [(ngModel)]="situacionLiquidacion_" name="situacion" [formControl]="formLiquidacion.controls['situacion']" align="top" [disabled]="">
-                                        <mat-option value="0">Pendiente</mat-option>
-                                        <mat-option value="1">En Proceso</mat-option>
-                                        <mat-option value="2">Procesado</mat-option>
+                                    <mat-select [(ngModel)]="situacionLiquidacion_" name="situacion" [formControl]="formLiquidacion.controls['situacion']" align="top" [disabled]="!edicion">
+                                        <mat-option value="1">Pendiente</mat-option>
+                                        <mat-option value="2">En Proceso</mat-option>
+                                        <mat-option value="3">Procesado</mat-option>
                                     </mat-select>
                                 </mat-form-field>
 
@@ -91,13 +93,13 @@
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
-                                <mat-form-field appearance="outline">
+                                <mat-form-field fxFlex="20%" appearance="outline">
                                     <mat-label><b>FECHA INICIO TRASLADO</b></mat-label>
                                     <input matInput [(ngModel)]="valorFechaIniTraslado_" name="fechaIniTraslado" [formControl]="formLiquidacion.controls['fechaIniTraslado']" [matDatepicker]="appDatepicker" maxlength="10" style="color:#3f51b5">
                                     <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
                                     <mat-datepicker touchUi #appDatepicker></mat-datepicker>
                                 </mat-form-field>
-                                <mat-form-field appearance="outline">
+                                <mat-form-field fxFlex="21%" appearance="outline">
                                     <mat-label><b>FECHA FIN DE TRASLADO</b></mat-label>
                                     <input matInput [(ngModel)]="valorFechaFinTraslado_" name="fechaFinTraslado" [formControl]="formLiquidacion.controls['fechaFinTraslado']" [matDatepicker]="picker" valuemaxlength="10" style="color:#3f51b5">
                                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -107,13 +109,13 @@
 
                             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <!-- Comapny name input field -->
-                                <mat-form-field fxFlex="59%">
+                                <mat-form-field fxFlex="59%" appearance="outline">
                                     <mat-label [style.fontSize.px]="15"><b>GLOSA </b></mat-label>
-                                    <input matInput name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
+                                    <input matInput [(ngModel)]="valorGlosa_" name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
                                 </mat-form-field>
                                 <mat-label fxFlex="28%"></mat-label>
                                 <div align="right">
-                                    <button mat-raised-button color="primary" (click)="buscarGuiasXLiquidar()"><mat-icon>search</mat-icon>Buscar Guias</button>
+                                    <button mat-raised-button type="button" color="primary" [disabled]="edicion" (click)="buscarGuiasXLiquidar()"><mat-icon>search</mat-icon>Buscar Guias</button>
                                 </div>
                             </div>
                         </mat-card-content>
@@ -128,240 +130,182 @@
                         <mat-card-content class="p-0 m-0">
                             <div class="mat-box-shadow margin-333">
 
-                                <mat-table #table [dataSource]="dataSource" matSort class="example-container mat-elevation-z8">
 
-                                    <!-- Accciones  -->
-                                    <ng-container matColumnDef="acciones">
-                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef>Acciones</mat-header-cell>
-                                        <mat-cell fxFlex="90px" *matCellDef="let row">
-                                            <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                                            <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>clear</mat-icon></button>
-                                        </mat-cell>
-                                        <mat-footer-cell fxFlex="90px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Item Correlativo -->
-                                    <ng-container matColumnDef="item">
-                                        <mat-header-cell fxFlex="50px" *matHeaderCellDef mat-sort-header>| Item </mat-header-cell>
-                                        <mat-cell fxFlex="50px" *matCellDef="let row; let i = item;">{{i}}</mat-cell>
-                                        <mat-footer-cell fxFlex="50px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Fecha de Traslado -->
-                                    <ng-container matColumnDef="fechaTraslado">
-                                        <mat-header-cell fxFlex="80px" *matHeaderCellDef mat-sort-header>| F.Traslado </mat-header-cell>
-                                        <mat-cell fxFlex="80px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{row.fechaTraslado}} </mat-cell>
-                                        <mat-footer-cell fxFlex="80px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Nro de Guia de Remisión -->
-                                    <ng-container matColumnDef="nroguia">
-                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header> | Guia de Remisión </mat-header-cell>
-                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">{{ row?.serie + '-' + row?.secuencia }} </mat-cell>
-                                        <mat-footer-cell fxFlex="110px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Guia Remisión Cliente -->
-                                    <ng-container matColumnDef="nroguia2">
-                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header>| Guia Rem. Cliente </mat-header-cell>
-                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">{{ row?.serieCliente + '-' + row?.secuenciaCliente }} </mat-cell>
-                                        <mat-footer-cell fxFlex="110px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Producto-->
-                                    <ng-container matColumnDef="producto">
-                                        <mat-header-cell fxFlex="180px" *matHeaderCellDef mat-sort-header> | Descripción </mat-header-cell>
-                                        <mat-cell fxFlex="180px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.guiaDetalle[0].producto.nombre }}</mat-cell>
-                                        <mat-footer-cell fxFlex="180px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Balanza  -->
-                                    <ng-container matColumnDef="ticketBalanza">
-                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef mat-sort-header> | Ticket Balanza </mat-header-cell>
-                                        <mat-cell fxFlex="90px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5">
-                                            <div align="right">
-                                                {{ row?.ticketBalanza }}
-                                            </div>
-                                        </mat-cell>
-                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef>Total cantidad: </mat-footer-cell>
-                                    </ng-container>
-
-
-                                    <!-- Total Cantidad -->
-                                    <ng-container matColumnDef="totalCantidad">
-                                        <mat-header-cell fxFlex="70px" *matHeaderCellDef mat-sort-header> | Cantidad </mat-header-cell>
-                                        <mat-cell fxFlex="70px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5; text-align:right;">
-                                            {{ row?.totalCantidad }}
-                                        </mat-cell>
-                                        <mat-footer-cell fxFlex="70px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumTotalCantidad() }} </mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Unidad de Medida -->
-                                    <ng-container matColumnDef="unidadMedida">
-                                        <mat-header-cell fxFlex="35px" *matHeaderCellDef mat-sort-header> | UM </mat-header-cell>
-                                        <mat-cell fxFlex="35px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5; text-align: center;"> {{ row?.guiaDetalle[0].unidadMedida.valor }} </mat-cell>
-                                        <mat-footer-cell fxFlex="35px" *matFooterCellDef></mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Precio Unitario-->
-                                    <ng-container matColumnDef="tarifa">
-                                        <mat-header-cell fxFlex="90px" *matHeaderCellDef mat-sort-header> | P. Unitario </mat-header-cell>
-                                        <mat-cell fxFlex="90px" *matCellDef="let row">
-                                            <mat-form-field fxFlex="80%" floatLabel="never" [style.fontSize.px]="12" style="color:#3f51b5;text-align:center;">
-                                                <input matInput [value]="row.tarifa" align="center">
-                                            </mat-form-field>
-                                        </mat-cell>
-                                        <mat-footer-cell fxFlex="90px" [style.fontSize.px]="13" *matFooterCellDef> Subtotal: </mat-footer-cell>
-                                    </ng-container>
-
-                                    <!--Sub Total-->
-                                    <ng-container matColumnDef="subTotal" mat-sort-header>
-                                        <mat-header-cell fxFlex="110px" *matHeaderCellDef mat-sort-header>| Sub Total </mat-header-cell>
-                                        <mat-cell fxFlex="110px" *matCellDef="let row" [style.fontSize.px]="12" style="color:#3f51b5;text-align:center">
-                                            {{ row?.subTotal }}
-                                        </mat-cell>
-                                        <mat-footer-cell fxFlex="110px" [style.fontSize.px]="13" *matFooterCellDef> {{ sumSubTotalImporte() }}</mat-footer-cell>
-                                    </ng-container>
-
-                                    <!-- Disclaimer label IGV -->
-                                    <ng-container matColumnDef="disc-label-igv">
-                                        <td mat-footer-cell fxFlex="390px" *matFooterCellDef> I.G.V : </td>
-                                    </ng-container>
-
-                                    <!-- Disclaimer valor IGV  -->
-                                    <ng-container matColumnDef="disc-value-igv">
-                                        <td mat-footer-cell *matFooterCellDef> {{calcularImporteIGV()}} </td>
-                                    </ng-container>
-
-
-                                    <!-- Disclaimer label TOTAL -->
-                                    <ng-container matColumnDef="disc-label-total">
-                                        <td mat-footer-cell *matFooterCellDef> Total : </td>
-                                    </ng-container>
-
-                                    <!-- Disclaimer valor TOTAL -->
-                                    <ng-container matColumnDef="disc-value-total">
-                                        <td mat-footer-cell *matFooterCellDef> {{calcularImporteTotal()}} </td>
-                                    </ng-container>
-
-                                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                                    <mat-row *matRowDef="let row; columns: displayedColumns;let i = index"></mat-row>
-
-
-                                    <tr mat-footer-row *matFooterRowDef="['disc-label-igv','disc-value-igv']"></tr>
-                                    <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
-                                    <tr mat-footer-row *matFooterRowDef="['disc-label-total','disc-value-total']"></tr>
-
-
-                                </mat-table>
-
+                                <mat-divider></mat-divider>
                                 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                <!-- <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="50" [rows]="rows">
-                                    <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="90">
+                                <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="140" [limit]="100" [rowHeight]="50" [rows]="rows" [messages]="{emptyMessage: 'No hay registros a mostrar'}">
+                                    <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                                            <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>clear</mat-icon></button>
+                                            <span title="Consultar Guia">
+                                            <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
+                                            <!--<button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Eliminar" (click)="deleteItem(row)"><mat-icon>clear</mat-icon></button> -->
+                                        </span>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
-                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.id }}
+                                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                            <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
                                         </ng-template>
                                     </ngx-datatable-column>
-                                    <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="100" prop="fechaTraslado">
+                                    <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="80" prop="fechaTraslado">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.fechaTraslado }}
+                                            <div [style.fontSize.px]="12">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
                                         </ng-template>
                                     </ngx-datatable-column>
-                                    <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="130" prop="nroguia">
+                                    <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="125" prop="nroguia">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.serie + '-' + row?.secuencia }}
+                                            <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
+
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="130" prop="nroguia2">
+                                    <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="125" prop="nroguia2">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.serieCliente + '-' + row?.secuenciaCliente }}
+                                            <div [style.fontSize.px]="12"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="200" prop="guiaDetalle">
+                                    <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="240" prop="guiaDetalle">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.guiaDetalle[0].producto.nemonico }}
+                                            <div [style.fontSize.px]="12"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
+
+
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="110" prop="ticketBalanza">
+                                    <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="105" prop="ticketBalanza">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.ticketBalanza }}
+                                            <div [style.fontSize.px]="12">{{ row?.ticketBalanza }} </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="UM" [flexGrow]="1" [width]="60" prop="unidadMedida">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            {{ row?.guiaDetalle[0].unidadMedida.valor }}
+                                            <div [style.fontSize.px]="12">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="80" prop="totalCantidad">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <div align="right">
-                                                {{ row?.totalCantidad }}
+                                                <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="90" prop="tarifa">
-                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
+
+
                                             <div align="right">
-                                                {{ row?.tarifa }}
+                                                <!--<div [style.fontSize.px]="12" align="left"> {{ row?.tarifa | number: '1.2-2'}} </div>-->
+                                                <span title="Doble click para editar" (dblclick)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
+                                                {{value | number: '1.2-2'}}
+                                                </span>
+                                                <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
                                     <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="130" prop="subTotal">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
-                                            <div align="center">
-                                                {{ row?.subTotal }}
+                                            <div align="center" [style.fontSize.px]="12">
+                                                {{ row?.subTotal | number: '1.2-2' }}
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>
 
+                                    <ngx-datatable-footer>
+                                        <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize" let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+                                            <div [style.fontSize.px]="13">
+                                                <tr>
+                                                    <td width="100" class="p-05 mt-0">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowCount }} </mat-label>
+                                                    </td>
+                                                    <td width="700"></td>
+                                                    <td width="100">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Cantidad : </b> </mat-label>
+                                                    </td>
+                                                    <td width="100" align="center">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> {{ sumTotalCantidad() | number: '1.2-2'}} </mat-label>
+                                                    </td>
+                                                    <td width="70">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SubTotal : </b> </mat-label>
+                                                    </td>
+                                                    <td width="100" align="right">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ sumSubTotalImporte() | number: '1.2-2'}} </mat-label>
+                                                    </td>
 
-                                </ngx-datatable> -->
+                                                </tr>
+
+                                                <tr>
+                                                    <td width="100" class="p-05">
+                                                    </td>
+                                                    <td width="700"></td>
+                                                    <td width="100">
+                                                    </td>
+                                                    <td width="100">
+                                                    </td>
+                                                    <td width="70">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>I.G.V. : </b> </mat-label>
+                                                    </td>
+                                                    <td width="100" align="right">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ calcularImporteIGV() | number: '1.2-2'}} </mat-label>
+                                                    </td>
+
+                                                </tr>
+                                                <br>
+
+                                                <mat-divider></mat-divider>
+                                                <br>
+                                                <tr>
+                                                    <td width="100" class="p-05">
+                                                    </td>
+                                                    <td width="700"></td>
+                                                    <td width="100">
+                                                    </td>
+                                                    <td width="100">
+                                                    </td>
+                                                    <td width="70">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>TOTAL : </b> </mat-label>
+                                                    </td>
+                                                    <td width="100" align="right" [style.fontSize.px]="14">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> <b>S/ {{ calcularImporteTotal() | number: '1.2-2'}} </b></mat-label>
+                                                    </td>
+
+                                                </tr>
+
+                                            </div>
+                                            <br>
+
+                                        </ng-template>
+                                    </ngx-datatable-footer>
+
+
+                                </ngx-datatable>
                             </div>
 
                         </mat-card-content>
-
                     </mat-card>
-
 
                 </div>
 
             </div>
+
+            <br>
+            <div align="center">
+                <!-- <button mat-raised-button class="mat-primary" (click)="uploader.uploadAll()" [disabled]="false">Confirmar</button> -->
+                <button mat-raised-button class="mat-primary" color="primary" class="mr-1" [disabled]="false"><mat-icon>save</mat-icon> Grabar</button>
+                <button mat-raised-button class="mat-primary" color="primary" type="button" class="mr-1" (click)="cancelarLiquidacion()" [disabled]="false"><mat-icon>cancel</mat-icon> Cancelar</button>
+                <button mat-raised-button class="mat-primary" color="primary" type="button" (click)="imprimirLiquidacion()" [disabled]="!edicion"><mat-icon>print</mat-icon> Imprimir</button>
+
+                <!-- <button mat-raised-button class="mat-primary" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Cancelar</button> -->
+            </div>
+
         </form>
 
 
-
-
-
-
-
-
-        <div>
-            <p>Queue progress:</p>
-            <div class="progress mb-1">
-                <mat-progress-bar class="" color="primary" mode="determinate" [value]="uploader.progress">
-                </mat-progress-bar>
-            </div>
-
-            <button mat-raised-button class="mat-primary" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">Upload all</button>
-
-            <button mat-raised-button class="mat-accent" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">Cancel all</button>
-
-            <button mat-raised-button class="mat-warn" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Remove all</button>
-        </div>
     </mat-card-content>
 </mat-card>

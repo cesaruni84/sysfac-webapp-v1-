@@ -1,38 +1,71 @@
-import { Component, OnInit } from '@angular/core';
+import { LiquidacionService } from './../../../shared/services/liquidacion/liquidacion.service';
+import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Factoria } from '../../../shared/models/factoria.model';
 import { CustomValidators } from 'ng2-validation';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { formatDate } from '@angular/common';
+import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
+import { MatSnackBar, MAT_DATE_LOCALE,NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
+import { TablesService } from '../../tables/tables.service';
+import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-rich-text-editor',
   templateUrl: './rich-text-editor.component.html',
-  styleUrls: [
-    './rich-text-editor.component.css'
-  ]
+  styleUrls: ['./rich-text-editor.component.css'],
+  providers: [
+    {
+        provide: DateAdapter, useClass: AppDateAdapter
+    },
+    {
+        provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
+    }
+    ]
 })
 export class RichTextEditorComponent implements OnInit {
 
   rows = [];
   temp = [];
-  total_rows_bd = [];
   columns = [];
   usuarioSession: Usuario;
  // listaGrillaGuias: GrillaGuiaRemision[];
   formFilter: FormGroup;
 
+
+
   // Ng Model
   public valorNroSerieLiq_: string;
   public fechaIniTraslado_: Date;
   public fechaFinTraslado_: Date;
-  public estadoSelected_: string;
-  public valorOrigenSelected_: any;
-  public valorDestinoSelected_: any;
+  public valorEstadoSelected_: any = '0';
+  public valorOrigenSelected_: any = '0';
+  public valorDestinoSelected_: any = '0';
   public facturado: boolean = false;
+  
+  // Manejo default de mensajes en grilla
+  messages: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: 'No hay registros a mostrar',
+
+    // Footer total message
+    totalMessage: 'total',
+
+    // Footer selected message
+    selectedMessage: 'selected'
+  };
+
+  // Manejo de respuesta
+  errorResponse_: ErrorResponse;
+  infoResponse_: InfoResponse;
 
   // Combos para filtros de búsqueda
   comboFactorias: Factoria[];
@@ -42,11 +75,13 @@ export class RichTextEditorComponent implements OnInit {
 
   constructor(
     private factoriaService: FactoriaService,
+    private route: ActivatedRoute,
     private router: Router,
     private userService: UsuarioService,
+    private liquidacionService: LiquidacionService,
+    public snackBar: MatSnackBar,
+    @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
-
-
   }
 
   ngOnInit() {
@@ -61,14 +96,12 @@ export class RichTextEditorComponent implements OnInit {
       fechaFinLiq: new FormControl(fechaActual_, ),
       origenSelected: new FormControl('', ),
       destinoSelected: new FormControl('', ),
-      estadoSelected: new FormControl('', ),
+      estadoSelected: new FormControl('0', ),
       esFacturado: new FormControl(this.facturado, ),
    });
 
-
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
-    // this.loader.open();
 
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
@@ -79,17 +112,9 @@ export class RichTextEditorComponent implements OnInit {
       this.comboFactoriasDestino = data3;
     });
 
-
-    // Carga de Grilla Principal
-    // this.guiaRemisionService.listarGrillaGuias(this.usuarioSession.empresa.id).subscribe(data => {
-    //   this.listaGrillaGuias = data;
-    //   this.rows = this.temp = this.total_rows_bd = data;
-    //   this.loader.close();
-
-    // });
-
-
   }
+
+
   // Completar Zeros
   completarZerosNroSerieLiq(event) {
     const valorDigitado = event.target.value.toLowerCase();
@@ -116,10 +141,73 @@ export class RichTextEditorComponent implements OnInit {
           return true;
       }
   }
+
+
   onContentChanged() { }
   onSelectionChanged() { }
-  filtrarLiquidaciones(){}
-  ExportTOExcel(){}
+
+  filtrarLiquidaciones() {
+    this.loader.open();
+
+    // Obtiene valores de parametros para la búsqueda
+    let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
+    const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
+    const origen = this.formFilter.controls['origenSelected'].value;
+    const destino = this.formFilter.controls['destinoSelected'].value;
+    const estado  =  this.formFilter.controls['estadoSelected'].value;
+
+    const conFactura  =  this.formFilter.controls['esFacturado'].value;
+    let valorConFactura = 0;
+    if (conFactura) {
+      valorConFactura = 1;
+    }
+    // console.log(nroDocLiq);
+    // console.log(fechaIniLiq);
+    // console.log(fechaFinLiq);
+    // console.log(origen);
+    // console.log(destino);
+    // console.log(estado);
+    // console.log(conFactura);
+    this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
+                                                        nroDocLiq || '',
+                                                        origen,
+                                                        destino,
+                                                        estado ,
+                                                        valorConFactura,
+                                                        fechaIniLiq, fechaFinLiq).subscribe(data_ => {
+      this.rows = data_;
+      console.log(this.rows);
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 10000,  panelClass: ['blue-snackbar'] });
+    });
+
+  }
+
+  ExportTOExcel() {
+
+    const wscols = [ {wch: 10},{wch: 20},{wch: 20},{wch: 20},{wch: 20},{wch: 20},
+          {wch: 20},{wch: 20}
+      ];
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'ReporteLiquidaciones_');
+    ws['!cols'] = wscols;
+
+    /* save to file */
+    XLSX.writeFile(wb, 'ReporteLiquidaciones_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
+  }
+
+  // Envia a Página de Consulta de Documento de Liquidación
+  consultarLiquidacion(row) {
+    this.router.navigate(['/forms/liquidacion'], { queryParams: { nroDocLiq: row.nrodoc } });
+  }
 
 
 }

@@ -14,7 +14,7 @@ import { Chofer } from '../../../shared/models/chofer.model';
 import { ProductoService } from '../../../shared/services/productos/producto.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS, MatDatepickerInputEvent, MatButton, MatProgressBar,
+import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MatDatepickerInputEvent, MatButton, MatProgressBar,
        MAT_DIALOG_DATA } from '@angular/material';
 import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -24,6 +24,7 @@ import { GuiaDetalle } from '../../../shared/models/guia_remision_detalle.model'
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { MatSnackBar } from '@angular/material';
+import { APP_DATE_FORMATS, AppDateAdapter } from '../../../shared/helpers/date.adapter';
 
 
 @Component({
@@ -31,16 +32,13 @@ import { MatSnackBar } from '@angular/material';
   templateUrl: './basic-form.component.html',
   styleUrls: ['./basic-form.component.css'],
   providers: [
-    // The locale would typically be provided on the root module of your application. We do it at
-    // the component level here, due to limitations of our example generation script.
-    {provide: MAT_DATE_LOCALE, useValue: 'es-ES'},
-
-    // `MomentDateAdapter` and `MAT_MOMENT_DATE_FORMATS` can be automatically provided by importing
-    // `MatMomentDateModule` in your applications root module. We provide it at the component level
-    // here, due to limitations of our example generation script.
-    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-    {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
-  ],
+    {
+        provide: DateAdapter, useClass: AppDateAdapter
+    },
+    {
+        provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
+    }
+    ],
 })
 
 export class BasicFormComponent implements OnInit {
@@ -458,7 +456,7 @@ export class BasicFormComponent implements OnInit {
       this.submitButton.disabled = false;
       this.basicForm.enable();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['red-snackbar'] });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['green-snackbar'] });
       console.log(this.errorResponse_.errorMessage);
     });
   }
@@ -518,26 +516,26 @@ export class BasicFormComponent implements OnInit {
     this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
   }
 
-    // Completar Zeros
-    completarZerosNroSerieCli(event) {
-      const valorDigitado = event.target.value.toLowerCase();
-      this.valorSerieCli_ = this.pad(valorDigitado, 5);
-    }
+  // Completar Zeros
+  completarZerosNroSerieCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    this.valorSerieCli_ = this.pad(valorDigitado, 5);
+  }
 
-    // Completar Zeros
-   completarZerosNroSecuenciaCli(event) {
-      const valorDigitado = event.target.value.toLowerCase();
-      this.valorSecuenciaCli_ = this.pad(valorDigitado, 8);
-    }
+  // Completar Zeros
+  completarZerosNroSecuenciaCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    this.valorSecuenciaCli_ = this.pad(valorDigitado, 8);
+  }
 
 
- pad(number: string, length: number): string {
+  pad(number: string, length: number): string {
     let str = '' + number;
     while (str.length < length) {
         str = '0' + str;
     }
     return str;
-}
+  }
 
 
   private handleError(error: HttpErrorResponse) {
