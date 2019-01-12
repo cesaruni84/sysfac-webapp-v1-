@@ -453,6 +453,9 @@ export class FileUploadComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+  imprimirLiquidacion() {
+
+  }
 
   // Validar Digitos
   validaDigitos(event) {
