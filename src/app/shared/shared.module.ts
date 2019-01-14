@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -63,7 +63,7 @@ import { DateFormatPipe } from './pipes/date-format.pipe';
 // SERVICES
 import { ThemeService } from './services/theme.service';
 import { LayoutService } from './services/layout.service';
-import { NavigationService } from "./services/navigation.service";
+import { NavigationService } from './services/navigation.service';
 import { RoutePartsService } from './services/route-parts.service';
 import { AuthGuard } from './services/auth/auth.guard';
 import { AppConfirmService } from './services/app-confirm/app-confirm.service';
@@ -75,6 +75,7 @@ import { AppLoaderService } from './services/app-loader/app-loader.service';
   (https://themeforest.net/item/angular-landing-material-design-angular-app-landing-page/21198258)
 */
 // import { LandingPageService } from '../shared/services/landing-page.service';
+import { ExcelService } from './services/util/excel.service';
 
 
 const classesToInclude = [
@@ -134,6 +135,8 @@ const classesToInclude = [
     LayoutService,
     NavigationService,
     RoutePartsService,
+    DatePipe,
+    ExcelService,
     AuthGuard,
     AppConfirmService,
     AppLoaderService,

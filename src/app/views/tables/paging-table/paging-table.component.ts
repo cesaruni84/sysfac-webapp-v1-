@@ -12,7 +12,6 @@ import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-mo
 import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
-import { write } from 'xlsx-style';
 import * as XLSX from 'xlsx';
 import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '@swimlane/ngx-datatable';

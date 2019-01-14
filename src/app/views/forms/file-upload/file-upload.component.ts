@@ -1,6 +1,6 @@
-import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
-import { Liquidacion } from './../../../shared/models/liquidacion.model';
-import { LiquidacionService } from './../../../shared/services/liquidacion/liquidacion.service';
+import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
+import { Liquidacion } from '../../../shared/models/liquidacion.model';
+import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';

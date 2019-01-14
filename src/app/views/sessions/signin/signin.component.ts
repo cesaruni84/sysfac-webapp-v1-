@@ -8,7 +8,7 @@ import { EmpresaService } from '../empresa.service';
 import { element } from 'protractor';
 import { UsuarioForm } from '../../../shared/models/usuarioForm.model';
 import { SigninService } from './signin.service';
-import { UsuarioService } from './../../../shared/services/auth/usuario.service';
+import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../../shared/models/error_response.model';

@@ -1,4 +1,4 @@
-import { GuiaRemision } from './../../models/guia_remision.model';
+import { GuiaRemision } from '../../models/guia_remision.model';
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { Observable } from 'rxjs';

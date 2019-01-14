@@ -28,3 +28,14 @@ export class Liquidacion {
     }
 }
 
+export interface LiquidacionReportExcel {
+    item: number;
+    nrodoc: string;
+    fechaEmision: string;
+    ordenServicio: string;
+    origen: string;
+    destino: string;
+    estado: string;
+    importeTotal: number;
+}
+

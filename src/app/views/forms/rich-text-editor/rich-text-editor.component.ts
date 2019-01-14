@@ -1,4 +1,4 @@
-import { LiquidacionService } from './../../../shared/services/liquidacion/liquidacion.service';
+import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -12,10 +12,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { MatSnackBar, MAT_DATE_LOCALE,NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
-import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
+import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { TablesService } from '../../tables/tables.service';
 import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx/types';
+import { ExcelService } from '../../../shared/services/util/excel.service';
+import { Liquidacion } from '../../../shared/models/liquidacion.model';
 
 @Component({
   selector: 'app-rich-text-editor',
@@ -36,12 +38,9 @@ export class RichTextEditorComponent implements OnInit {
   temp = [];
   columns = [];
   usuarioSession: Usuario;
- // listaGrillaGuias: GrillaGuiaRemision[];
-  formFilter: FormGroup;
-
-
 
   // Ng Model
+  formFilter: FormGroup;
   public valorNroSerieLiq_: string;
   public fechaIniTraslado_: Date;
   public fechaFinTraslado_: Date;
@@ -80,6 +79,7 @@ export class RichTextEditorComponent implements OnInit {
     private userService: UsuarioService,
     private liquidacionService: LiquidacionService,
     public snackBar: MatSnackBar,
+    public excelService: ExcelService,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
   }
@@ -189,19 +189,9 @@ export class RichTextEditorComponent implements OnInit {
 
   }
 
+  // Genera Reporte para Excel
   ExportTOExcel() {
-
-    const wscols = [ {wch: 10},{wch: 20},{wch: 20},{wch: 20},{wch: 20},{wch: 20},
-          {wch: 20},{wch: 20}
-      ];
-
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'ReporteLiquidaciones_');
-    ws['!cols'] = wscols;
-
-    /* save to file */
-    XLSX.writeFile(wb, 'ReporteLiquidaciones_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
+    this.excelService.generarReporteLiquidaciones(this.rows);
   }
 
   // Envia a Página de Consulta de Documento de Liquidación

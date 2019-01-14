@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { TablesService } from '../tables.service';
-import { DatatableComponent } from '../../../../../node_modules/@swimlane/ngx-datatable';
-import { write } from 'xlsx-style';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
 import * as XLSX from 'xlsx';
 
 @Component({
