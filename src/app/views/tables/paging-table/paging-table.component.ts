@@ -19,6 +19,7 @@ import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
 import { formatDate } from '@angular/common';
 import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
+import { ExcelService } from '../../../shared/services/util/excel.service';
 
 
 
@@ -81,6 +82,7 @@ export class PagingTableComponent implements OnInit {
     private choferService: ChoferService,
     private factoriaService: FactoriaService,
     private router: Router,
+    private excelService: ExcelService,
     private userService: UsuarioService,
     private loader: AppLoaderService) {
 
@@ -319,17 +321,19 @@ export class PagingTableComponent implements OnInit {
 
   ExportTOExcel() {
 
-    const wscols = [ {wch: 10},{wch: 20},{wch: 20},{wch: 20},{wch: 20},{wch: 20},
-          {wch: 20},{wch: 20}, {wch: 20},{wch: 20}, {wch: 20},{wch: 20},{wch: 20},
-      ];
+    this.excelService.generarReporteGuiasRemision(this.rows);
 
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'ReporteGuias_');
-    ws['!cols'] = wscols;
+    // const wscols = [ {wch: 10},{wch: 20},{wch: 20},{wch: 20},{wch: 20},{wch: 20},
+    //       {wch: 20},{wch: 20}, {wch: 20},{wch: 20}, {wch: 20},{wch: 20},{wch: 20},
+    //   ];
 
-    /* save to file */
-    XLSX.writeFile(wb, 'ReporteGuias_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
+    // const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
+    // const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(wb, ws, 'ReporteGuias_');
+    // ws['!cols'] = wscols;
+
+    // /* save to file */
+    // XLSX.writeFile(wb, 'ReporteGuias_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
   }
 
   onSelect({ selected }) {
