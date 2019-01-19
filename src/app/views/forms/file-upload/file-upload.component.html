@@ -1,6 +1,6 @@
 <mat-card class="p-0 m-0">
     <mat-card-content>
-        <form [formGroup]="formLiquidacion" novalidate (ngSubmit)="grabaFormulario(formLiquidacion.value, formLiquidacion.valid, $event)">
+        <form id="idLiquidacion" [formGroup]="formLiquidacion" novalidate (ngSubmit)="grabaFormulario(formLiquidacion.value, formLiquidacion.valid, $event)">
             <div fxLayout="row" fxLayoutWrap="wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100">
                     <mat-card class="p-0 mt-05">
@@ -114,7 +114,7 @@
                                     <input matInput [(ngModel)]="valorGlosa_" name="glosa" [formControl]="formLiquidacion.controls['glosa']" value="-" style="color:#3f51b5">
                                 </mat-form-field>
                                 <mat-label fxFlex="28%"></mat-label>
-                                <div align="right">
+                                <div align="right" data-html2canvas-ignore="true">
                                     <button mat-raised-button type="button" color="primary" [disabled]="edicion" (click)="buscarGuiasXLiquidar()"><mat-icon>search</mat-icon>Buscar Guias</button>
                                 </div>
                             </div>
@@ -134,7 +134,7 @@
                                 <mat-divider></mat-divider>
                                 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="140" [limit]="100" [rowHeight]="50" [rows]="rows" [messages]="{emptyMessage: 'No hay registros a mostrar'}">
+                                <ngx-datatable id="idTabla" class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="140" [limit]="100" [rowHeight]="50" [rows]="rows" [messages]="{emptyMessage: 'No hay registros a mostrar'}">
                                     <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <span title="Consultar Guia">
@@ -295,7 +295,7 @@
             </div>
 
             <br>
-            <div align="center">
+            <div align="center" data-html2canvas-ignore="true">
                 <!-- <button mat-raised-button class="mat-primary" (click)="uploader.uploadAll()" [disabled]="false">Confirmar</button> -->
                 <button mat-raised-button class="mat-primary" color="primary" class="mr-1" [disabled]="false"><mat-icon>save</mat-icon> Grabar</button>
                 <button mat-raised-button class="mat-primary" color="primary" type="button" class="mr-1" (click)="cancelarLiquidacion()" [disabled]="false"><mat-icon>cancel</mat-icon> Cancelar</button>

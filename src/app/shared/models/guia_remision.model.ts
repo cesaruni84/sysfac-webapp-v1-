@@ -59,3 +59,19 @@ export interface GrillaGuiaRemision {
     nroGuiaCliente: string;
     fechaRecepcion: string;
 }
+
+export class GuiasRemisionPDF {
+    id: number;
+    fechaRemision: string;
+    guiaRemision: string;
+    guiaCliente: string;
+    descripcion: string;
+    unidadMedida: string;
+    cantidad: number;
+    tarifa: number;
+    subTotal: number;
+
+    constructor () {
+
+    }
+}

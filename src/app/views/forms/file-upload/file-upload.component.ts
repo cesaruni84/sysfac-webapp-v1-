@@ -1,7 +1,7 @@
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
-import { GuiaRemision } from '../../../shared/models/guia_remision.model';
+import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
 import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
@@ -23,7 +23,9 @@ import { ErrorResponse, InfoResponse } from '../../../shared/models/error_respon
 import { ImpuestoService } from '../../../shared/services/liquidacion/impuesto.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
-
+import * as jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-file-upload',
@@ -53,7 +55,7 @@ export class FileUploadComponent implements OnInit {
 
   // Manejo insert o update
   idNroDocLiq: number;
-  nroDocLiqQuery: string;
+  public nroDocLiqQuery: string;
   edicion: boolean = false;
 
   // Ng Model
@@ -454,7 +456,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   imprimirLiquidacion() {
-
+    this.captureScreen();
   }
 
   // Validar Digitos
@@ -515,6 +517,61 @@ export class FileUploadComponent implements OnInit {
        }
     });
     return resultado;
+  }
+
+
+  captureScreen() {
+    const doc = new jspdf();
+    //doc.autoTable({html: 'idTabla'});
+    this.listadoGuias = this.rows;
+    console.log(this.listadoGuias) ;
+
+    var lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
+
+    this.listadoGuias.forEach(function(itemGuias, index){
+      let guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
+        console.log(this.nroDocLiqQuery);
+        guiaPDF.id = index;
+        guiaPDF.fechaRemision = itemGuias.fechaRemision.toString();
+        this.lista.push(guiaPDF);
+    });
+
+
+
+    doc.autoTable({
+      columnStyles: {id: {halign: 'center'}}, // European countries centered
+      // body: [{europe: 'Sweden', america: 'Canada', asia: 'China'}, {europe: 'Norway', america: 'Mexico', asia: 'Japan'}],
+      body: this.rows,
+      theme: 'grid',
+      columns: [{header: 'Item', dataKey: 'id'},
+                {header: 'F.Traslado', dataKey: 'fechaRemision'},
+                {header: 'Guia de Remisión', dataKey: 'serie'},
+                {header: 'Guia Rem. Cliente', dataKey: 'secuenciaCliente'},
+                {header: 'Descripción', dataKey: 'secuenciaCliente'},
+                {header: 'UM', dataKey: 'remitente.refLarga1'},
+                {header: 'Cantidad', dataKey: 'secuenciaCliente'},
+                {header: 'P.Unitario', dataKey: 'secuenciaCliente'},
+                {header: 'Sub Total', dataKey: 'secuenciaCliente'},
+              ]
+    });
+
+
+  doc.save('table.pdf');
+
+    // var data = document.getElementById('idLiquidacion');
+    // html2canvas(data).then(canvas => {
+    //   // Few necessary setting options
+    //   var imgWidth = 208;
+    //   var pageHeight = 295;
+    //   var imgHeight = canvas.height * imgWidth / canvas.width;
+    //   var heightLeft = imgHeight;
+
+    //   const contentDataURL = canvas.toDataURL('image/png');
+    //   let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+    //   var position = 0;
+    //   pdf.addImage(contentDataURL, 'PDF', 0, position, imgWidth, imgHeight);
+    //   pdf.save('MYPdf.pdf'); // Generated PDF
+    // });
   }
 
 

@@ -82,32 +82,13 @@ export class ExcelService {
        cell.font = { name: 'Calibri', family: 4, size: 12, bold: true };
      });
 
-    // this.listaLiquidaciones = values;
-
-    // // Añade data
-    // this.listaLiquidaciones.forEach(function(itemLiquidacion, index){
-    //   // tslint:disable-next-line:prefer-const
-    //   let reporteLiquidaciones: LiquidacionReportExcel =  new LiquidacionReportExcel();
-    //   reporteLiquidaciones.item = index + 1;
-    //   reporteLiquidaciones.nrodoc = itemLiquidacion.nrodoc;
-    //   reporteLiquidaciones.fechaEmision = itemLiquidacion.fechaEmision.toString();
-    //   reporteLiquidaciones.ordenServicio = '-';
-    //   reporteLiquidaciones.origen = itemLiquidacion.origen.refLarga1;
-    //   reporteLiquidaciones.destino = itemLiquidacion.destino.refLarga1;
-    //   reporteLiquidaciones.estado = EstadoLiquidacion[itemLiquidacion.estado];
-    //   reporteLiquidaciones.importeTotal = itemLiquidacion.importeTotal;
-    //   worksheet.addRow(reporteLiquidaciones);
-
-    // });
     worksheet.addRows(values);
-
 
     // Exportar a Excel
     workbook.xlsx.writeBuffer().then((data) => {
       const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       fs.saveAs(blob, FILE_NAME_REPORTE +  new Date().toISOString() + EXTENSION);
     });
-
 
   }
 
