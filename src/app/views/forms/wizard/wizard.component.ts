@@ -19,6 +19,7 @@ export class WizardComponent implements OnInit, OnDestroy {
   facturaForm: FormGroup;
   myFormValueChanges$;
   totalSum: number;
+  subTotal: any;
 
   // Valores de Combo de Formulario
   public comboTiposDocumento: TipoDocumento[];
