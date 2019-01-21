@@ -150,7 +150,7 @@
                             <mat-card-content>
                                 <!-- Nuevos Items-->
                                 <!-- loop nuevos items  -->
-                                <div *ngFor="let facturaDetalle of facturaForm.controls.facturaDetalle.controls; let i=index">
+                                <div *ngFor="let facturaDetalle of facturaForm.controls['facturaDetalle'].controls; let i=index">
 
                                     <!-- row divider show for every nex row exclude if first row -->
                                     <mat-divider *ngIf="facturaForm.controls['facturaDetalle'].controls.length > 1 && i > 0"></mat-divider><br>
