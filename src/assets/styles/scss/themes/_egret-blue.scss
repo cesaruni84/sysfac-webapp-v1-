@@ -99,4 +99,7 @@ $primary-dark: darken( map-get($mat-primary, 500), 8%);
     .mat-color-default {
         color: rgba(0, 0, 0, 0.87);
     }
+    .mat-option-text {
+        font-size: 10px;
+    }
 }

@@ -28,6 +28,7 @@ import {
   MatSelectModule,
   MatStepperModule,
   MatChipsModule,
+  MatAutocompleteModule,
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
@@ -53,6 +54,7 @@ import { WizardComponent } from './wizard/wizard.component';
     MatListModule,
     MatCardModule,
     MatChipsModule,
+    MatAutocompleteModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressBarModule,

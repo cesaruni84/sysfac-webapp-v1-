@@ -521,8 +521,7 @@ export class FileUploadComponent implements OnInit {
 
 
   captureScreen() {
-    const doc = new jspdf();
-    //doc.autoTable({html: 'idTabla'});
+    const doc = new jspdf('l');
     this.listadoGuias = this.rows;
     console.log(this.listadoGuias) ;
 
@@ -530,28 +529,38 @@ export class FileUploadComponent implements OnInit {
 
     this.listadoGuias.forEach(function(itemGuias, index){
       let guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
-        console.log(this.nroDocLiqQuery);
-        guiaPDF.id = index;
-        guiaPDF.fechaRemision = itemGuias.fechaRemision.toString();
-        this.lista.push(guiaPDF);
-    });
+        guiaPDF.id = index + 1;
+        guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
+        guiaPDF.guiaRemision = itemGuias.serie + itemGuias.secuencia;
+        guiaPDF.guiaCliente = itemGuias.serieCliente + itemGuias.secuenciaCliente;
+        guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
+        guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
+        guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
+        guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
+        guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
+        guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
+        lista.push(guiaPDF);
+    }, this);
 
-
+    console.log(lista);
 
     doc.autoTable({
-      columnStyles: {id: {halign: 'center'}}, // European countries centered
+      headStyles: {fillColor: [155, 89, 182]}, // Purple
+      columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}}, // European countries centered
       // body: [{europe: 'Sweden', america: 'Canada', asia: 'China'}, {europe: 'Norway', america: 'Mexico', asia: 'Japan'}],
-      body: this.rows,
-      theme: 'grid',
+      body: lista,
+      styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
+      theme: 'striped',
       columns: [{header: 'Item', dataKey: 'id'},
-                {header: 'F.Traslado', dataKey: 'fechaRemision'},
-                {header: 'Guia de Remisión', dataKey: 'serie'},
-                {header: 'Guia Rem. Cliente', dataKey: 'secuenciaCliente'},
-                {header: 'Descripción', dataKey: 'secuenciaCliente'},
-                {header: 'UM', dataKey: 'remitente.refLarga1'},
-                {header: 'Cantidad', dataKey: 'secuenciaCliente'},
-                {header: 'P.Unitario', dataKey: 'secuenciaCliente'},
-                {header: 'Sub Total', dataKey: 'secuenciaCliente'},
+                {header: 'F.Traslado', dataKey: 'fechaTraslado'},
+                {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
+                {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
+                {header: 'Descripción', dataKey: 'descripcion'},
+                {header: 'Ticket Balanza', dataKey: 'ticketBalanza'},
+                {header: 'UM', dataKey: 'unidadMedida'},
+                {header: 'Cantidad', dataKey: 'cantidad'},
+                {header: 'P.Unitario', dataKey: 'tarifa'},
+                {header: 'Sub Total', dataKey: 'subTotal'},
               ]
     });
 

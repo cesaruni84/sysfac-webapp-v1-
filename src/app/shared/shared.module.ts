@@ -76,6 +76,7 @@ import { AppLoaderService } from './services/app-loader/app-loader.service';
 */
 // import { LandingPageService } from '../shared/services/landing-page.service';
 import { ExcelService } from './services/util/excel.service';
+import { TiposGenericosService } from './services/util/tiposGenericos.service';
 
 
 const classesToInclude = [
@@ -137,6 +138,7 @@ const classesToInclude = [
     RoutePartsService,
     DatePipe,
     ExcelService,
+    TiposGenericosService,
     AuthGuard,
     AppConfirmService,
     AppLoaderService,

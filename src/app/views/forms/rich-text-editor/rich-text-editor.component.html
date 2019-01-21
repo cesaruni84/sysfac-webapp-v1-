@@ -34,9 +34,8 @@
                 </mat-form-field>
             </div>
             <br>
-
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
-                <mat-form-field fxFlex="35%" class="pl-1">
+                <mat-form-field fxFlex="35%" class="pl-1" floatPlaceholder="never">
                     <mat-label><b>ORIGEN</b></mat-label>
                     <mat-select [compareWith]="" [(ngModel)]="valorOrigenSelected_" name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
                         <mat-option value="0">Todos</mat-option>

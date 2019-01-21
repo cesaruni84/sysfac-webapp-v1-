@@ -520,8 +520,9 @@ export class NavigationService {
       tooltip: 'Forms',
       icon: 'monetization_on',
       state: 'forms',
+      badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
-        { name: 'Registro', state: 'liquidacion' },
+        { name: 'Registro', state: 'liquidacion',  },
         { name: 'Consulta', state: 'busquedaLiquidaciones' },
       ]
     },
@@ -531,8 +532,9 @@ export class NavigationService {
       tooltip: 'Forms',
       icon: 'payment',
       state: 'forms',
+      badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
-        { name: 'Registro', state: '404' },
+        { name: 'Registro', state: 'facturacion' },
         { name: 'Consulta', state: '404' },
         { name: 'Factura Electrónica', state: '404' },
       ]

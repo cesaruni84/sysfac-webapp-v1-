@@ -1,91 +1,339 @@
 <mat-card class="p-0">
-  <mat-card-title class="">
-    <div class="card-title-text">Horizontal</div>
-    <mat-divider></mat-divider>
-  </mat-card-title>
-  <mat-card-content>
-    <mat-horizontal-stepper [linear]="true">
-      <mat-step [stepControl]="firstFormGroup">
-        <form [formGroup]="firstFormGroup">
-          <ng-template matStepLabel>Fill out your name</ng-template>
-          <mat-form-field class="pt-1 pb-1">
-            <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
-          </mat-form-field>
-          <div>
-            <button mat-raised-button color="primary" matStepperNext>Next</button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step [stepControl]="secondFormGroup">
-        <form [formGroup]="secondFormGroup">
-          <ng-template matStepLabel>Fill out your address</ng-template>
-          <mat-form-field class="pt-1 pb-1">
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
-          <div fxLayout="row">
-            <button mat-raised-button color="accent" matStepperPrevious>Back</button>
-            <span fxFlex="8px"></span>
-            <button mat-raised-button color="primary" matStepperNext>Next</button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Done</ng-template>
-        <div>
-          <mat-icon class="pt-1" [style.fontSize]="'36px'">check</mat-icon>
-        </div>
-        <div class="pb-1 mb-1"> You Are Done.</div>
-        <div fxLayout="row">
-          <button mat-raised-button color="accent" matStepperPrevious>Back</button>
-          <span fxFlex="8px"></span>
-          <button mat-raised-button color="primary" (click)="submit()">Submit</button>
-        </div>
-      </mat-step>
-    </mat-horizontal-stepper>
-  </mat-card-content>
-</mat-card>
 
-<mat-card class="p-0">
-  <mat-card-title class="">
-    <div class="card-title-text">Verticle</div>
-    <mat-divider></mat-divider>
-  </mat-card-title>
-  <mat-card-content>
-    <mat-vertical-stepper [linear]="true">
-      <mat-step [stepControl]="firstFormGroup">
-        <form [formGroup]="firstFormGroup">
-          <ng-template matStepLabel>Fill out your name</ng-template>
-          <mat-form-field>
-            <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
-          </mat-form-field>
-          <div>
-            <button mat-raised-button color="primary" matStepperNext>Next</button>
-          </div>
+    <mat-card-content class="p-05">
+        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="grabarGuiaRemision(facturaForm.value, facturaForm.valid, $event)">
+            <div fxLayout="row wrap">
+                <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
+                        <div fxFlex="100" fxFlex.gt-xs="100">
+                            <mat-card class="p-0 m-05">
+                                <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                                    <div align="center" [style.fontSize.px]="14">
+                                        <span><b>FACTURA CABECERA</b></span>
+                                    </div>
+                                    <mat-divider></mat-divider>
+                                </mat-card-title>
+                                <mat-divider></mat-divider>
+                                <br>
+                                <mat-card-content class="pb-0">
+                                    <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
+                                        <!-- Nombre Cliente-->
+                                        <mat-form-field fxFlex="25%" appearance="">
+                                            <mat-label><b>CLIENTE</b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" name="cliente" [formControl]="facturaForm.controls['cliente']" (selectionChange)="seleccionarCliente($event)" requeried>
+                                                <mat-option *ngFor="let cliente of comboClientes" [value]="cliente">
+                                                    {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="facturaForm.controls['cliente'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <!-- Direccion Cliente -->
+                                        <mat-form-field fxFlex="45%" appearance="">
+                                            <mat-label><b>DIRECCION</b></mat-label>
+                                            <input matInput name="direccion" [formControl]="facturaForm.controls['direccion']" [disabled]="true" [style.fontSize.px]="13" style="color:#3f51b5">
+                                            <!-- <mat-icon matSuffix>directions</mat-icon> -->
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="10%">
+                                            <mat-label><b>TIPO DOCUMENTO </b></mat-label>
+                                            <mat-select [formControl]="facturaForm.controls['tipoDocumento']" align="top">
+                                                <mat-option *ngFor="let tipoDocumento of comboTiposDocumento" [value]="tipoDocumento">
+                                                    {{tipoDocumento.descripcion}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field fxFlex="5%">
+                                            <mat-label><b>SERIE </b></mat-label>
+                                            <input matInput name="serieDocumento" [formControl]="facturaForm.controls['serieDocumento']" maxlength="5" [disabled]="" style="color:red">
+                                            <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="facturaForm.controls['serieDocumento'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="8%">
+                                            <mat-label><b>SECUENCIA </b></mat-label>
+                                            <input matInput name="numeroDocumento" [formControl]="facturaForm.controls['numeroDocumento']" maxlength="8" [disabled]="" style="color:red" (keypress)='validaDigitos($event)'>
+                                            <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="facturaForm.controls['numeroDocumento'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+
+                                    </div>
+
+                                    <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="6.0%" fxLayoutAlign=" left">
+
+                                        <!-- Tipo de Operación -->
+                                        <mat-form-field appearance="">
+                                            <mat-label><b>TIPO DE OPERACION</b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" name="tipoOperacion" [formControl]="facturaForm.controls['tipoOperacion']">
+                                                <mat-option *ngFor="let tipoOperacion of comboTiposOperacion" [value]="tipoOperacion">
+                                                    {{tipoOperacion.descripcion}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="facturaForm.controls['tipoOperacion'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <!-- Formas de Pago -->
+                                        <mat-form-field fxFlex="15%" appearance="">
+                                            <mat-label><b>FORMA DE PAGO</b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" name="formaPago" [formControl]="facturaForm.controls['formaPago']">
+                                                <mat-option *ngFor="let formaPago of comboFormasPago" [value]="formaPago">
+                                                    {{formaPago.descripcion}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="facturaForm.controls['formaPago'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <!-- Monedas -->
+                                        <mat-form-field fxFlex="15%" appearance="">
+                                            <mat-label><b>MONEDA</b></mat-label>
+                                            <mat-select [compareWith]="compareObjects" name="moneda" [formControl]="facturaForm.controls['moneda']">
+                                                <mat-option *ngFor="let moneda of comboMonedas" [value]="moneda">
+                                                    {{moneda.descripcion}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <mat-error *ngIf="facturaForm.controls['moneda'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <!-- <mat-label fxFlex="1%"></mat-label> -->
+
+                                        <mat-form-field fxFlex="15%" appearance="">
+                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA EMISION</b></mat-label>
+                                            <input matInput name="fechaEmision" [formControl]="facturaForm.controls['fechaEmision']" [matDatepicker]="appDatepicker" maxlength="10" style="color:#3f51b5">
+                                            <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
+                                            <mat-datepicker touchUi #appDatepicker></mat-datepicker>
+                                            <mat-error *ngIf="facturaForm.controls['fechaEmision'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="15%" appearance="">
+                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA VENCIMIENTO</b></mat-label>
+                                            <input matInput name="fechaVencimiento" [formControl]="facturaForm.controls['fechaVencimiento']" [matDatepicker]="picker" valuemaxlength="10" style="color:#3f51b5">
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                                            <mat-error *ngIf="facturaForm.controls['fechaVencimiento'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Seccion Carga de Producto -->
+                    <!-- loop throught units -->
+                    <div>
+                        <mat-card class="p-0" formArrayName="facturaDetalle">
+                            <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                                <div align="center" [style.fontSize.px]="14">
+                                    <span><b>FACTURA DETALLE </b></span>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </mat-card-title>
+                            <br>
+                            <mat-card-content>
+                                <!-- Nuevos Items-->
+                                <!-- loop nuevos items  -->
+                                <div *ngFor="let facturaDetalle of facturaForm.controls.facturaDetalle.controls; let i=index">
+
+                                    <!-- row divider show for every nex row exclude if first row -->
+                                    <mat-divider *ngIf="facturaForm.controls.facturaDetalle.controls.length > 1 && i > 0"></mat-divider><br>
+
+                                    <!-- group name in this case row index -->
+                                    <div [formGroupName]="i">
+                                        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
+
+                                            <!-- Código-->
+                                            <mat-form-field fxFlex="10%">
+                                                <mat-label><b>CODIGO</b></mat-label>
+                                                <input matInput formControlName="codigo" required>
+                                                <!-- input field error -->
+                                                <mat-error *ngIf="facturaDetalle.controls.codigo.invalid">
+                                                    REQUERIDO
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <!-- Descripción -->
+                                            <mat-form-field fxFlex="20%">
+                                                <mat-label><b>DESCRIPCION</b></mat-label>
+                                                <input matInput formControlName="descripcion" required>
+                                                <!-- input field error -->
+                                                <mat-error *ngIf="facturaDetalle.controls.descripcion.invalid">
+                                                    REQUERIDO
+                                                </mat-error>
+
+                                            </mat-form-field>
+
+                                            <!-- Cantidad -->
+                                            <mat-form-field fxFlex="7%">
+                                                <mat-label><b>CANTIDAD</b></mat-label>
+                                                <input matInput type="number" formControlName="cantidad" required>
+                                            </mat-form-field>
+
+                                            <!-- Unidad de Medida -->
+                                            <mat-form-field fxFlex="5%">
+                                                <mat-label><b>UM</b></mat-label>
+                                                <input matInput formControlName="unidadMedida" required>
+                                                <!-- input field error -->
+                                                <mat-error *ngIf="facturaDetalle.controls.unidadMedida.invalid">
+                                                    REQUERIDO
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <!-- unit price input field -->
+                                            <mat-form-field fxFlex="5%">
+                                                <mat-label><b>P. UNIT</b></mat-label>
+                                                <input matInput type="number" formControlName="unitPrice" required>
+                                            </mat-form-field>
+
+                                            <!-- Tipo IGV -->
+                                            <mat-form-field fxFlex="8%">
+                                                <mat-label><b>TIPO IGV</b></mat-label>
+                                                <mat-select [compareWith]="compareObjects" formControlName="tipoIGV">
+                                                    <mat-option *ngFor="let tipoIGV_ of comboTiposIGV" [value]="tipoIGV_">
+                                                        {{tipoIGV_.descripcion}}
+                                                    </mat-option>
+                                                </mat-select>
+                                                <mat-error *ngIf="facturaDetalle.controls.tipoIGV.invalid">
+                                                    REQUERIDO
+                                                </mat-error>
+                                            </mat-form-field>
+
+                                            <!-- Valor IGV -->
+                                            <mat-form-field fxFlex="8%">
+                                                <mat-label><b>IGV</b></mat-label>
+                                                <input matInput type="number" formControlName="valorIGV">
+                                            </mat-form-field>
+
+                                            <!-- unit total price input field, calculated and not editable -->
+                                            <div fxLayout.xs="row">
+                                                <mat-form-field fxFlex="50%">
+                                                    <mat-label><b>IMPORTE TOTAL</b></mat-label>
+                                                    <input matInput formControlName="unitTotalPrice">
+                                                </mat-form-field>
+
+                                                <!-- row delete button, hidden if there is just one row -->
+                                                <button type="button" mat-mini-fab color="warn" fxFlex="nogrow" *ngIf="facturaForm.controls.facturaDetalle.controls.length > 1" (click)="removeUnit(i)">
+                                                    <mat-icon>delete forever</mat-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- New unit button -->
+                                <mat-divider></mat-divider>
+                                <mat-card-actions>
+                                    <button mat-stroked-button color="primary" type="button" mat-raised-button (click)="addUnit()">
+                                        <mat-icon>add box</mat-icon>
+                                          Añadir Item
+                                        </button>
+                                </mat-card-actions>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+
+                    <!-- SECCION RESUMEN Y TOTALES -->
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
+                        <!-- SECCION RESUMEN -->
+                        <div fxFlex="100" fxFlex.gt-xs="50">
+                            <mat-card class="p-0">
+                                <mat-divider></mat-divider>
+                                <mat-card-content>
+                                    a
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+
+                        <!-- SECCION TOTALES -->
+
+                        <div fxFlex="100" fxFlex.gt-xs="50">
+
+                            <mat-card class="p-0 mb-0">
+                                <mat-divider></mat-divider>
+                                <mat-card-content>
+                                    <br>
+                                    <div fxLayout="row" fxLayout.xs="columns" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" right">
+                                        <!-- <mat-form-field fxFlex="25%" appearance="">
+                                            <input matInput value="SUB TOTAL VENTAS" [disabled]="true" style="color:rgba(0, 0, 0, 0.54);">
+                                        </mat-form-field>
+                                        <mat-form-field fxFlex="20%" appearance="">
+                                            <input matInput name="totales" [disabled]="true" style="color:#3f51b5">
+                                        </mat-form-field> -->
+
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Sub Total Ventas :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Anticipos :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Descuentos :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Valor Venta :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">IGV :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Otros Cargos :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">Otros Tributos :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+                                    <div class="line mb-0" [style.fontSize.px]="12">
+                                        <span class="fw-500">IMPORTE TOTAL :</span>
+                                        <span fxFlex></span>
+                                        <span class="text-muted">S/{{subTotal}}</span>
+                                    </div>
+
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <br>
+            <div align="center">
+                <button mat-raised-button color="primary" class="mr-1">Guardar Factura</button>
+                <button mat-raised-button color="primary" class="mr-1">Emitir Factura</button>
+                <button mat-raised-button color="primary">Imprimir PDF</button>
+
+            </div>
         </form>
-      </mat-step>
-      <mat-step [stepControl]="secondFormGroup">
-        <form [formGroup]="secondFormGroup">
-          <ng-template matStepLabel>Fill out your address</ng-template>
-          <mat-form-field>
-            <input matInput placeholder="Address" formControlName="secondCtrl" required>
-          </mat-form-field>
-          <div fxLayout="row">
-            <button mat-raised-button color="accent" matStepperPrevious>Back</button>
-            <span fxFlex="8px"></span>
-            <button mat-raised-button color="primary" matStepperNext>Next</button>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Done</ng-template>
-        <div>
-          <mat-icon class="pt-1" [style.fontSize]="'36px'">check</mat-icon>
-        </div>
-        <div class="pb-1 mb-1"> You Are Done.</div>
-        <div>
-          <button mat-raised-button color="accent" matStepperPrevious>Back</button>
-        </div>
-      </mat-step>
-    </mat-vertical-stepper>
-  </mat-card-content>
+    </mat-card-content>
 </mat-card>
