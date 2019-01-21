@@ -176,7 +176,7 @@ export class WizardComponent implements OnInit, OnDestroy {
     /**
    * Add new unit row into form
    */
-  private addUnit() {
+   addUnit() {
     const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
     control.push(this.obtenerFacturaDetalle());
   }
@@ -184,7 +184,7 @@ export class WizardComponent implements OnInit, OnDestroy {
   /**
    * Remove unit row from form on click delete button
    */
-  private removeUnit(i: number) {
+   removeUnit(i: number) {
     const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
     control.removeAt(i);
   }

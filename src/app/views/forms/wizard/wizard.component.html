@@ -1,7 +1,7 @@
 <mat-card class="p-0">
 
     <mat-card-content class="p-05">
-        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="grabarGuiaRemision(facturaForm.value, facturaForm.valid, $event)">
+        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="submit(facturaForm.value, facturaForm.valid, $event)">
             <div fxLayout="row wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
@@ -153,7 +153,7 @@
                                 <div *ngFor="let facturaDetalle of facturaForm.controls.facturaDetalle.controls; let i=index">
 
                                     <!-- row divider show for every nex row exclude if first row -->
-                                    <mat-divider *ngIf="facturaForm.controls.facturaDetalle.controls.length > 1 && i > 0"></mat-divider><br>
+                                    <mat-divider *ngIf="facturaForm.controls['facturaDetalle'].controls.length > 1 && i > 0"></mat-divider><br>
 
                                     <!-- group name in this case row index -->
                                     <div [formGroupName]="i">
