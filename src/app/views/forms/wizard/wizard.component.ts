@@ -135,9 +135,13 @@ export class WizardComponent implements OnInit, OnDestroy {
   }
 
 
-  submit() {
+  submit(a:any, b:any, c:any) {
     // console.log(this.firstFormGroup.value);
     // console.log(this.secondFormGroup.value);
+  }
+
+  getControls(frmGrp: FormGroup, key: string) {
+    return (<FormArray>frmGrp.controls[key]).controls;
   }
 
     /**
