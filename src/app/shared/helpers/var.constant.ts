@@ -1,6 +1,5 @@
 // tslint:disable-next-line:eofline
 
-
 // Desarrollo - Local Backend - BD AWS
 // export const HOST = 'http://localhost:8080/v1/sisyfac/api';
 

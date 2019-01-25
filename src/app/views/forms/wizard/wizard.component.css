@@ -1,0 +1,13 @@
+.icon {
+    font-size: 6px;
+}
+
+.datatable-header-cell {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: rgb(15, 168, 105);
+}
+
+.my-custom-cell {
+    background-color: rgb(15, 168, 105);
+}

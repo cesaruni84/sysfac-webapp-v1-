@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {NgxMaskModule} from 'ngx-mask';
-import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS, MatTooltipModule } from '@angular/material';
 import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MatGridListModule} from '@angular/material/grid-list';
@@ -39,7 +39,7 @@ import { BasicFormComponent } from './basic-form/basic-form.component';
 import { RichTextEditorComponent } from './rich-text-editor/rich-text-editor.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 
-import { FormsRoutes } from "./forms.routing";
+import { FormsRoutes } from './forms.routing';
 import { WizardComponent } from './wizard/wizard.component';
 
 @NgModule({
@@ -53,6 +53,7 @@ import { WizardComponent } from './wizard/wizard.component';
     MatInputModule,
     MatListModule,
     MatCardModule,
+    MatTooltipModule,
     MatChipsModule,
     MatAutocompleteModule,
     MatDatepickerModule,

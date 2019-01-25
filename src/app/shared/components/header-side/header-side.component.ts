@@ -4,6 +4,7 @@ import { LayoutService } from '../../services/layout.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UsuarioService } from '../../services/auth/usuario.service';
 import { Router } from '@angular/router';
+import { Usuario } from '../../models/usuario.model';
 
 @Component({
   selector: 'app-header-side',
@@ -21,6 +22,8 @@ export class HeaderSideComponent implements OnInit {
   }]
   public egretThemes;
   public layoutConf:any;
+  public usuarioSession: Usuario;
+
   constructor(
     private themeService: ThemeService,
     private layout: LayoutService,
@@ -31,6 +34,9 @@ export class HeaderSideComponent implements OnInit {
 
   ) {}
   ngOnInit() {
+
+    // Recupera datos de usuario de session
+    this.usuarioSession = this.userService.getUserLoggedIn();
     this.egretThemes = this.themeService.egretThemes;
     this.layoutConf = this.layout.layoutConf;
     this.translate.use(this.currentLang);
@@ -61,13 +67,13 @@ export class HeaderSideComponent implements OnInit {
     if(this.layoutConf.sidebarStyle === 'compact') {
       return this.layout.publishLayoutChange({
         sidebarStyle: 'full'
-      }, {transitionClass: true})
+      }, {transitionClass: true});
     }
 
     // * --> compact
     this.layout.publishLayoutChange({
       sidebarStyle: 'compact'
-    }, {transitionClass: true})
+    }, {transitionClass: true});
 
   }
 

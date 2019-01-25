@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV } from '../../../shared/models/tipos_facturacion';
@@ -13,13 +13,28 @@ import { TiposGenericosService } from '../../../shared/services/util/tiposGeneri
   templateUrl: './wizard.component.html',
   styleUrls: ['./wizard.component.css']
 })
-export class WizardComponent implements OnInit, OnDestroy {
+export class WizardComponent implements OnInit {
 
   // Formulario
   facturaForm: FormGroup;
-  myFormValueChanges$;
   totalSum: number;
   subTotal: any;
+  rows = [];
+  temp = [];
+  columns = [];
+
+  // Manejo default de mensajes en grilla
+    messages: any = {
+      // Message to show when array is presented
+      // but contains no values
+      emptyMessage: '-',
+
+      // Footer total message
+      totalMessage: 'total',
+
+      // Footer selected message
+      selectedMessage: 'selected'
+  };
 
   // Valores de Combo de Formulario
   public comboTiposDocumento: TipoDocumento[];
@@ -54,17 +69,8 @@ export class WizardComponent implements OnInit, OnDestroy {
       observacion: [''],
       nroOrdenServicio: [''],
       moneda: [''],
-      facturaDetalle: this.formBuilder.array([
-         this.obtenerFacturaDetalle()
-      ])
     });
 
-
-    // initialize stream on units
-    this.myFormValueChanges$ = this.facturaForm.controls['facturaDetalle'].valueChanges;
-
-    // subscribe to the stream so listen to changes on units
-    this.myFormValueChanges$.subscribe(facturaDetalle => this.updateTotalUnitPrice(facturaDetalle));
 
     // Carga Valores de Formulario
     this.cargarValoresFormulario();
@@ -161,12 +167,7 @@ export class WizardComponent implements OnInit, OnDestroy {
     });
   }
 
-    /**
-   * unsubscribe listener
-   */
-  ngOnDestroy(): void {
-    this.myFormValueChanges$.unsubscribe();
-  }
+
 
    /**
    * Completar Campo Dirección
