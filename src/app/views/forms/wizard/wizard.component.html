@@ -95,7 +95,7 @@
                                         <!-- Monedas -->
                                         <mat-form-field fxFlex="10%" appearance="">
                                             <mat-label><b>MONEDA</b></mat-label>
-                                            <mat-select [compareWith]="compareObjects" name="moneda" [formControl]="facturaForm.controls['moneda']" (selectionChange)="selecccionarSimbolo($event)">
+                                            <mat-select [compareWith]="compareObjects" name="moneda" [formControl]="facturaForm.controls['moneda']" (selectionChange)="selecccionarSimbolo()">
                                                 <mat-option *ngFor="let moneda of comboMonedas" [value]="moneda">
                                                     {{moneda.descripcion}}
                                                 </mat-option>
