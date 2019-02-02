@@ -92,6 +92,7 @@ export class FileUploadComponent implements OnInit {
   listadoGuias: GuiaRemision[];
   rowsSelected = [];
   rows = [];
+  columns = [];
   temp = [];
 
   // Variables Totales

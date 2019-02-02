@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FacturaPopUpComponent implements OnInit {
 
+  rows = [];
+  columns = [];
+
   messages: any = {
     // Message to show when array is presented
     // but contains no values

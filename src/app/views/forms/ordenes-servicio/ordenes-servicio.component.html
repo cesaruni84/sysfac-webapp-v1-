@@ -57,7 +57,7 @@
                                     <!-- Nombre Cliente-->
                                     <mat-form-field fxFlex="40%" appearance="">
                                         <mat-label><b>CLIENTE</b></mat-label>
-                                        <mat-select [compareWith]="compareObjects" class="p" name="cliente" [formControl]="ordenServicioForm.controls['cliente']" (selectionChange)="seleccionarCliente($event)" style="color:#3f51b5" requeried>
+                                        <mat-select [compareWith]="compareObjects" class="p" name="cliente" [formControl]="ordenServicioForm.controls['cliente']" style="color:#3f51b5" requeried>
                                             <mat-option *ngFor="let cliente of comboClientes" [value]="cliente">
                                                 {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
                                             </mat-option>

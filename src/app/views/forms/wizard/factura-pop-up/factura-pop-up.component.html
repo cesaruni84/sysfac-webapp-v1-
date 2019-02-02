@@ -143,8 +143,10 @@
     </ngx-datatable>
 
     <div fxFlex="100" class="mt-1">
-        <button mat-raised-button color="primary" [disabled]="itemForm.invalid">Save</button>
+        <button mat-raised-button color="primary" [disabled]="">Save</button>
         <span fxFlex></span>
-        <button mat-button color="warn" type="button" (click)="dialogRef.close(false)">Cancel</button>
+        <!-- <button mat-button color="warn" type="button" (click)="dialogRef.close(false)">Cancel</button> -->
+        <button mat-button color="warn" type="button">Cancel</button>
+
     </div>
 </div>
