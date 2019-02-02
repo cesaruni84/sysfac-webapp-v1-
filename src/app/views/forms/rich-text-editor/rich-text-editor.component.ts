@@ -1,3 +1,4 @@
+import { Liquidacion } from './../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Usuario } from '../../../shared/models/usuario.model';
@@ -11,13 +12,10 @@ import { FactoriaService } from '../../../shared/services/factorias/factoria.ser
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
-import { MatSnackBar, MAT_DATE_LOCALE,NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } from '@angular/material';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
-import { TablesService } from '../../tables/tables.service';
-import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
-import * as XLSX from 'xlsx/types';
 import { ExcelService } from '../../../shared/services/util/excel.service';
-import { Liquidacion } from '../../../shared/models/liquidacion.model';
+import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.component';
 
 @Component({
   selector: 'app-rich-text-editor',
@@ -36,8 +34,10 @@ export class RichTextEditorComponent implements OnInit {
 
   rows = [];
   temp = [];
+  selected = [];
   columns = [];
   usuarioSession: Usuario;
+  liquidacionesSelected: Liquidacion[];
 
   // Ng Model
   formFilter: FormGroup;
@@ -53,7 +53,7 @@ export class RichTextEditorComponent implements OnInit {
   messages: any = {
     // Message to show when array is presented
     // but contains no values
-    emptyMessage: 'No hay registros a mostrar',
+    emptyMessage: '-',
 
     // Footer total message
     totalMessage: 'total',
@@ -80,6 +80,7 @@ export class RichTextEditorComponent implements OnInit {
     private liquidacionService: LiquidacionService,
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
+    private dialog: MatDialog,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
   }
@@ -106,10 +107,13 @@ export class RichTextEditorComponent implements OnInit {
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
+      console.log( this.comboFactorias);
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
+      console.log( this.comboFactoriasDestino);
+
     });
 
   }
@@ -142,12 +146,9 @@ export class RichTextEditorComponent implements OnInit {
       }
   }
 
-
-  onContentChanged() { }
-  onSelectionChanged() { }
-
   filtrarLiquidaciones() {
     this.loader.open();
+    this.selected = [];
 
     // Obtiene valores de parametros para la búsqueda
     let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
@@ -162,13 +163,6 @@ export class RichTextEditorComponent implements OnInit {
     if (conFactura) {
       valorConFactura = 1;
     }
-    // console.log(nroDocLiq);
-    // console.log(fechaIniLiq);
-    // console.log(fechaFinLiq);
-    // console.log(origen);
-    // console.log(destino);
-    // console.log(estado);
-    // console.log(conFactura);
     this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
                                                         nroDocLiq || '',
                                                         origen,
@@ -184,10 +178,59 @@ export class RichTextEditorComponent implements OnInit {
       this.loader.close();
       this.rows = [];
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 10000,  panelClass: ['blue-snackbar'] });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
     });
 
   }
+
+
+  asignarOrdenServicio(data: any = {}, isNew?) {
+
+    if (this.selected.length > 0) {
+      let title = isNew ? 'ASIGNAR ORDEN DE SERVICIO' : 'Actualizar Item';
+      let dialogRef: MatDialogRef<any> = this.dialog.open(OrdenesServicioComponent, {
+        width: '840px',
+        height: '640px',
+        disableClose: true,
+        data: { title: title, payload: this.liquidacionesSelected }
+      });
+      dialogRef.afterClosed()
+        .subscribe(res => {
+          if (!res) {
+            // If user press cancel
+            return;
+          }
+          this.loader.open();
+          if (isNew) {
+            this.filtrarLiquidaciones();
+            // this.crudService.addItem(res)
+            //   .subscribe(data => {
+            //     this.items = data;
+            //     this.loader.close();
+            //     this.snack.open('Member Added!', 'OK', { duration: 4000 });
+            //   });
+          } else {
+            // this.crudService.updateItem(data._id, res)
+            //   .subscribe(data => {
+            //     this.items = data;
+            //     this.loader.close();
+            //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
+            //   });
+          }
+        });
+    } else {
+      return;
+    }
+  }
+
+
+  onSelect({ selected }) {
+
+    this.liquidacionesSelected = selected;
+    this.selected.splice(0, this.selected.length);
+    this.selected.push(...selected);
+  }
+
 
   // Genera Reporte para Excel
   ExportTOExcel() {

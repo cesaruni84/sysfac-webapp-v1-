@@ -44,7 +44,7 @@ export class LiquidacionService {
                                  fechaIni: string,
                                  fechaFin: string) {
     const params = new HttpParams().set('nroDocLiq', nroDocLiq.toString())
-                                    .set('origen', idDestino.toString())
+                                    .set('origen', idOrigen.toString())
                                     .set('destino', idDestino.toString())
                                     .set('estado', idEstado.toString())
                                     .set('facturado', conFactura.toString())

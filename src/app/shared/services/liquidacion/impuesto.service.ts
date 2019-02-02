@@ -1,4 +1,4 @@
-import { Impuesto } from './../../models/impuesto.model';
+import { Impuesto } from '../../models/impuesto.model';
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { HttpClient } from '@angular/common/http';

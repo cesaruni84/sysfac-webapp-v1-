@@ -3,29 +3,27 @@ import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
 import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
-import { TablesService } from '../../tables/tables.service';
-import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
-import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } from '@angular/material';
 import { CustomValidators } from 'ng2-validation';
 import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
 import { Factoria } from '../../../shared/models/factoria.model';
 import { MotivoTrasladoService } from '../../../shared/services/motivos-traslado/motivo-traslado.service';
 import { MotivoTraslado } from '../../../shared/models/motivo_traslado.model';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
-import { MatSort, MatTableDataSource, MatSnackBar, MatPaginator } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 import { formatDate } from '@angular/common';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
+import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../shared/models/error_response.model';
 import { ImpuestoService } from '../../../shared/services/liquidacion/impuesto.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import * as jspdf from 'jspdf';
-import html2canvas from 'html2canvas';
 import 'jspdf-autotable';
+import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
 
 @Component({
   selector: 'app-file-upload',
@@ -43,34 +41,48 @@ import 'jspdf-autotable';
 export class FileUploadComponent implements OnInit {
 
   console = console;
+  filtros: any = {};
 
   // Usuario sesionado
   usuarioSession: Usuario;
   formLiquidacion: FormGroup;
 
   // Combos de Formularios
-  comboFactorias: Factoria[];
-  comboFactoriasDestino: Factoria[];
-  comboMotivosTraslado: MotivoTraslado[];
+  public comboFactorias: Factoria[] = [];
+  public comboFactoriasDestino: Factoria[] = [];
+  public comboMotivosTraslado: MotivoTraslado[];
 
   // Manejo insert o update
   idNroDocLiq: number;
   public nroDocLiqQuery: string;
   edicion: boolean = false;
 
+  // Manejo default de mensajes en grilla
+  messages: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: '-',
+
+    // Footer total message
+    totalMessage: 'total',
+
+    // Footer selected message
+    selectedMessage: 'seleccionados'
+  };
+  
   // Ng Model
   liquidacionModel: Liquidacion;
-  valorNroDocumentoLiq_: string;
+  // valorNroDocumentoLiq_: string;
   estadoLiquidacion_: string;
   situacionLiquidacion_: string;
   monedaLiquidacion_: string;
   valorFechaIniTraslado_: Date;
   valorFechaFinTraslado_: Date;
   valorFechaRegistro_: Date;
-  valorOrigenSelected_: number;
-  valorDestinoSelected_: number;
-  motivoTrasladoSelected_: number;
   valorGlosa_: string;
+  valorOrigenSelected_: any;
+  valorDestinoSelected_: any;
+  motivoTrasladoSelected_: any;
 
   // Manejo de usuario
   errorResponse_: ErrorResponse;
@@ -78,7 +90,9 @@ export class FileUploadComponent implements OnInit {
 
   // Listado de Guias
   listadoGuias: GuiaRemision[];
+  rowsSelected = [];
   rows = [];
+  temp = [];
 
   // Variables Totales
   totalCantidadGuiasLiq_: number;
@@ -87,6 +101,16 @@ export class FileUploadComponent implements OnInit {
   igvAplicado_: number;
   totalImpGuiasLiq_: number;
   editing = {};
+  selected = [];
+
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+  formBusqueda: FormGroup;
+
+  filtroDestino_: any;
+  filtroOrigen_: any;
+  filtroFechaIni_: Date;
+  filtroFechaFin_: Date;
 
   constructor(private userService: UsuarioService,
               private factoriaService: FactoriaService,
@@ -97,18 +121,38 @@ export class FileUploadComponent implements OnInit {
               private confirmService: AppConfirmService,
               private route: ActivatedRoute,
               private router: Router,
+              private fb: FormBuilder,
+              private dialog: MatDialog,
               private loader: AppLoaderService,
               public snackBar: MatSnackBar,
               @Inject(LOCALE_ID) private locale: string,
               ) {
 
+    this.validarGrabarActualizar();
+    this.usuarioSession = this.userService.getUserLoggedIn();
+
   }
 
   ngOnInit() {
     // Recupera datos de usuario de session
-    this.validarGrabarActualizar();
-    this.usuarioSession = this.userService.getUserLoggedIn();
     this.initForm();
+
+    // this.firstFormGroup = this.fb.group({
+    //   firstCtrl: ['', Validators.required]
+    // });
+    // this.secondFormGroup = this.fb.group({
+    //   secondCtrl: ['', Validators.required]
+    // });
+
+    this.formBusqueda = this.fb.group({
+      filtroOrigen: ['', Validators.required],
+      filtroDestino: ['', Validators.required],
+      filtroFechaIni: ['', Validators.required],
+      filtroFechaFin: ['', Validators.required],
+    });
+
+
+    // Carga valores para formulario
     this.cargarCombosFormulario();
 
     // Si es edicion recuperar datos de BD
@@ -117,38 +161,28 @@ export class FileUploadComponent implements OnInit {
     } else {
       this.defaultValues();
     }
+    console.log(this.formLiquidacion);
 
-
-  }
-
-  validarGrabarActualizar() {
-    this.route.queryParams.subscribe(params => {
-        this.nroDocLiqQuery = params.nroDocLiq;
-        this.edicion = (this.nroDocLiqQuery) != null ;
-        console.log(this.edicion);
-      }
-    );
   }
 
   initForm() {
-
     this.formLiquidacion = new FormGroup({
       empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true},),
-      nroDocumentoLiq: new FormControl( '', Validators.required),
+      nroDocumentoLiq: new FormControl( ' ', [CustomValidators.digits, Validators.required]),
       fechaRegistro: new FormControl({value: '', disabled: true}),
       estado: new FormControl({value: '0', disabled: true}, ),
       situacion: new FormControl({value: '0', disabled: true}, ),
       moneda: new FormControl({value: '0', disabled: false}, ),
-      origen: new FormControl('', Validators.required),
-      destino: new FormControl('', Validators.required ),
-      motivoTraslado: new FormControl('', ),
-      fechaIniTraslado: new FormControl('', [
+      origen: new FormControl({value: '', disabled: true}, Validators.required),
+      destino: new FormControl({value: '', disabled: true}, Validators.required ),
+      motivoTraslado: new FormControl({value: '', disabled: true}, ),
+      fechaIniTraslado: new FormControl({value: '', disabled: true}, [
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.required,
         CustomValidators.date
       ]),
-      fechaFinTraslado: new FormControl('', [
+      fechaFinTraslado: new FormControl({value: '', disabled: true}, [
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.required,
@@ -162,30 +196,102 @@ export class FileUploadComponent implements OnInit {
 
   }
 
+
+  cargarCombosFormulario() {
+    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+      this.comboFactorias = data1;
+      this.valorOrigenSelected_ = this.comboFactorias[0];
+      this.filtroOrigen_ = this.comboFactorias[0];
+    });
+
+    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
+      this.comboFactoriasDestino = data3;
+      this.valorDestinoSelected_ = this.comboFactoriasDestino[1];
+      this.filtroDestino_ =  this.comboFactoriasDestino[1];
+    });
+
+    this.motivoTrasladoService.listarComboMotivosTraslado().subscribe(data2 => {
+      this.comboMotivosTraslado = data2;
+    });
+  }
+
+  validarGrabarActualizar() {
+    this.route.queryParams.subscribe(params => {
+        this.nroDocLiqQuery = params.nroDocLiq;
+        this.edicion = (this.nroDocLiqQuery) != null ;
+      }
+    );
+  }
+
+  submit() {
+    // console.log(this.firstFormGroup.value);
+    // console.log(this.secondFormGroup.value);
+    // console.log(this.formBusqueda.value);
+    console.log('paso para seleccionar');
+
+
+    if (this.edicion) {
+      this.confirmService.confirm({message: `Desea reemplazar las guias asociadas a esta liquidación ?`})
+      .subscribe(res => {
+        if (res) { // OK
+          this.rowsSelected = this.temp;
+          this.valorOrigenSelected_ = this.filtroOrigen_;
+          this.valorDestinoSelected_ = this.filtroDestino_;
+          this.valorFechaIniTraslado_ = this.filtroFechaIni_;
+          this.valorFechaFinTraslado_ = this.filtroFechaFin_;
+        } else {// Cancelar
+          this.loader.close();
+        }
+      });
+    } else {
+      this.rowsSelected = this.temp;
+      this.valorOrigenSelected_ = this.filtroOrigen_;
+      this.valorDestinoSelected_ = this.filtroDestino_;
+      this.valorFechaIniTraslado_ = this.filtroFechaIni_;
+      this.valorFechaFinTraslado_ = this.filtroFechaFin_;
+    }
+
+
+  }
+
+
+  onSelect({ selected }) {
+    this.temp = selected;
+    this.selected.splice(0, this.selected.length);
+    this.selected.push(...selected);
+  }
+
   // Obtiene datos de base de datos
   recuperarLiquidacionBD()  {
     this.loader.open();
     this.liquidacionService.obtenerLiquidacionPorNroDoc(this.usuarioSession.empresa.id,
                                                         this.nroDocLiqQuery).subscribe((data_) => {
-      // this.initForm(data_);
-      console.log(data_);
-
-      // Datos de cabeceras
+      // Id de base de datos
       this.idNroDocLiq = data_.id;
-      this.valorNroDocumentoLiq_ = this.nroDocLiqQuery;
+
+
+      // this.valorNroDocumentoLiq_ = this.nroDocLiqQuery;
+      this.formLiquidacion.patchValue({
+        nroDocumentoLiq: this.nroDocLiqQuery,
+      });
       this.estadoLiquidacion_ = data_.estado.toString();
       this.situacionLiquidacion_ = data_.situacion.toString();
       this.monedaLiquidacion_ = data_.moneda.toString();
       this.valorFechaIniTraslado_ = data_.fecIniTraslado;
+      this.filtroFechaIni_ = data_.fecIniTraslado;
       this.valorFechaFinTraslado_ = data_.fecFinTraslado;
+      this.filtroFechaFin_ = data_.fecFinTraslado;
       this.valorFechaRegistro_ = data_.fechaEmision;
-      this.valorOrigenSelected_ = data_.origen.id;
-      this.valorDestinoSelected_ = data_.destino.id;
+      this.valorOrigenSelected_ = data_.origen;
+      this.filtroOrigen_ = data_.origen;
+      this.valorDestinoSelected_ = data_.destino;
+      this.filtroDestino_ = data_.destino;
       this.motivoTrasladoSelected_ = data_.motivo.id;
       this.valorGlosa_ = data_.glosa;
 
       // Guias asociadas
       this.rows = data_.guias;
+      this.rowsSelected = data_.guias;
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -198,14 +304,13 @@ export class FileUploadComponent implements OnInit {
     }, (error: HttpErrorResponse) => {
       this.loader.close();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 10000,  panelClass: ['blue-snackbar'] });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
       console.log(this.errorResponse_.errorMessage);
 
     });
   }
 
-  defaultValues() {
-    this.valorNroDocumentoLiq_ = '000000000000';
+  defaultValues( ) {
     this.estadoLiquidacion_ = '1';
     this.situacionLiquidacion_ = '1';
     this.monedaLiquidacion_ = '0';
@@ -213,9 +318,10 @@ export class FileUploadComponent implements OnInit {
     this.valorFechaFinTraslado_ = new Date();
     this.valorFechaRegistro_ = new Date();
     this.valorFechaIniTraslado_.setDate((this.valorFechaIniTraslado_ .getDate()) - 30);
-    this.valorOrigenSelected_ = 8;
-    this.valorDestinoSelected_ = 1;
-    this.motivoTrasladoSelected_ = 2;
+    this.motivoTrasladoSelected_ = 1;
+
+    this.filtroFechaIni_ = this.valorFechaIniTraslado_;
+    this.filtroFechaFin_ = this.valorFechaFinTraslado_;
 
     // Obtiene % impuesto I.G.V - 1
     this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -224,36 +330,26 @@ export class FileUploadComponent implements OnInit {
 
   }
 
-  cargarCombosFormulario() {
-
-    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
-      this.comboFactorias = data1;
-    });
-
-    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
-      this.comboFactoriasDestino = data3;
-    });
-
-    this.motivoTrasladoService.listarComboMotivosTraslado().subscribe(data2 => {
-      this.comboMotivosTraslado = data2;
-    });
-
+  nuevaBusqueda() {
+    this.filtroOrigen_ = this.comboFactorias[0];
+    this.filtroDestino_ =  this.comboFactoriasDestino[1];
+    this.filtroFechaIni_ = new Date();
+    this.filtroFechaFin_ = new Date();
+    this.filtroFechaIni_.setDate((this.filtroFechaIni_ .getDate()) - 30);
+    this.rows = [];
   }
 
 
-
-
-
-  buscarGuiasXLiquidar() {
+  buscarGuiasXLiquidar_() {
 
     this.loader.open();
 
-    const fechaIni = formatDate(this.valorFechaIniTraslado_, 'yyyy-MM-dd', this.locale);
-    const fechaFin = formatDate(this.valorFechaFinTraslado_, 'yyyy-MM-dd', this.locale);
+    const fechaIni = formatDate(this.filtroFechaIni_, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.filtroFechaFin_, 'yyyy-MM-dd', this.locale);
 
     this.guiaRemisionService.listarGuiasRemisionPorLiquidar(this.usuarioSession.empresa.id,
-                                this.valorOrigenSelected_,
-                                this.valorDestinoSelected_,
+                                this.filtroOrigen_.id,
+                                this.filtroDestino_.id,
                                 fechaIni,
                                 fechaFin).subscribe(data_ => {
       this.listadoGuias = data_;
@@ -263,10 +359,51 @@ export class FileUploadComponent implements OnInit {
     (error: HttpErrorResponse) => {
       this.loader.close();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['blue-snackbar'] });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
     });
 
   }
+
+  // buscarGuiasXLiquidar(isNew: boolean) {
+
+  //     this.filtros.origen = this.valorOrigenSelected_;
+  //     this.filtros.destino = this.valorDestinoSelected_;
+  //     this.filtros.fechaIni = this.valorFechaIniTraslado_;
+  //     this.filtros.fechaFin = this.valorFechaFinTraslado_;
+
+  //     let title = isNew ? 'ASIGNAR ORDEN DE SERVICIO' : 'Actualizar Item';
+  //     let dialogRef: MatDialogRef<any> = this.dialog.open(BuscarGuiaLiqComponent, {
+  //       width: '1040px',
+  //       height: '580px',
+  //       disableClose: true,
+  //       data: { title: title, payload: this.filtros}
+  //     });
+  //     dialogRef.afterClosed()
+  //       .subscribe(res => {
+  //         if (!res) {
+  //           // If user press cancel
+  //           return;
+  //         }
+  //         this.loader.open();
+  //         if (isNew) {
+  //           // this.crudService.addItem(res)
+  //           //   .subscribe(data => {
+  //               this.rows = res;
+  //               this.loader.close();
+  //               this.snackBar.open('Se agregaron guias seleccionadas', 'OK', { duration: 4000 });
+  //           //   });
+  //         } else {
+  //           // this.crudService.updateItem(data._id, res)
+  //           //   .subscribe(data => {
+  //           //     this.items = data;
+  //           //     this.loader.close();
+  //           //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
+  //           //   });
+  //         }
+  //       });
+
+
+  // }
 
 
   consultarGuia(row) {
@@ -348,19 +485,19 @@ export class FileUploadComponent implements OnInit {
       } else {
            // Completa valores
           if (!this.validarGuias() ){
-            this.snackBar.open('Importe de tarifa es igual a 0.00, configurar la tarifa para la ruta seleccionada.', 'OK', { duration: 10000 });
+            this.snackBar.open('Importe de tarifa es igual a 0.00, configurar la tarifa para la ruta seleccionada.', 'OK', { duration: 5000 });
             this.loader.close();
           } else {
             console.log(this.rows);
             this.liquidacionModel.tipocod = 'LST';
-            this.valorNroDocumentoLiq_ = this.pad(this.valorNroDocumentoLiq_, 12) ;
-            this.liquidacionModel.nrodoc = this.valorNroDocumentoLiq_;
+           //  this.valorNroDocumentoLiq_ = this.pad(this.valorNroDocumentoLiq_, 12) ;
+           //  this.liquidacionModel.nrodoc = this.valorNroDocumentoLiq_;
+            this.liquidacionModel.nrodoc = this.pad(this.nroDocumentoLiq.value, 12);
+
             this.liquidacionModel.fechaEmision = this.valorFechaRegistro_;
             this.liquidacionModel.estado = this.formLiquidacion.get('estado').value;
             this.liquidacionModel.situacion = this.formLiquidacion.get('situacion').value;
-            console.log(this.valorFechaIniTraslado_);
             this.liquidacionModel.fecIniTraslado =  this.valorFechaIniTraslado_;
-            console.log(this.valorFechaFinTraslado_);
             this.liquidacionModel.fecFinTraslado =  this.valorFechaFinTraslado_;
             this.liquidacionModel.glosa = this.formLiquidacion.get('glosa').value;
             this.liquidacionModel.moneda = this.formLiquidacion.get('moneda').value;
@@ -370,22 +507,25 @@ export class FileUploadComponent implements OnInit {
             this.liquidacionModel.importeTotal = this.totalImpGuiasLiq_;
             this.liquidacionModel.usuarioRegistro = this.usuarioSession.codigo;
             this.liquidacionModel.usuarioActualiza = this.usuarioSession.codigo;
-  
+
             const motivoTrasladoTemp = new MotivoTraslado();
             motivoTrasladoTemp.id = this.formLiquidacion.get('motivoTraslado').value;
             this.liquidacionModel.motivo =  motivoTrasladoTemp;
-  
-            const origenTemp = new Factoria();
-            origenTemp.id = this.formLiquidacion.get('origen').value;
-            this.liquidacionModel.origen = origenTemp;
-  
-            const destinoTemp = new Factoria();
-            destinoTemp.id = this.formLiquidacion.get('destino').value;
-            this.liquidacionModel.destino = destinoTemp;
-  
-            this.liquidacionModel.guias = this.rows;
+
+            // let origenTemp = new Factoria();
+            // origenTemp = this.formLiquidacion.get('origen').value;
+            // this.liquidacionModel.origen = origenTemp;
+            this.liquidacionModel.origen = this.formLiquidacion.get('origen').value;
+
+            // let destinoTemp = new Factoria();
+            // destinoTemp.id = this.formLiquidacion.get('destino').value;
+            // this.liquidacionModel.destino = destinoTemp;
+            this.liquidacionModel.destino = this.formLiquidacion.get('destino').value;
+
+            this.liquidacionModel.guias = this.rowsSelected;
+            console.log(this.liquidacionModel);
             console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
-  
+
             if (this.edicion) {
               this.actualizarLiquidacion();
             } else {
@@ -406,7 +546,7 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
 
       // Resetea Formulario
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
@@ -418,7 +558,7 @@ export class FileUploadComponent implements OnInit {
       this.errorResponse_ = error.error;
       console.log(this.errorResponse_);
       // if ( !this.errorResponse_ === undefined) {
-        this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000 });
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
       //} else {
         // this.snackBar.open('Hay problemas de conexión con el Servidor.', 'cerrar', { duration: 20000 });
       //}
@@ -471,10 +611,17 @@ export class FileUploadComponent implements OnInit {
       }
   }
 
+  compareObjects(o1: any, o2: any): boolean {
+    return o1.name === o2.name && o1.id === o2.id;
+  }
+
       // Completar Zeros
   completarZerosNroDoc(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroDocumentoLiq_ = this.pad(valorDigitado, 12);
+    // this.valorNroDocumentoLiq_ = this.pad(valorDigitado, 12);
+    this.formLiquidacion.patchValue({
+      nroDocumentoLiq: this.pad(valorDigitado, 12),
+    });
   }
 
   pad(number: string, length: number): string {
@@ -488,9 +635,9 @@ export class FileUploadComponent implements OnInit {
   updateTarifa(event, cell, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
-    this.rows[rowIndex][cell] = event.target.value;
-    this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
+    this.rowsSelected[rowIndex][cell] = event.target.value;
+    this.rowsSelected = [...this.rowsSelected];
+    console.log('UPDATED!', this.rowsSelected[rowIndex][cell]);
 
     this.updateSubTotalRow('subTotal', rowIndex);
     this.recalcularTotales();
@@ -500,18 +647,18 @@ export class FileUploadComponent implements OnInit {
   updateSubTotalRow(cell, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
-    this.rows[rowIndex][cell] = this.rows[rowIndex]['tarifa'] * this.rows[rowIndex]['totalCantidad'] ;
-    this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
+    this.rowsSelected[rowIndex][cell] = this.rowsSelected[rowIndex]['tarifa'] * this.rowsSelected[rowIndex]['totalCantidad'] ;
+    this.rowsSelected = [...this.rowsSelected];
+    console.log('UPDATED!', this.rowsSelected[rowIndex][cell]);
     this.recalcularTotales();
   }
 
   validarGuias() {
     let resultado = true;
 
-    this.rows.forEach((item, i) => {
+    this.rowsSelected.forEach((item, i) => {
       // this.subTotal += (item.product.price.sale * item.data.quantity);
-       if (this.rows[i]['tarifa'] === 0.00) {
+       if (this.rowsSelected[i]['tarifa'] === 0.00) {
         resultado = false;
           // console.log('aun quedan valores de 0.00');
        }
@@ -519,6 +666,21 @@ export class FileUploadComponent implements OnInit {
     return resultado;
   }
 
+
+  //  /**
+  //  * Getters de campos de formulario
+  //  */
+  // get origen_ (): FormControl {
+  //   return this.formLiquidacion.get('origen') as FormControl;
+  // }
+
+  // get destino_ (): FormControl {
+  //   return this.formLiquidacion.get('destino') as FormControl;
+  // }
+
+  get nroDocumentoLiq (): FormControl {
+    return this.formLiquidacion.get('nroDocumentoLiq') as FormControl;
+  }
 
   captureScreen() {
     const doc = new jspdf('l');

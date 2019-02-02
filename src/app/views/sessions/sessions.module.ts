@@ -23,7 +23,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ErrorComponent } from './error/error.component';
 import { EmpresaService } from './empresa.service';
 import { SigninService } from './signin/signin.service';
-import { UsuarioService } from './../../shared/services/auth/usuario.service';
+import { UsuarioService } from '../../shared/services/auth/usuario.service';
 
 
 @NgModule({

@@ -15,11 +15,11 @@ export class AppConfirmService {
   constructor(private dialog: MatDialog) { }
 
   public confirm(data:confirmData = {}): Observable<boolean> {
-    data.title = data.title || 'Confirmar';
+    data.title = data.title || 'Confirmación';
     data.message = data.message || 'Are you sure?';
     let dialogRef: MatDialogRef<AppComfirmComponent>;
     dialogRef = this.dialog.open(AppComfirmComponent, {
-      width: '380px',
+      width: '440px',
       disableClose: true,
       data: {title: data.title, message: data.message}
     });

@@ -73,13 +73,11 @@ export class BasicFormComponent implements OnInit {
   valorCantidad_: number;
   valorPeso_: number;
   valorUMSelected_: any;
-
   valorBalanzaSelected_: any;
   valorTicketBalanza_: string;
   valorFechaRecepcion_: Date;
   valorSerieCli_: string;
   valorSecuenciaCli_: string;
-
 
   // Usuario sesionado
   usuarioSession: Usuario;
@@ -126,8 +124,6 @@ export class BasicFormComponent implements OnInit {
 
     // Carga Formulario
     this.defaultForm();
-    
-    
 
     // Carga Combos para el Formulario
     this.cargarCombosFormulario();
@@ -307,8 +303,7 @@ export class BasicFormComponent implements OnInit {
     });
 
      // Carga de Combos Choferes
-    console.log(this.usuarioSession.empresa.id);
-    this.choferService.listarComboChoferes(1).subscribe(data4 => {
+    this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
       this.comboChoferes = data4;
      });
 
@@ -486,6 +481,11 @@ export class BasicFormComponent implements OnInit {
       console.log(this.errorResponse_.errorMessage);
     });
   }
+
+  cancelarGuiaRem() {
+    this.router.navigate(['/dashboard']);
+  }
+
 
 
   onChangeFechaEmision(type: string, event: MatDatepickerInputEvent<Date>) {

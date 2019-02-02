@@ -4,7 +4,7 @@ import { Component, Inject } from '@angular/core';
 @Component({
   selector: 'app-confirm',
   template: `<h1 matDialogTitle>{{ data.title }}</h1>
-    <div mat-dialog-content>{{ data.message }}</div>
+    <div mat-dialog-content><mat-icon>info</mat-icon> {{ data.message }}</div>
     <div mat-dialog-actions>
     <button 
     type="button" 
@@ -17,7 +17,7 @@ import { Component, Inject } from '@angular/core';
     type="button"
     color="accent"
     mat-raised-button 
-    (click)="dialogRef.close(false)">Cancel</button>
+    (click)="dialogRef.close(false)">Cancelar</button>
     </div>`,
 })
 export class AppComfirmComponent {

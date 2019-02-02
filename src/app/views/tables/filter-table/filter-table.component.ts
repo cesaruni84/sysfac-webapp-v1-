@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { TablesService } from '../tables.service';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-filter-table',
@@ -134,67 +133,67 @@ export class FilterTableComponent implements OnInit {
   }
 
 
-  ExportTOExcel() {
-    console.log('export');
+  // ExportTOExcel() {
+  //   console.log('export');
 
-    // const cell_styles = { s:
-    //     { patternType: 'solid',
-    //       fgColor: { theme: 8, tint: 0.3999755851924192, rgb: '9ED2E0' },
-    //       bgColor: { indexed: 64 , rgb: 'FFFFAA00'} }
-    //     };
-    const defaultCellStyle = { font:
-                               { name: 'Verdana',
-                                   sz: 12,
-                                   color: 'FF00FF88'
-                                },
-                                fill: {
-                                  patternType: 'solid',
-                                  fgColor:
-                                   {rgb: '86BC25'}
-                                }
-                              };
+  //   // const cell_styles = { s:
+  //   //     { patternType: 'solid',
+  //   //       fgColor: { theme: 8, tint: 0.3999755851924192, rgb: '9ED2E0' },
+  //   //       bgColor: { indexed: 64 , rgb: 'FFFFAA00'} }
+  //   //     };
+  //   const defaultCellStyle = { font:
+  //                              { name: 'Verdana',
+  //                                  sz: 12,
+  //                                  color: 'FF00FF88'
+  //                               },
+  //                               fill: {
+  //                                 patternType: 'solid',
+  //                                 fgColor:
+  //                                  {rgb: '86BC25'}
+  //                               }
+  //                             };
 
-    const cell_styles = { s:  defaultCellStyle
-      };
+  //   const cell_styles = { s:  defaultCellStyle
+  //     };
 
-    const wscols = [
-          {wch: 10},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-          {wch: 20},
-      ];
-    // this.table.nativeElement.style.background = "red";
-    // const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.table.nativeElement);
-    // const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows,{header:["A","B","C","D","E","F","G","G","G","G","G","G"], skipHeader:true});
+  //   const wscols = [
+  //         {wch: 10},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //         {wch: 20},
+  //     ];
+  //   // this.table.nativeElement.style.background = "red";
+  //   // const ws: XLSX.WorkSheet=XLSX.utils.table_to_sheet(this.table.nativeElement);
+  //   // const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows,{header:["A","B","C","D","E","F","G","G","G","G","G","G"], skipHeader:true});
     
     
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    ws['F1'].s = defaultCellStyle;
+  //   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.rows);
+  //   const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  //   ws['F1'].s = defaultCellStyle;
 
-    XLSX.utils.book_append_sheet(wb, ws, 'ReporteGuias_');
-    ws['!cols'] = wscols;
-    // ws['A1'] = cell_styles;
+  //   XLSX.utils.book_append_sheet(wb, ws, 'ReporteGuias_');
+  //   ws['!cols'] = wscols;
+  //   // ws['A1'] = cell_styles;
 
-    /* if an A1-style address is needed, encode the address */
-    console.log(ws['F1']);
-    console.log(ws);
-    console.log(wb);
+  //   /* if an A1-style address is needed, encode the address */
+  //   console.log(ws['F1']);
+  //   console.log(ws);
+  //   console.log(wb);
 
-    const wopts = { bookType:'xlsx', bookSST:false, type:'binary' };
+  //   const wopts = { bookType:'xlsx', bookSST:false, type:'binary' };
 
-    /* save to file */
-    XLSX.writeFile(wb, 'ReporteGuias_.xlsx', { cellStyles: true });
-  }
+  //   /* save to file */
+  //   XLSX.writeFile(wb, 'ReporteGuias_.xlsx', { cellStyles: true });
+  // }
 
 
 }

@@ -16,7 +16,6 @@ export class TiposGenericosService {
   constructor() { }
 
   public retornarTiposDocumento(): TipoDocumento[] {
-    console.log(this.tiposGenericos.tiposDocumentoDB);
     return this.tiposGenericos.tiposDocumentoDB;
   }
 

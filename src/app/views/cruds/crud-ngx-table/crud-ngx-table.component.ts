@@ -41,7 +41,7 @@ export class CrudNgxTableComponent implements OnInit, OnDestroy {
   openPopUp(data: any = {}, isNew?) {
     let title = isNew ? 'Add new member' : 'Update member';
     let dialogRef: MatDialogRef<any> = this.dialog.open(NgxTablePopupComponent, {
-      width: '720px',
+      width: '840px',
       disableClose: true,
       data: { title: title, payload: data }
     })
@@ -69,6 +69,8 @@ export class CrudNgxTableComponent implements OnInit, OnDestroy {
         }
       })
   }
+
+  
   deleteItem(row) {
     this.confirmService.confirm({message: `Delete ${row.name}?`})
       .subscribe(res => {

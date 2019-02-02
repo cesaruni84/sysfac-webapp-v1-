@@ -12,9 +12,9 @@ import { TablesModule } from '../tables/tables.module';
 import { SatPopoverModule } from '@ncstate/sat-popover';
 
 
-import { 
+import {
   MatInputModule,
-  MatDatepickerModule, 
+  MatDatepickerModule,
   MatNativeDateModule,
   MatListModule,
   MatCardModule,
@@ -34,13 +34,14 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
-
 import { BasicFormComponent } from './basic-form/basic-form.component';
 import { RichTextEditorComponent } from './rich-text-editor/rich-text-editor.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
-
 import { FormsRoutes } from './forms.routing';
 import { WizardComponent } from './wizard/wizard.component';
+import { FacturaPopUpComponent } from './wizard/factura-pop-up/factura-pop-up.component';
+import { OrdenesServicioComponent } from './ordenes-servicio/ordenes-servicio.component';
+import { BuscarGuiaLiqComponent } from './file-upload/buscar-guia-liq/buscar-guia-liq.component';
 
 @NgModule({
   imports: [
@@ -75,6 +76,16 @@ import { WizardComponent } from './wizard/wizard.component';
     FileUploadModule,
     RouterModule.forChild(FormsRoutes)
   ],
-  declarations: [BasicFormComponent, RichTextEditorComponent, FileUploadComponent, WizardComponent, InlineEditComponent]
+  declarations: [BasicFormComponent,
+                RichTextEditorComponent,
+                FileUploadComponent,
+                WizardComponent,
+                InlineEditComponent,
+                FacturaPopUpComponent,
+                OrdenesServicioComponent,
+                BuscarGuiaLiqComponent],
+   entryComponents: [FacturaPopUpComponent, OrdenesServicioComponent, BuscarGuiaLiqComponent]
 })
-export class AppFormsModule { }
+export class AppFormsModule {
+
+}

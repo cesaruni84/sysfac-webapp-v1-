@@ -1,0 +1,258 @@
+<mat-card class="p-0 m-0">
+    <mat-card-content class="p-0 m-0">
+        <form [formGroup]="ordenServicioForm" id="ngForm" novalidate (ngSubmit)="grabarOrdenServicio(ordenServicioForm.value, ordenServicioForm.valid, $event)">
+            <div fxFlex="100" fxFlex.gt-xs="100" class="p-0 m-0">
+                <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
+                    <div fxFlex="100" fxFlex.gt-xs="100">
+                        <mat-card class="p-0 m-0">
+                            <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                                <div align="center" [style.fontSize.px]="14">
+                                    <span><b>{{data.title}}</b></span>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </mat-card-title> -->
+
+                            <mat-card-title class="mat-bg-primary m-05">
+                                <div align="center" [style.fontSize.px]="14" class="p-0 ml-1">
+                                    <span><mat-icon inline=true >list</mat-icon> {{ data.title}}</span>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </mat-card-title>
+                            <br>
+                            <mat-card-content class="pb-0">
+                                <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign=" left">
+                                    <!-- Nro de Orden -->
+                                    <mat-form-field fxFlex="15%" appearance="">
+                                        <mat-label><b>NRO DE ORDEN</b></mat-label>
+                                        <input matInput name="nroOrdenServicio" [formControl]="ordenServicioForm.controls['nroOrdenServicio']" maxlength="12" [style.fontSize.px]="14" style="color:green">
+                                        <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="ordenServicioForm.controls['nroOrdenServicio'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+                                    <!-- Estado -->
+                                    <mat-form-field fxFlex="15%" appearance="">
+                                        <mat-label><b>ESTADO</b></mat-label>
+                                        <mat-select [compareWith]="compareObjects" name="estadoOrden" [formControl]="ordenServicioForm.controls['estadoOrden']">
+                                            <mat-option *ngFor="let estado of comboEstados" [value]="estado">
+                                                {{estado.descripcion}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="ordenServicioForm.controls['estadoOrden'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Fecha de Orden -->
+                                    <mat-form-field fxFlex="15%" appearance="">
+                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA DE ORDEN</b></mat-label>
+                                        <input matInput name="fechaOrden" [formControl]="ordenServicioForm.controls['fechaOrden']" [matDatepicker]="appDatepicker" maxlength="10" style="color:#3f51b5">
+                                        <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
+                                        <mat-datepicker touchUi #appDatepicker></mat-datepicker>
+                                        <mat-error *ngIf="ordenServicioForm.controls['fechaOrden'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+
+                                    <!-- Nombre Cliente-->
+                                    <mat-form-field fxFlex="40%" appearance="">
+                                        <mat-label><b>CLIENTE</b></mat-label>
+                                        <mat-select [compareWith]="compareObjects" class="p" name="cliente" [formControl]="ordenServicioForm.controls['cliente']" (selectionChange)="seleccionarCliente($event)" style="color:#3f51b5" requeried>
+                                            <mat-option *ngFor="let cliente of comboClientes" [value]="cliente">
+                                                {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="ordenServicioForm.controls['cliente'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+
+
+
+                                </div>
+
+                                <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign=" left">
+
+                                    <!-- Fecha de Aprobación -->
+                                    <mat-form-field fxFlex="25%" appearance="">
+                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA APROBACION</b></mat-label>
+                                        <input matInput name="fechaAprobacion" [formControl]="ordenServicioForm.controls['fechaAprobacion']" [matDatepicker]="appDatepicker2" maxlength="10" style="color:#3f51b5">
+                                        <mat-datepicker-toggle matSuffix [for]="appDatepicker2"></mat-datepicker-toggle>
+                                        <mat-datepicker touchUi #appDatepicker2></mat-datepicker>
+                                        <mat-error *ngIf="ordenServicioForm.controls['fechaAprobacion'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Fecha de Vencimiento -->
+                                    <mat-form-field fxFlex="25%" appearance="">
+                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA VENCIMIENTO</b></mat-label>
+                                        <input matInput name="fechaVencimiento" [formControl]="ordenServicioForm.controls['fechaVencimiento']" [matDatepicker]="picker" valuemaxlength="10" style="color:#3f51b5">
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker touchUi #picker></mat-datepicker>
+                                        <mat-error *ngIf="ordenServicioForm.controls['fechaVencimiento'].hasError('required')"><strong>* REQUERIDO</strong></mat-error>
+                                        <br>
+                                    </mat-form-field>
+
+                                    <!-- Formas de Pago -->
+                                    <mat-form-field fxFlex="20%" appearance="">
+                                        <mat-label><b>FORMA DE PAGO</b></mat-label>
+                                        <mat-select [compareWith]="compareObjects" name="formaPago" [formControl]="ordenServicioForm.controls['formaPago']">
+                                            <mat-option *ngFor="let formaPago of comboFormasPago" [value]="formaPago">
+                                                {{formaPago.descripcion}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="ordenServicioForm.controls['formaPago'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <!-- Monedas -->
+                                    <mat-form-field fxFlex="15%" appearance="">
+                                        <mat-label><b>MONEDA</b></mat-label>
+                                        <mat-select [compareWith]="compareObjects" name="moneda" [formControl]="ordenServicioForm.controls['moneda']">
+                                            <mat-option *ngFor="let moneda of comboMonedas" [value]="moneda">
+                                                {{moneda.descripcion}}
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-error *ngIf="ordenServicioForm.controls['moneda'].hasError('required')">
+                                            <strong>* REQUERIDO</strong>
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                </div>
+                                <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="6.0%" fxLayoutAlign=" left">
+
+                                    <!-- Glosa -->
+                                    <mat-form-field fxFlex="55%" appearance="">
+                                        <mat-label><b>GLOSA/OBSERVACION</b></mat-label>
+                                        <input matInput name="glosa" [formControl]="ordenServicioForm.controls['glosa']" style="color:#3f51b5">
+                                    </mat-form-field>
+                                </div>
+
+                                <br>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+
+                <!-- Seccion Liquidaciones -->
+                <div class="p-0 m-0">
+                    <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
+                        <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+                            <div align="center" [style.fontSize.px]="14">
+                                <span><b>LIQUIDACIONES </b></span>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </mat-card-title> -->
+                        <mat-card-title class="mat-bg-primary m-05">
+                            <div align="center" [style.fontSize.px]="14" class="p-0 ml-1">
+                                <span><mat-icon inline=true >list</mat-icon> LIQUIDACIONES</span>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </mat-card-title>
+                        <div class="full-width p-0 m-0">
+                            <ngx-datatable class="material grid" style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100" [rows]="rows" [columns]="columns" [messages]="messages">
+
+                                <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
+                                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                        <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="Nro. Liquidación" [flexGrow]="1" [width]="110" prop="nrodoc">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <div [style.fontSize.px]="12"> {{ row?.nrodoc }} </div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                                <!-- 
+                                <ngx-datatable-column name="F. Emisión Liq." [flexGrow]="1" [width]="100" prop="fechaEmision">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
+                                    </ng-template>
+                                </ngx-datatable-column> -->
+
+                                <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="100" prop="cantidad">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <div align="center" [style.fontSize.px]="12">{{ row?.totalCantidad | number: '1.2-2' }}</div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="Referencia" [flexGrow]="1" [width]="280" prop="glosa">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <div [style.fontSize.px]="12"> {{ row?.glosa }} </div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="100" prop="estado">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <mat-chip mat-sm-chip class="full-width" [color]="'primary'" align="center" [selected]="row.estado =='1'">{{row.estado == '1' ? 'Vigente' : 'Vencido'}}</mat-chip>
+                                    </ng-template>
+                                </ngx-datatable-column>
+
+                                <ngx-datatable-column name="Total Importe" [flexGrow]="1" [width]="150" prop="importeTotal">
+                                    <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <div align="center" [style.fontSize.px]="12">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
+                                    </ng-template>
+                                </ngx-datatable-column>
+                            </ngx-datatable>
+                        </div>
+                    </mat-card>
+                </div>
+
+                <!-- SECCION TOTALES -->
+                <!-- <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap"> -->
+                <mat-card class="p-0 mt-05 mb-0 mr-0 ml-0">
+                    <mat-divider></mat-divider>
+                    <mat-card-content>
+                        <br>
+                        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="6.5%" fxLayoutAlign=" left">
+                            <!-- Sub Total -->
+                            <mat-form-field fxFlex="15%" appearance="">
+                                <mat-label><b>SUB TOTAL</b></mat-label>
+                                <input matInput name="subTotal" [formControl]="ordenServicioForm.controls['subTotal']" [style.fontSize.px]="13" style="color:#3f51b5" [ngModel]="subTotal | number:'1.2-2'">
+                            </mat-form-field>
+
+                            <!--Descuento-->
+                            <mat-form-field fxFlex="15%" appearance="">
+                                <mat-label><b>DESCUENTO</b></mat-label>
+                                <input matInput name="descuento" [formControl]="ordenServicioForm.controls['descuento']" [style.fontSize.px]="13" style="color:#3f51b5" [ngModel]="descuentos | number:'1.2-2'">
+                            </mat-form-field>
+
+                            <!--Valor de Compra-->
+                            <mat-form-field fxFlex="15%" appearance="">
+                                <mat-label><b>VALOR COMPRA</b></mat-label>
+                                <input matInput name="valorCompra" [formControl]="ordenServicioForm.controls['valorCompra']" [style.fontSize.px]="13" style="color:#3f51b5" [ngModel]="valorCompra | number:'1.2-2'">
+                            </mat-form-field>
+
+                            <!--Valor de IGV-->
+                            <mat-form-field fxFlex="15%" appearance="">
+                                <mat-label><b>I.G.V. 18.00%</b></mat-label>
+                                <input matInput name="valorIGV" [formControl]="ordenServicioForm.controls['valorIGV']" [style.fontSize.px]="13" style="color:#3f51b5" [ngModel]="valorIGV | number:'1.2-2'">
+                            </mat-form-field>
+
+                            <!--TOTAL Importe -->
+                            <mat-form-field fxFlex="15%" appearance="">
+                                <mat-label><b>TOTAL</b></mat-label>
+                                <input matInput name="totalImporte" [style.backgroundColor]="'rgb(255, 255, 77)'" [formControl]="ordenServicioForm.controls['totalImporte']" [style.fontSize.px]="13" style="color:#3f51b5" [ngModel]="totalImporte | number:'1.2-2'">
+                            </mat-form-field>
+                        </div>
+
+                    </mat-card-content>
+                </mat-card>
+                <!-- </div> -->
+            </div>
+            <br>
+
+        </form>
+    </mat-card-content>
+</mat-card>
+<br>
+<div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+    <!-- <div fxFlex="100" class="mt-1"> -->
+    <!-- <button mat-button color="primary" type="button" [disabled]="ordenServicioForm.invalid" (click)="confirmar()"><mat-icon>info</mat-icon> Confirmar</button> -->
+    <button mat-button color="primary" type="submit" form="ngForm" [disabled]="ordenServicioForm.invalid"><mat-icon>save</mat-icon> Grabar</button>
+    <span fxFlex></span>
+    <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+</div>

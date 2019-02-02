@@ -21,11 +21,11 @@ export class ThemeService {
   }, {
     "name": "egret-blue",
     "baseColor": "#247ba0",
-    "isActive": false
+    "isActive": true
   }, {
     "name": "egret-indigo",
     "baseColor": "#3f51b5",
-    "isActive": true 
+    "isActive": false 
   }];
   public activatedTheme: ITheme;
 
@@ -42,7 +42,7 @@ export class ThemeService {
     // this.activatedTheme = this.egretThemes[0]; 
     // this.activatedTheme = this.egretThemes[1]; 
     // this.activatedTheme = this.egretThemes[2]; 
-    this.activatedTheme = this.egretThemes[3];
+    this.activatedTheme = this.egretThemes[2];
 
     // *********** ONLY FOR DEMO **********
     this.setThemeFromQuery();

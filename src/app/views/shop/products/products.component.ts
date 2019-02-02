@@ -41,9 +41,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.loader.open();
     });
-    this.products$ = this.shopService
-      .getFilteredProduct(this.filterForm)
-      .pipe(
+    this.products$ = this.shopService.getFilteredProduct(this.filterForm).pipe(
         map(products => {
           this.loader.close();
           return products;

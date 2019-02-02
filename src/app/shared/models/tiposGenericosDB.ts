@@ -1,17 +1,24 @@
 export class TiposGenericosDB {
 
 public tiposDocumentoDB = [
-    { id: 1, codigo: '001' , descripcion: 'Boleta' , nemonico: '1 - Boleta' },
-    { id: 2, codigo: '002' , descripcion: 'Factura' , nemonico: '2 - Factura' },
-    { id: 3, codigo: '003' , descripcion: 'Nota Crédito' , nemonico: '3 - Nota Crédito' },
-    { id: 4, codigo: '004' , descripcion: 'Nota Débito' , nemonico: '4 - Nota Débito' },
+    { id: 1, codigo: '01' , descripcion: 'Factura' , nemonico: '01 - Factura' },
+    { id: 2, codigo: '03' , descripcion: 'Boleta de Venta' , nemonico: '03 - Boleta de Venta' },
+    { id: 3, codigo: '07' , descripcion: 'Nota de Crédito' , nemonico: '07 - Nota de Crédito' },
+    { id: 4, codigo: '08' , descripcion: 'Nota de Débito' , nemonico: '08 - Nota de Débito' },
 ];
 
 public tiposOperacionDB = [
-    { id: 1, codigo: '001' , descripcion: 'Venta Interna' , nemonico: '1 - Venta Interna' },
-    { id: 2, codigo: '002' , descripcion: 'Exportación' , nemonico: '2 - Exportación' },
-    { id: 3, codigo: '003' , descripcion: 'Venta Interna - Anticipos' , nemonico: '3 - Venta Interna - Anticipos' },
-    { id: 4, codigo: '004' , descripcion: 'Venta Itinerante' , nemonico: '4 - Venta Itinerante' },
+    { id: 1, codigo: '0101' , descripcion: 'Venta Interna' , nemonico: '' },
+    { id: 2, codigo: '0102' , descripcion: 'Exportación' , nemonico: '' },
+    { id: 3, codigo: '0103' , descripcion: 'No Domiciliados' , nemonico: '' },
+    { id: 4, codigo: '0104' , descripcion: 'Venta Interna - Anticipos' , nemonico: '' },
+    { id: 5, codigo: '0105' , descripcion: 'Venta Itinerante' , nemonico: '' },
+    { id: 6, codigo: '0106' , descripcion: 'Factura Guía' , nemonico: '' },
+    { id: 7, codigo: '0107' , descripcion: 'Venta Arroz Pilado' , nemonico: '' },
+    { id: 8, codigo: '0108' , descripcion: 'Factura - Comprobante de Percepción' , nemonico: '' },
+    { id: 9, codigo: '0110' , descripcion: 'Factura - Guía remitente' , nemonico: '' },
+    { id: 10, codigo: '0111' , descripcion: 'Factura - Guía transportista' , nemonico: '' },
+
 ];
 
 public formasPagoDB = [
@@ -27,8 +34,25 @@ public monedaDB = [
 ];
 
 public tiposIgvDB = [
-    { id: 1, codigo: '001' , descripcion: 'Gravado' , nemonico: '1 - Gravado' },
-    { id: 2, codigo: '002' , descripcion: 'Exonerado' , nemonico: '2 - Exonerado' },
-    { id: 3, codigo: '003' , descripcion: 'Inafecto' , nemonico: '3 - Inafecto' },
+    { id: 1, codigo: '10' , descripcion: 'Gravado - Operación Onerosa' , nemonico: '' },
+    { id: 2, codigo: '11' , descripcion: 'Gravado – Retiro por premio' , nemonico: '' },
+    { id: 3, codigo: '12' , descripcion: 'Gravado – Retiro por donación' , nemonico: '' },
+    { id: 4, codigo: '13' , descripcion: 'Gravado – Retiro' , nemonico: '' },
+    { id: 5, codigo: '14' , descripcion: 'Gravado – Retiro por publicidad' , nemonico: '' },
+    { id: 6, codigo: '15' , descripcion: 'Gravado – Bonificaciones' , nemonico: '' },
+    { id: 7, codigo: '16' , descripcion: 'Gravado – Retiro por entrega a trabajadores' , nemonico: '' },
+    { id: 8, codigo: '17' , descripcion: 'Gravado – IVAP' , nemonico: '' },
+    { id: 9, codigo: '20' , descripcion: 'Exonerado - Operación Onerosa' , nemonico: '' },
+    { id: 10, codigo: '21' , descripcion: 'Exonerado – Transferencia Gratuita' , nemonico: '' },
+    { id: 11, codigo: '30' , descripcion: 'Inafecto - Operación Onerosa' , nemonico: '' },
+    { id: 12, codigo: '31' , descripcion: 'Inafecto – Retiro por Bonificación' , nemonico: '' },
+    { id: 13, codigo: '32' , descripcion: 'Inafecto – Retiro' , nemonico: '' },
+    { id: 14, codigo: '33' , descripcion: 'Inafecto – Retiro por Muestras Médicas' , nemonico: '' },
+    { id: 15, codigo: '34' , descripcion: 'Inafecto - Retiro por Convenio Colectivo' , nemonico: '' },
+    { id: 16, codigo: '35' , descripcion: 'Inafecto – Retiro por premio' , nemonico: '' },
+    { id: 17, codigo: '36' , descripcion: 'Inafecto - Retiro por publicidad' , nemonico: '' },
+    { id: 18, codigo: '37' , descripcion: 'Inafecto - Transferencia Gratuita' , nemonico: '' },
+    { id: 19, codigo: '40' , descripcion: 'Exportación' , nemonico: '' }
+
 ];
-} 
+}

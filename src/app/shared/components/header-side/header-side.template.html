@@ -1,10 +1,10 @@
 <mat-toolbar class="topbar">
     <!-- Sidenav toggle button -->
-    <button *ngIf="layoutConf.sidebarStyle !== 'compact'" mat-icon-button id="sidenavToggle" (click)="toggleSidenav()" matTooltip="Toggle Hide/Open">
+    <button *ngIf="layoutConf.sidebarStyle !== 'compact'" mat-icon-button id="sidenavToggle" (click)="toggleSidenav()" matTooltip="Ocultar/Mostrar">
   <mat-icon>menu</mat-icon>
   </button>
     <!-- Sidenav toggle collapse -->
-    <button *ngIf="layoutConf.sidebarStyle !== 'closed'" mat-icon-button id="collapseToggle" fxHide.lt-md="true" (click)="toggleCollapse()" matTooltip="Toggle Collapse" class="toggle-collapsed">
+    <button *ngIf="layoutConf.sidebarStyle !== 'closed'" mat-icon-button id="collapseToggle" fxHide.lt-md="true" (click)="toggleCollapse()" matTooltip="Ocultar/Mostrar" class="toggle-collapsed">
   <mat-icon>chevron_left</mat-icon>
   </button>
 
@@ -25,8 +25,8 @@
     <!-- Theme Switcher -->
     <!-- <button mat-icon-button id="schemeToggle" [style.overflow]="'visible'" matTooltip="Color Schemes" [matMenuTriggerFor]="themeMenu" class="topbar-button-right">
       <mat-icon>format_color_fill</mat-icon>
-    </button>
-    <mat-menu #themeMenu="matMenu">
+    </button> -->
+    <!-- <mat-menu #themeMenu="matMenu">
         <mat-grid-list class="theme-list" cols="2" rowHeight="48px">
             <mat-grid-tile *ngFor="let theme of egretThemes" (click)="changeTheme(theme)">
                 <div mat-menu-item [title]="theme.name">

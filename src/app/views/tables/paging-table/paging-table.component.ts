@@ -9,10 +9,10 @@ import { Chofer } from '../../../shared/models/chofer.model';
 import { ChoferService } from '../../../shared/services/chofer/chofer.service';
 import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
-import { AppDateAdapter, APP_DATE_FORMATS } from './../../../shared/helpers/date.adapter';
+import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx/types';
 import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
@@ -61,7 +61,7 @@ export class PagingTableComponent implements OnInit {
   messages: any = {
     // Message to show when array is presented
     // but contains no values
-    emptyMessage: 'No hay registros a mostrar',
+    emptyMessage: '-',
 
     // Footer total message
     totalMessage: 'total',
