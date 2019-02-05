@@ -12,6 +12,8 @@ import { DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog, MatSnackBar } f
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { FacturaPopUpComponent } from './factura-pop-up/factura-pop-up.component';
+import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
+import { FacturaItemComponent } from './factura-item/factura-item.component';
 
 @Component({
   selector: 'app-wizard',
@@ -44,9 +46,10 @@ export class WizardComponent implements OnInit {
   importeTotal: number;
 
 
-  // Manejos
-  rows = [];
+  // Grilla Detalle de Factura
+ // rows = [];
   temp = [];
+  rows =  [];
   columns = [];
 
   // Manejo default de mensajes en grilla
@@ -81,6 +84,7 @@ export class WizardComponent implements OnInit {
               private tiposGenService: TiposGenericosService,
               private loader: AppLoaderService,
               private dialog: MatDialog,
+              private confirmService: AppConfirmService,
               private snack: MatSnackBar,
               private clienteService: ClienteService) { }
 
@@ -109,7 +113,7 @@ export class WizardComponent implements OnInit {
       ],
       estado: [{value: '', disabled: true}],
       observacion: [''],
-      nroOrdenServicio: [{value: '', disabled: true}],
+      nroOrdenServicio: [{value: '-', disabled: true}],
       moneda: [''],
     });
 
@@ -247,30 +251,29 @@ export class WizardComponent implements OnInit {
 
 
     /**
-   * Buscar Item en base de datos
+   * Abre Pop-up para búsqueda de item
    */
-
   buscarItem(data: any = {}, isNew?) {
     let title = isNew ? 'Añadir Item' : 'Actualizar Item';
     let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaPopUpComponent, {
       width: '840px',
-      height: '640px',
+      height: '580px',
       disableClose: true,
       data: { title: title, payload: data }
     });
     dialogRef.afterClosed()
-      .subscribe(res => {
-        if (!res) {
+      .subscribe(itemAñadidos => {
+        if (!itemAñadidos) {
           // If user press cancel
           return;
         }
-        this.loader.open();
         if (isNew) {
-          // this.crudService.addItem(res)
-          //   .subscribe(data => {
-          //     this.items = data;
-          //     this.loader.close();
-          //     this.snack.open('Member Added!', 'OK', { duration: 4000 });
+          itemAñadidos.forEach(element => {
+            let rowData = { ...element};
+            this.rows.splice(this.rows.length, 0, rowData);
+            this.rows = [...this.rows];
+          });
+          this.snack.open('Items añadidos!!', 'OK', { duration: 3000 });
           //   });
         } else {
           // this.crudService.updateItem(data._id, res)
@@ -279,6 +282,48 @@ export class WizardComponent implements OnInit {
           //     this.loader.close();
           //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
           //   });
+        }
+      });
+  }
+
+  /**
+ * Abre Pop-up para edición de item
+ */
+  editarItem(data: any = {}) {
+    let title = 'Actualizar Item';
+    let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaItemComponent, {
+      width: '640px',
+      disableClose: true,
+      data: { title: title, payload: data }
+    });
+    dialogRef.afterClosed()
+      .subscribe(itemActualizado => {
+        if (!itemActualizado) {
+          // If user press cancel
+          return;
+        }
+
+        this.rows = this.rows.map(element => {
+          if (element.id === data.id) {
+            return Object.assign({}, element, itemActualizado);
+          }
+          return element;
+        });
+        this.snack.open('Item actualizado!!', 'OK', { duration: 3000 });
+
+      });
+  }
+
+    /**
+   * Elimina item de grilla
+   */
+  eliminarItem(row: any , rowindex) {
+    this.confirmService.confirm({message: `Descartar item N° ${rowindex + 1} ?`})
+      .subscribe(res => {
+        if (res) {
+          let i = this.rows.indexOf(row);
+          this.rows.splice(i, 1);
+          this.snack.open('Item eliminado!', 'OK', { duration: 3000 });
         }
       });
   }

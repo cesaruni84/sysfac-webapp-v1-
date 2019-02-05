@@ -42,6 +42,7 @@ import { WizardComponent } from './wizard/wizard.component';
 import { FacturaPopUpComponent } from './wizard/factura-pop-up/factura-pop-up.component';
 import { OrdenesServicioComponent } from './ordenes-servicio/ordenes-servicio.component';
 import { BuscarGuiaLiqComponent } from './file-upload/buscar-guia-liq/buscar-guia-liq.component';
+import { FacturaItemComponent } from './wizard/factura-item/factura-item.component';
 
 @NgModule({
   imports: [
@@ -83,8 +84,9 @@ import { BuscarGuiaLiqComponent } from './file-upload/buscar-guia-liq/buscar-gui
                 InlineEditComponent,
                 FacturaPopUpComponent,
                 OrdenesServicioComponent,
-                BuscarGuiaLiqComponent],
-   entryComponents: [FacturaPopUpComponent, OrdenesServicioComponent, BuscarGuiaLiqComponent]
+                BuscarGuiaLiqComponent,
+                FacturaItemComponent],
+   entryComponents: [FacturaPopUpComponent, FacturaItemComponent, OrdenesServicioComponent, BuscarGuiaLiqComponent]
 })
 export class AppFormsModule {
 

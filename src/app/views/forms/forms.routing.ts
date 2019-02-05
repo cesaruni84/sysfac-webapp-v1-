@@ -30,7 +30,7 @@ export const FormsRoutes: Routes = [
     {
       path: 'facturacion',
       component: WizardComponent,
-      data: { title: 'Facturación', breadcrumb: 'Registro de Factura' }
+      data: { title: 'Facturación', breadcrumb: 'REGISTRO DE FACTURA' }
     }]
   }
 ];

@@ -299,11 +299,10 @@ export class BasicFormComponent implements OnInit {
     // Carga de Combos Unidades de Medida
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidadMedida = data3;
-
     });
 
      // Carga de Combos Choferes
-    this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
+    this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
      });
 

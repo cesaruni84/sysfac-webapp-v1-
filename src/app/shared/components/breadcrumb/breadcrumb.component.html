@@ -10,6 +10,10 @@
         <mat-icon>home</mat-icon>
     </h1>
     <ul class="breadcrumb" *ngIf="routeParts.length > 1">
-        <li *ngFor="let part of routeParts"><a routerLink="/{{part.url}}" class="text-muted">{{part.breadcrumb | translate}}</a></li>
+        <li *ngFor="let part of routeParts">
+            <a routerLink="/{{part.url}}" class="text-muted" style="font-size: 16px">
+                <b>{{part.breadcrumb | translate}}</b>
+            </a>
+        </li>
     </ul>
 </div>

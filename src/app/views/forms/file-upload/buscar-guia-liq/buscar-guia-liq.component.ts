@@ -77,14 +77,10 @@ export class BuscarGuiaLiqComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<BuscarGuiaLiqComponent>,
     private factoriaService: FactoriaService,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
-    private router: Router,
     private userService: UsuarioService,
-    private liquidacionService: LiquidacionService,
     private guiaRemisionService: GuiaRemisionService,
     public snackBar: MatSnackBar,
-    private dialog: MatDialog,
     private loader: AppLoaderService) {
   }
 

@@ -11,7 +11,7 @@ export interface CargaDB {
 
 export class TipoDocumento extends TipoGenerico {
     constructor() {
-        super();    
+        super();
     }
 }
 
@@ -38,3 +38,10 @@ export class TipoIGV extends TipoGenerico {
         super();
     }
 }
+
+export class TipoItem extends TipoGenerico {
+    constructor() {
+        super();
+    }
+}
+

@@ -24,6 +24,7 @@ import { AppConfirmService } from '../../../shared/services/app-confirm/app-conf
 import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
+import { BasicFormComponent } from '../basic-form/basic-form.component';
 
 @Component({
   selector: 'app-file-upload',
@@ -225,12 +226,6 @@ export class FileUploadComponent implements OnInit {
   }
 
   submit() {
-    // console.log(this.firstFormGroup.value);
-    // console.log(this.secondFormGroup.value);
-    // console.log(this.formBusqueda.value);
-    console.log('paso para seleccionar');
-
-
     if (this.edicion) {
       this.confirmService.confirm({message: `Desea reemplazar las guias asociadas a esta liquidación ?`})
       .subscribe(res => {
@@ -408,13 +403,25 @@ export class FileUploadComponent implements OnInit {
 
 
   consultarGuia(row) {
-    // const array = row.nroguia.split('-');
-    console.log(row);
     const _nroSerie = row.serie;
     const _nroSecuencia = row.secuencia;
 
     // Envia a Página de Edición de Guia
-    this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
+    //this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
+
+      let dialogRef: MatDialogRef<any> = this.dialog.open(BasicFormComponent, {
+        width: '1640px',
+        height: '580px',
+        disableClose: true,
+        data: { title: '', payload: this.filtros}
+      });
+      dialogRef.afterClosed()
+        .subscribe(res => {
+          if (!res) {
+            // If user press cancel
+            return;
+          }
+        });
   }
 
 
