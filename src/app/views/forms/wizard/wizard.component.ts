@@ -1,3 +1,4 @@
+import { FacturaDocumento } from './../../../shared/models/facturacion.model';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
@@ -66,6 +67,9 @@ export class WizardComponent implements OnInit {
   errorResponse_: ErrorResponse;
   infoResponse_: InfoResponse;
   step = 0;
+
+  // Documento
+  documentoModel: FacturaDocumento;
 
 
   // Manejo default de mensajes en grilla
@@ -235,12 +239,10 @@ export class WizardComponent implements OnInit {
 
 
   submit(a:any, b:any, c:any) {
-    console.log('paso a grabar');
-    // console.log(this.secondFormGroup.value);
     this.loader.open();
 
     if (this.rows.length === 0) {
-        this.snack.open('Debe añadir al menos un item para la factura', 'OK', { duration: 2000 });
+        this.snack.open('Debe añadir al menos un item para el documento', 'OK', { duration: 2000 });
         this.loader.close();
     } else {
 
@@ -367,7 +369,7 @@ export class WizardComponent implements OnInit {
     /**
    * Obtiene una lista de todas las guias de remisión asociadas a la orden de servicio
    */
-  buscarGuiasPorOS() {
+  buscarGuiasPorOS(event: any) {
     this.ordenServicioService.listarGuiasPorOrdenServicio(this.usuarioSession.empresa.id ,
       this.nroOrdenServicio_.value).subscribe((data_) => {
       this.rows_guias = data_;
