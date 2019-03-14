@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
 import { Usuario } from '../../../../shared/models/usuario.model';
-import { GuiaRemision } from 'app/shared/models/guia_remision.model';
+import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../../shared/models/error_response.model';
 import { Factoria } from '../../../../shared/models/factoria.model';
@@ -11,6 +11,7 @@ import { GuiaRemisionService } from '../../../../shared/services/guias/guia-remi
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ProductoService } from '../../../../shared/services/productos/producto.service';
 
 @Component({
   selector: 'app-factura-pop-up',
@@ -19,7 +20,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class FacturaPopUpComponent implements OnInit {
 
-  rows = [
+  rows2 = [
     { id: 1, tipo: 'Bien' , codigo: 'S023232311' , descripcion: ' Transporte a Granel 01' ,
       cantidad: 0.00, unidadMedida: 'TNL', tarifa: 12.00 , valorIGV: 0.00, importeTotal: 0.00 },
     { id: 2, tipo: 'Bien' , codigo: 'S023232312' , descripcion: ' Transporte a Granel 02' , tarifa: 13.12 },
@@ -30,6 +31,7 @@ export class FacturaPopUpComponent implements OnInit {
 
   ];
 
+  rows = [];
   temp = [];
   selected = [];
   columns = [];
@@ -77,6 +79,7 @@ export class FacturaPopUpComponent implements OnInit {
     private factoriaService: FactoriaService,
     private fb: FormBuilder,
     private userService: UsuarioService,
+    private productoService: ProductoService,
     private guiaRemisionService: GuiaRemisionService,
     public snackBar: MatSnackBar,
     private loader: AppLoaderService) {
@@ -84,11 +87,11 @@ export class FacturaPopUpComponent implements OnInit {
 
   ngOnInit() {
 
-
+    this.loader.open();
     this.formFilter = this.fb.group({
-      codigo: ['', ],
+      codigo: [' ', ],
       indTipoProd: [ '', ],
-      descripcion: ['', ],
+      descripcion: [' ', ],
       fechaIni: ['', ],
       fechaFin: ['', ],
     });
@@ -98,13 +101,18 @@ export class FacturaPopUpComponent implements OnInit {
     this.usuarioSession = this.userService.getUserLoggedIn();
 
     // Carga de Combos Factorias
-    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
-      this.comboFactorias = data1;
+    // this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+    //   this.comboFactorias = data1;
+    // });
+
+
+
+    this.productoService.listarComboProductosServicios(this.usuarioSession.empresa.id).subscribe(data3 => {
+      this.rows = data3;
+      this.loader.close();
+
     });
 
-    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
-      this.comboFactoriasDestino = data3;
-    });
 
   }
 

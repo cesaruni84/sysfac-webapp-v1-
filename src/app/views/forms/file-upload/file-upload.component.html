@@ -393,7 +393,7 @@
 
                                                     <div align="right">
                                                         <!--<div [style.fontSize.px]="12" align="left"> {{ row?.tarifa | number: '1.2-2'}} </div>-->
-                                                        <span title="Doble click para editar" (dblclick)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
+                                                        <span title="Doble click para editar" (click)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
                                                                 {{value | number: '1.2-2'}}
                                                                 </span>
                                                         <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
@@ -500,8 +500,6 @@
                                         <td width="100" align="right" [style.fontSize.px]="14">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"> <b>S/ {{ calcularImporteTotal() | number: '1.2-2'}} </b></mat-label>
                                         </td>
-
-
                                     </tr>
                                     <br>
                                 </mat-card-content>

@@ -1,36 +1,28 @@
-import { Liquidacion } from '../../../shared/models/liquidacion.model';
-import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
-import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
-import { Usuario } from '../../../shared/models/usuario.model';
+import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Factoria } from '../../../shared/models/factoria.model';
+import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
+import { MatSnackBar, MatDialog, MatDialogRef } from '@angular/material';
+import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
+import { LiquidacionService } from '../../../../shared/services/liquidacion/liquidacion.service';
+import { ExcelService } from '../../../../shared/services/util/excel.service';
+import { ErrorResponse, InfoResponse } from '../../../../shared/models/error_response.model';
+import { Factoria } from '../../../../shared/models/factoria.model';
+import { Usuario } from '../../../../shared/models/usuario.model';
+import { Liquidacion } from '../../../../shared/models/liquidacion.model';
 import { CustomValidators } from 'ng2-validation';
-import { Router, ActivatedRoute } from '@angular/router';
-import { UsuarioService } from '../../../shared/services/auth/usuario.service';
-import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
-import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { formatDate } from '@angular/common';
-import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
-import { MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } from '@angular/material';
-import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
-import { ExcelService } from '../../../shared/services/util/excel.service';
-import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.component';
+import { HttpErrorResponse } from '@angular/common/http';
+import { OrdenesServicioComponent } from '../../ordenes-servicio/ordenes-servicio.component';
+import { Cliente } from '../../../../shared/models/cliente.model';
 
 @Component({
-  selector: 'app-rich-text-editor',
-  templateUrl: './rich-text-editor.component.html',
-  styleUrls: ['./rich-text-editor.component.css'],
-  providers: [
-    {
-        provide: DateAdapter, useClass: AppDateAdapter
-    },
-    {
-        provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
-    }
-    ]
+  selector: 'app-factura-consulta',
+  templateUrl: './factura-consulta.component.html',
+  styleUrls: ['./factura-consulta.component.scss']
 })
-export class RichTextEditorComponent implements OnInit {
+export class FacturaConsultaComponent implements OnInit {
 
   rows = [];
   temp = [];
@@ -69,6 +61,7 @@ export class RichTextEditorComponent implements OnInit {
   // Combos para filtros de búsqueda
   comboFactorias: Factoria[];
   comboFactoriasDestino: Factoria[];
+  comboClientes: Cliente[];
   facturacionCheck = false;
 
 
@@ -92,6 +85,7 @@ export class RichTextEditorComponent implements OnInit {
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
 
     this.formFilter = new FormGroup({
+      serieDocumento:  new FormControl('',),
       nroSerieLiq: new FormControl('', CustomValidators.digits),
       fechaIniLiq: new FormControl(fechaIniTraslado_, ),
       fechaFinLiq: new FormControl(fechaActual_, ),
@@ -198,14 +192,11 @@ export class RichTextEditorComponent implements OnInit {
         .subscribe(res => {
           if (!res) {
             // If user press cancel
-            this.loader.close();
             return;
           }
           this.loader.open();
           if (isNew) {
             this.filtrarLiquidaciones();
-            this.loader.close();
-
             // this.crudService.addItem(res)
             //   .subscribe(data => {
             //     this.items = data;
@@ -213,8 +204,6 @@ export class RichTextEditorComponent implements OnInit {
             //     this.snack.open('Member Added!', 'OK', { duration: 4000 });
             //   });
           } else {
-            this.loader.close();
-
             // this.crudService.updateItem(data._id, res)
             //   .subscribe(data => {
             //     this.items = data;
@@ -224,7 +213,6 @@ export class RichTextEditorComponent implements OnInit {
           }
         });
     } else {
-      this.loader.close();
       return;
     }
   }
@@ -247,6 +235,5 @@ export class RichTextEditorComponent implements OnInit {
   consultarLiquidacion(row) {
     this.router.navigate(['/forms/liquidacion'], { queryParams: { nroDocLiq: row.nrodoc } });
   }
-
 
 }

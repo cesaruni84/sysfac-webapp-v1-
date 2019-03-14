@@ -1,6 +1,6 @@
-import { OrdenServicio } from './../../../shared/models/orden-servicio';
-import { UsuarioService } from './../../../shared/services/auth/usuario.service';
-import { ClienteService } from './../../../shared/services/facturacion/cliente.service';
+import { OrdenServicio } from '../../../shared/models/orden-servicio';
+import { UsuarioService } from '../../../shared/services/auth/usuario.service';
+import { ClienteService } from '../../../shared/services/facturacion/cliente.service';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, DateAdapter, MAT_DATE_FORMATS, MatSnackBar } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -184,7 +184,7 @@ export class OrdenesServicioComponent implements OnInit {
     this.comboMonedas = this.tiposGenService.retornarMonedas();
 
     // Totales
-    this.totalCantidad = this.rows.map(t => t.cantidad).reduce((acc, value) => acc + value, 0);
+    this.totalCantidad = this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
     this.subTotal = this.rows.map(t => t.importeTotal).reduce((acc, value) => acc + value, 0);
     this.descuentos = 0.00;
     this.valorCompra = this.subTotal - this.descuentos;
@@ -204,6 +204,7 @@ export class OrdenesServicioComponent implements OnInit {
       .subscribe(res => {
         if (res) { // OK
           this.ordenServicioModel = new OrdenServicio();
+          this.ordenServicioModel.tipocod = 'LST';
           this.ordenServicioModel.nroOrden = this.nroOrdenServicio_.value;
           this.ordenServicioModel.fechaOrden = this.fechaOrden_.value;
           this.ordenServicioModel.fechaVencimiento = this.fechaVencimiento_.value;
@@ -214,14 +215,15 @@ export class OrdenesServicioComponent implements OnInit {
           this.ordenServicioModel.cliente = this.cliente_.value;
           this.ordenServicioModel.glosa = this.glosa_.value;
           this.ordenServicioModel.totalCantidad = this.totalCantidad;
-          this.ordenServicioModel.subTotal = this.subTotal_.value;
-          this.ordenServicioModel.descuentos = this.descuento_.value;
-          this.ordenServicioModel.valorCompra = this.valorCompra_.value;
-          this.ordenServicioModel.igvAplicado = this.valorIGV_.value;
-          this.ordenServicioModel.importeTotal = this.totalImporte_.value;
+          this.ordenServicioModel.subTotal = this.subTotal;
+          this.ordenServicioModel.descuentos = this.descuentos;
+          this.ordenServicioModel.valorCompra = this.valorCompra;
+          this.ordenServicioModel.igvAplicado = this.valorIGV;
+          this.ordenServicioModel.importeTotal = this.totalImporte;
           this.ordenServicioModel.empresa = this.usuarioSession.empresa;
           this.ordenServicioModel.usuarioRegistro = this.usuarioSession.codigo ;
           this.ordenServicioModel.usuarioActualiza = this.usuarioSession.codigo ;
+          this.ordenServicioModel.liquidaciones = this.rows;
           this.grabar();
 
         } else {// Cancelar
@@ -236,7 +238,7 @@ export class OrdenesServicioComponent implements OnInit {
     this.ordenServicioService.registrarOrdenServicioBD(this.ordenServicioModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 2000 });
 
       // Resetea Formulario
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {

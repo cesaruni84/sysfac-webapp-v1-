@@ -534,8 +534,8 @@ export class NavigationService {
       state: 'forms',
       badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
-        { name: 'Registro', state: 'facturacion' },
-        { name: 'Consulta', state: '404' },
+        { name: 'Registro', state: 'facturacion/registro' },
+        { name: 'Consulta', state: 'facturacion/consulta' },
         { name: 'Factura Electrónica', state: '404' },
       ]
     },

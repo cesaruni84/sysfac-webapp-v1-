@@ -14,6 +14,12 @@ import { AppLoaderService } from '../../../shared/services/app-loader/app-loader
 import { FacturaPopUpComponent } from './factura-pop-up/factura-pop-up.component';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import { FacturaItemComponent } from './factura-item/factura-item.component';
+import { OrdenServicioService } from '../../../shared/services/liquidacion/orden-servicio.service';
+import { Usuario } from '../../../shared/models/usuario.model';
+import { UsuarioService } from '../../../shared/services/auth/usuario.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { throwError } from 'rxjs/internal/observable/throwError';
+import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 
 @Component({
   selector: 'app-wizard',
@@ -46,11 +52,21 @@ export class WizardComponent implements OnInit {
   importeTotal: number;
 
 
+  esNuevo: boolean = true;
+
+
   // Grilla Detalle de Factura
  // rows = [];
   temp = [];
   rows =  [];
+  rows_guias =  [];
   columns = [];
+  panelOpenState = true;
+  usuarioSession: Usuario;
+  errorResponse_: ErrorResponse;
+  infoResponse_: InfoResponse;
+  step = 0;
+
 
   // Manejo default de mensajes en grilla
     messages: any = {
@@ -86,6 +102,8 @@ export class WizardComponent implements OnInit {
               private dialog: MatDialog,
               private confirmService: AppConfirmService,
               private snack: MatSnackBar,
+              private userService: UsuarioService,
+              private ordenServicioService: OrdenServicioService,
               private clienteService: ClienteService) { }
 
   ngOnInit() {
@@ -93,7 +111,7 @@ export class WizardComponent implements OnInit {
       cliente: ['', [Validators.required]],
       direccion: new FormControl({value: '', disabled: true}, ),
       tipoDocumento: [{value: '', disabled: true}],
-      serieDocumento: ['', [Validators.required]],
+      serieDocumento: ['E001', [Validators.required]],
       numeroDocumento: ['', [Validators.required]],
       tipoOperacion: [''],
       tipoAfectacionIGV: [''],
@@ -113,7 +131,7 @@ export class WizardComponent implements OnInit {
       ],
       estado: [{value: '', disabled: true}],
       observacion: [''],
-      nroOrdenServicio: [{value: '-', disabled: true}],
+      nroOrdenServicio: [{value: '', disabled: false}, [Validators.required]],
       moneda: [''],
     });
 
@@ -162,6 +180,7 @@ export class WizardComponent implements OnInit {
   }
 
   cargaValoresTotales() {
+    this.totalSum = 0.00;
     this.simbolo = 'S/';
     this.subTotal = 0.00;
     this.anticipos = 0.00;
@@ -188,6 +207,9 @@ export class WizardComponent implements OnInit {
    */
   cargarCombos() {
 
+    // Recupera datos de usuario de session
+    this.usuarioSession = this.userService.getUserLoggedIn();
+
     // Combo Clientes
     this.clienteService.listarClientesPorEmpresa(1).subscribe(dataClientes => {
       this.comboClientes = dataClientes;
@@ -213,8 +235,17 @@ export class WizardComponent implements OnInit {
 
 
   submit(a:any, b:any, c:any) {
-    // console.log(this.firstFormGroup.value);
+    console.log('paso a grabar');
     // console.log(this.secondFormGroup.value);
+    this.loader.open();
+
+    if (this.rows.length === 0) {
+        this.snack.open('Debe añadir al menos un item para la factura', 'OK', { duration: 2000 });
+        this.loader.close();
+    } else {
+
+    }
+
   }
 
   getControls(frmGrp: FormGroup, key: string) {
@@ -251,37 +282,38 @@ export class WizardComponent implements OnInit {
 
 
     /**
-   * Abre Pop-up para búsqueda de item
+   * Abre Pop-up para Añadir/Actualiza item
    */
   buscarItem(data: any = {}, isNew?) {
     let title = isNew ? 'Añadir Item' : 'Actualizar Item';
-    let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaPopUpComponent, {
-      width: '840px',
-      height: '580px',
+    let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaItemComponent, {
+      width: '740px',
+     // height: '580px',
       disableClose: true,
       data: { title: title, payload: data }
     });
     dialogRef.afterClosed()
-      .subscribe(itemAñadidos => {
-        if (!itemAñadidos) {
+      .subscribe(item => {
+        if (!item) {
           // If user press cancel
           return;
         }
         if (isNew) {
-          itemAñadidos.forEach(element => {
-            let rowData = { ...element};
+            let rowData = { ...item};
             this.rows.splice(this.rows.length, 0, rowData);
             this.rows = [...this.rows];
-          });
-          this.snack.open('Items añadidos!!', 'OK', { duration: 3000 });
-          //   });
+            this.actualizaTotales();
+            this.snack.open('Item añadido!!', 'OK', { duration: 1000 });
         } else {
-          // this.crudService.updateItem(data._id, res)
-          //   .subscribe(data => {
-          //     this.items = data;
-          //     this.loader.close();
-          //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
-          //   });
+
+          this.rows = this.rows.map(element => {
+            if (element.id === data.id) {
+              return Object.assign({}, element, item);
+            }
+            return element;
+          });
+          this.actualizaTotales();
+          this.snack.open('Item actualizado!!', 'OK', { duration: 1000 });
         }
       });
   }
@@ -292,7 +324,7 @@ export class WizardComponent implements OnInit {
   editarItem(data: any = {}) {
     let title = 'Actualizar Item';
     let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaItemComponent, {
-      width: '640px',
+      width: '740px',
       disableClose: true,
       data: { title: title, payload: data }
     });
@@ -303,13 +335,16 @@ export class WizardComponent implements OnInit {
           return;
         }
 
+        console.log(itemActualizado);
+
         this.rows = this.rows.map(element => {
           if (element.id === data.id) {
             return Object.assign({}, element, itemActualizado);
           }
           return element;
         });
-        this.snack.open('Item actualizado!!', 'OK', { duration: 3000 });
+        this.actualizaTotales();
+        this.snack.open('Item actualizado!!', 'OK', { duration: 1000 });
 
       });
   }
@@ -323,11 +358,36 @@ export class WizardComponent implements OnInit {
         if (res) {
           let i = this.rows.indexOf(row);
           this.rows.splice(i, 1);
-          this.snack.open('Item eliminado!', 'OK', { duration: 3000 });
+          this.actualizaTotales();
+          this.snack.open('Item eliminado!', 'OK', { duration: 1000 });
         }
       });
   }
 
+    /**
+   * Obtiene una lista de todas las guias de remisión asociadas a la orden de servicio
+   */
+  buscarGuiasPorOS() {
+    this.ordenServicioService.listarGuiasPorOrdenServicio(this.usuarioSession.empresa.id ,
+      this.nroOrdenServicio_.value).subscribe((data_) => {
+      this.rows_guias = data_;
+      this.setStep(1);
+    },
+    (error: HttpErrorResponse) => {
+      this.rows_guias = [];
+      this.setStep(0);
+      this.handleError(error);
+    });
+  }
+
+
+
+    /**
+   * Default Panel
+   */
+  setStep(index: number) {
+    this.step = index;
+  }
 
     /**
    * Add new unit row into form
@@ -344,6 +404,30 @@ export class WizardComponent implements OnInit {
     const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
     control.removeAt(i);
   }
+
+
+  /**  Actualiza campos Descuentos */
+  actualizaTotales() {
+    this.totalSum = 0;
+    this.descuentos = 0;
+    this.valorIGV = 0;
+
+    this.rows.forEach(element => {
+      this.descuentos += (Number.parseFloat(element.descuentos));
+      this.totalSum += (Number.parseFloat(element.total));
+      this.valorIGV += (Number.parseFloat(element.valorIGV));
+    });
+
+    this.importeTotal = this.totalSum + this.valorIGV;
+  }
+
+
+  calcularImporteTotal(): number {
+   this.importeTotal = this.totalSum  + this.valorIGV;
+    return this.importeTotal;
+  }
+
+
 
     /************
    * UTILITARIOS
@@ -364,4 +448,41 @@ export class WizardComponent implements OnInit {
   compareObjects(o1: any, o2: any): boolean {
     return o1.name === o2.name && o1.id === o2.id;
   }
+
+
+
+  get nroOrdenServicio_ (): FormControl {
+    return this.facturaForm.get('nroOrdenServicio') as FormControl;
+  }
+
+
+  private handleError(error: HttpErrorResponse) {
+
+    this.loader.close();
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 3000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 3000 });
+      } else {
+        this.snack.open('Ocurrió un error inesperado!!, intenta nuevamente.', 'OK', { duration: 3000 });
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
+
+
+
 }

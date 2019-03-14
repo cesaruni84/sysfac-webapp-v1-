@@ -1,9 +1,19 @@
 <mat-card class="p-0">
-    <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+    <mat-card-title class="mat-bg-primary m-05">
         <div align="center" [style.fontSize.px]="14">
-            <span><b>FILTROS PARA BUSQUEDA</b></span>
+            <span>FILTROS PARA BUSQUEDA</span>
         </div>
     </mat-card-title>
+
+    <!-- <mat-card-title class="mat-bg-primary m-05">
+            <div align="center" [style.fontSize.px]="14" class="p-0">
+                <span>FILTROS PARA BUSQUEDA</span>
+            </div>
+            <mat-divider></mat-divider>
+        </mat-card-title> -->
+
+
+
     <mat-card-content class="mb-0 p-05">
         <form [formGroup]="formFilter" novalidate>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">

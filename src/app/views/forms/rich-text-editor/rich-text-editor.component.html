@@ -1,3 +1,9 @@
+<mat-tab-group class="p-05">
+    <mat-tab label="FILTROS DE BUSQUEDA" align="center">
+
+    </mat-tab>
+</mat-tab-group>
+
 <mat-card class="p-0">
     <!-- <mat-card-title class="m-05" [style.backgroundColor]="'rgb(235, 235, 235)'">
         <div align="center" [style.fontSize.px]="14" class="p-05">
@@ -5,15 +11,16 @@
         </div>
     </mat-card-title> -->
 
-    <mat-card-title class="mat-bg-primary m-05">
-        <div align="center" [style.fontSize.px]="14" class="p-0">
-            <span>FILTROS PARA BUSQUEDA DE LIQUIDACIONES</span>
+    <!-- <mat-card-title class="mat-bg-primary m-05" style="width: 25%">
+        <div align="center" [style.fontSize.px]="13" class="p-0">
+            <span>FILTROS DE BUSQUEDA</span>
         </div>
         <mat-divider></mat-divider>
-    </mat-card-title>
+    </mat-card-title> -->
 
 
     <mat-card-content class="mb-0 p-05">
+        <br>
         <form [formGroup]="formFilter" novalidate>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
                 <mat-form-field fxFlex="20%" class="pl-1">
@@ -94,39 +101,41 @@
 
         <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ rowIndex + 1 }} </div>
             </ng-template>
         </ngx-datatable-column>
         <ngx-datatable-column name="Nro. Liquidación" [flexGrow]="1" [width]="110" prop="nrodoc">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.nrodoc }} </div>
+                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.nrodoc }} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="F. Emisión Liq." [flexGrow]="1" [width]="100" prop="fechaEmision" [cellClass]="'my-custom-cell'">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
+                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" [width]="120" prop="factura.ordenServicio">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row.factura? 'row?.factura.ordenServicio' : '-' }} </div>
+                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row.ordenServicio != null ? row?.ordenServicio.nroOrden : '-'}} </div>
+
+
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Origen" [flexGrow]="1" [width]="200" prop="origen.refLarga1" [sortable]="true">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <span title="{{ row?.origen.refLarga1 }}">
-                <div [style.fontSize.px]="12"> {{ row?.origen.refLarga1 }} </div>
-                 </span>
+                <span title="{{ row?.origen.refLarga1 }}" style="color:#3f51b5">
+            <div [style.fontSize.px]="12"> {{ row?.origen.refLarga1 }} </div>
+            </span>
             </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="200" prop="destino.refLarga1" [sortable]="true">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <span title="{{ row?.destino.refLarga1 }}">
-                <div [style.fontSize.px]="12"> {{ row?.destino.refLarga1 }} </div>
+                <span title="{{ row?.destino.refLarga1 }}" style="color:#3f51b5">
+            <div [style.fontSize.px]="12"> {{ row?.destino.refLarga1 }} </div>
             </span>
             </ng-template>
         </ngx-datatable-column>
@@ -145,7 +154,7 @@
 
         <ngx-datatable-column name="Total Importe" [flexGrow]="1" [width]="150" prop="importeTotal">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div align="center" [style.fontSize.px]="12">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
+                <div align="center" [style.fontSize.px]="12" style="color:#3f51b5">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
             </ng-template>
         </ngx-datatable-column>
 

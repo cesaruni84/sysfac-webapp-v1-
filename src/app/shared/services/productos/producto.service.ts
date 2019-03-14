@@ -8,7 +8,8 @@ import { Producto } from '../../models/producto.model';
 })
 export class ProductoService {
 
-  url = `${HOST}/productos`;
+  url = `${HOST}/empresas`;
+  url2 = `${HOST}/productos`;
 
   constructor(private http: HttpClient) { }
 
@@ -16,4 +17,10 @@ export class ProductoService {
   listarComboProductos() {
     return this.http.get<Producto[]>(this.url);
   }
+
+  listarComboProductosServicios(idEmpresa: number) {
+    return this.http.get<any[]>(this.url +  '/' +  idEmpresa + '/productos-servicios/SRV1');
+  }
+
+
 }

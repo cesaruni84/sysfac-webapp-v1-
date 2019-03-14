@@ -112,4 +112,7 @@ $primary-dark: darken( map-get($mat-primary, 500), 8%);
             color: #3f51b5;
         }
     }
+    .mat-input-element:disabled {
+        color: #3f51b5;
+    }
 }

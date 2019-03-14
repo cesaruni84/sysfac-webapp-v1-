@@ -11,7 +11,7 @@
     </h1>
     <ul class="breadcrumb" *ngIf="routeParts.length > 1">
         <li *ngFor="let part of routeParts">
-            <a routerLink="/{{part.url}}" class="text-muted" style="font-size: 16px">
+            <a routerLink="/{{part.url}}" class="text-muted" style="font-size: 14px">
                 <b>{{part.breadcrumb | translate}}</b>
             </a>
         </li>

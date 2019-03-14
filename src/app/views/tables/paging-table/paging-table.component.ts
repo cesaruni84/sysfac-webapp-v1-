@@ -131,10 +131,9 @@ export class PagingTableComponent implements OnInit {
       this.listaGrillaGuias = data;
       this.rows = this.temp = this.total_rows_bd = data;
       this.loader.close();
-
     });
 
-
+    
   }
 
 

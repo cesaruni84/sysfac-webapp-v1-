@@ -1,108 +1,152 @@
-<mat-card class="p-0 m-0">
-    <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
+<!-- <mat-card class=""> -->
+
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>list</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
       <div align="center" [style.fontSize.px]="14">
           <span><b>{{data.title}}</b></span>
       </div>
       <mat-divider></mat-divider>
   </mat-card-title> -->
 
-    <mat-card-title class="mat-bg-primary m-05">
-        <div align="center" [style.fontSize.px]="14" class="p-0 ml-1">
-            <span><mat-icon inline=true >list</mat-icon> {{ data.title}}</span>
-        </div>
-        <mat-divider></mat-divider>
-    </mat-card-title>
-
-    <mat-card-content class="mb-0 p-05">
-        <form [formGroup]="itemForm" (ngSubmit)="submit()">
-            <div fxLayout="row wrap" fxLayout.lt-sm="column" align="left" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>TIPO DE ITEM</b></mat-label>
-                        <mat-select [(ngModel)]="tipo_" name="tipo" [formControl]="itemForm.controls['tipo']">
-                            <!-- <mat-option value="0">Todos</mat-option> -->
-                            <mat-option *ngFor="let tipoProducto of comboTipoProducto" [value]="tipoProducto.id">
-                                {{tipoProducto.descripcion}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>CODIGO</b></mat-label>
-                        <input matInput name="codigo" [formControl]="itemForm.controls['codigo']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="80" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>DESCRIPCION</b></mat-label>
-                        <input matInput name="descripcion" [formControl]="itemForm.controls['descripcion']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="25" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>CANTIDAD</b></mat-label>
-                        <input matInput type="number" name="cantidad" [formControl]="itemForm.controls['cantidad']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="30" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>UNIDAD DE MEDIDA</b></mat-label>
-                        <mat-select [(ngModel)]="unidadMedida_" name="unidadMedida" [formControl]="itemForm.controls['unidadMedida']">
-                            <!-- <mat-option value="0">Todos</mat-option> -->
-                            <mat-option *ngFor="let unidad of comboUnidades" [value]="unidad">
-                                {{unidad.descripcion}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="25" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>P. UNITARIO</b></mat-label>
-                        <input matInput type="number" name="tarifa" [formControl]="itemForm.controls['tarifa']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>DESCUENTOS</b></mat-label>
-                        <input matInput name="descuentos" [formControl]="itemForm.controls['descuentos']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>TIPO IGV (18%)</b></mat-label>
-                        <input matInput name="tipoIGV" [formControl]="itemForm.controls['tipoIGV']">
-                    </mat-form-field>
-                </div>
-
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>VALOR IGV</b></mat-label>
-                        <input matInput name="valorIGV" [formControl]="itemForm.controls['valorIGV']">
-                    </mat-form-field>
-                </div>
-
-
-                <div fxFlex="40" class="pr-1">
-                    <mat-form-field class="full-width">
-                        <mat-label><b>IMPORTE TOTAL</b></mat-label>
-                        <input matInput name="total" [formControl]="itemForm.controls['total']">
-                    </mat-form-field>
-                </div>
-
-            </div>
-        </form>
-    </mat-card-content>
-</mat-card>
-<br>
-<div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
-    <button mat-button color="primary" [disabled]="itemForm.invalid"><mat-icon>save</mat-icon> Grabar</button>
-    <span fxFlex></span>
-    <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+<!-- <mat-card-title class="mat-bg-primary m-0"> -->
+<!-- <div align="center" [style.fontSize.px]="14">
+    <span><mat-icon inline=true >list</mat-icon> {{ data.title}</span>
 </div>
+<mat-divider></mat-divider> -->
+<!-- </mat-card-title> -->
+<!-- 
+    <mat-card-content class="mb-0 p-0"> -->
+<div fxLayout="row wrap">
+    <form id="itemFormFactura" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+
+            <div fxFlex="80" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>PRODUCTO</b></mat-label>
+                    <mat-select [compareWith]="compareObjects2" name="productos" [formControl]="itemForm_.controls['productos']">
+                        <mat-option value="">Seleccione un producto</mat-option>
+                        <mat-option *ngFor="let producto of comboProductos" [value]="producto">
+                            {{producto.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="20" class="pr-1 pt-1">
+                <button mat-raised-button type="button" color="primary" (click)="seleccionarProducto($event)"><mat-icon>add box</mat-icon> Añadir </button>
+            </div>
+
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>TIPO DE ITEM</b></mat-label>
+                    <mat-select name="tipo" [formControl]="itemForm_.controls['tipo']">
+                        <!-- <mat-option value="0">Todos</mat-option> -->
+                        <mat-option *ngFor="let tipoProducto of comboTipoProducto" [value]="tipoProducto.id">
+                            {{tipoProducto.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>CODIGO</b></mat-label>
+                    <input matInput name="codigo" [formControl]="itemForm_.controls['codigo']">
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="100" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DESCRIPCION</b></mat-label>
+                    <input matInput name="descripcion" [formControl]="itemForm_.controls['descripcion']">
+                    <mat-icon matSuffix>comment</mat-icon>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>UNIDAD DE MEDIDA</b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="unidadMedida" [formControl]="itemForm_.controls['unidadMedida']">
+                        <!-- <mat-option value="0">Todos</mat-option> -->
+                        <mat-option *ngFor="let unidad of comboUnidades" [value]="unidad">
+                            {{unidad.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxFlex="5" class="pr-1 pt-05"></div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>CANTIDAD</b></mat-label>
+                    <input matInput type="number" name="cantidad" [formControl]="itemForm_.controls['cantidad']" [ngModel]="cantidad_" (change)="despuesDigitarCantidad($event)">
+                    <mat-icon matSuffix>add_shopping_cart</mat-icon>
+                </mat-form-field>
+            </div>
+            <div fxFlex="5" class="pr-1 pt-05"></div>
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>P. UNITARIO</b></mat-label>
+                    <input matInput type="number" name="tarifa" [formControl]="itemForm_.controls['tarifa']" [ngModel]="tarifa_ | number:'1.2-2'" (change)="despuesDigitarTarifa($event)">
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
+
+                </mat-form-field>
+            </div>
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DESCUENTOS</b></mat-label>
+                    <input matInput type="number" name="descuentos" [formControl]="itemForm_.controls['descuentos']" [ngModel]="descuentos_ " (change)="despuesDigitarDescuentos($event)">
+                    <mat-icon matSuffix inline="true">style</mat-icon>
+
+                </mat-form-field>
+            </div>
+            <div fxFlex="10" class="pr-1 pt-05"></div>
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>TIPO IGV (18%) </b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="tipoIGV" [formControl]="itemForm_.controls['tipoIGV']">
+                        <mat-option *ngFor="let tipoAfectacion of comboTiposIGV" [value]="tipoAfectacion">
+                            {{tipoAfectacion.codigo + ' - ' + tipoAfectacion.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>VALOR IGV</b></mat-label>
+                    <input matInput type="number" name="valorIGV" [formControl]="itemForm_.controls['valorIGV']" [ngModel]="valorIGV_ ">
+                    <mat-icon matSuffix inline="true">style</mat-icon>
+
+                </mat-form-field>
+            </div>
+            <div fxFlex="10" class="pr-1 pt-05"></div>
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>IMPORTE TOTAL ITEM</b></mat-label>
+                    <input matInput type="number" name="total" [formControl]="itemForm_.controls['total']" [ngModel]="total_">
+                    <mat-icon matSuffix inline="true">library_books</mat-icon>
+
+                </mat-form-field>
+            </div>
+
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormFactura" [disabled]="itemForm_.invalid"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>
+<!-- </mat-card-content>
+</mat-card> -->

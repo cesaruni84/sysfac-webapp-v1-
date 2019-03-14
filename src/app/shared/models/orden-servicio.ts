@@ -8,6 +8,7 @@ export class OrdenServicio {
     tipocod: string;
     nroOrden: string;
     situacion: number;
+    estado: number;
     fechaOrden: Date;
     fechaVencimiento: Date;
     fechaAprobacion: Date;

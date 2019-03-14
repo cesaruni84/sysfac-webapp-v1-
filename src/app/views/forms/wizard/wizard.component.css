@@ -1,14 +1,32 @@
-.icon {
-    font-size: 6px;
+/* .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: green;
+} */
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: #247ba0 !important
 }
 
-.datatable-header-cell {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    background-color: rgb(15, 168, 105);
+::ng-deep .mat-form-field-label {
+    color: green;
 }
 
-.my-custom-cell {
-    background-color: rgb(15, 168, 105);
-    background: red;
+::ng-deep.text-muted {
+    font-size: 14px;
+    color: #3f51b5;
+}
+
+.text-muted2 {
+    font-size: 16px;
+    color: green;
+    background-color: bisque;
+}
+
+.example-headers-align .mat-expansion-panel-header-title,
+.example-headers-align .mat-expansion-panel-header-description {
+    flex-basis: 0;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
 }

@@ -5,6 +5,7 @@ import { RichTextEditorComponent } from './rich-text-editor/rich-text-editor.com
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { WizardComponent } from './wizard/wizard.component';
 import { PagingTableComponent } from '../tables/paging-table/paging-table.component';
+import { FacturaConsultaComponent } from './wizard/factura-consulta/factura-consulta.component';
 
 export const FormsRoutes: Routes = [
   {
@@ -12,25 +13,31 @@ export const FormsRoutes: Routes = [
     children: [{
       path: 'basic',
       component: BasicFormComponent,
-      data: { title: 'Registro', breadcrumb: 'Registro de Guias' }
+      data: { title: 'Registro', breadcrumb: 'REGISTRO DE GUIAS' }
     }, {
       path: 'paging',
       component: PagingTableComponent,
-      data: { title: 'Consulta', breadcrumb: 'Consulta de Guias' }
+      data: { title: 'Consulta', breadcrumb: 'CONSULTA DE GUIAS' }
     }, {
       path: 'liquidacion',
       component: FileUploadComponent,
-      data: { title: 'Liquidación', breadcrumb: 'Registro de Liquidación' }
+      data: { title: 'Liquidación', breadcrumb: 'REGISTRO DE LIQUIDACION' }
     },
     {
       path: 'busquedaLiquidaciones',
       component: RichTextEditorComponent,
-      data: { title: 'Liquidación2', breadcrumb: 'Consulta de Liquidaciones' }
+      data: { title: 'Liquidación', breadcrumb: 'CONSULTA DE LIQUIDACIONES' }
     },
     {
-      path: 'facturacion',
+      path: 'facturacion/registro',
       component: WizardComponent,
       data: { title: 'Facturación', breadcrumb: 'REGISTRO DE FACTURA' }
-    }]
+    },
+    {
+      path: 'facturacion/consulta',
+      component: FacturaConsultaComponent,
+      data: { title: 'Facturación', breadcrumb: 'CONSULTA DE FACTURAS' }
+    }
+  ]
   }
 ];

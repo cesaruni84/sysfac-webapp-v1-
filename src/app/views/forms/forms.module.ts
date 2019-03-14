@@ -21,6 +21,7 @@ import {
   MatProgressBarModule,
   MatRadioModule,
   MatTableModule,
+  MatExpansionModule,
   MatPaginatorModule,
   MatCheckboxModule,
   MatButtonModule,
@@ -29,6 +30,8 @@ import {
   MatStepperModule,
   MatChipsModule,
   MatAutocompleteModule,
+  MatToolbarModule,
+
 } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { QuillModule } from 'ngx-quill';
@@ -43,6 +46,7 @@ import { FacturaPopUpComponent } from './wizard/factura-pop-up/factura-pop-up.co
 import { OrdenesServicioComponent } from './ordenes-servicio/ordenes-servicio.component';
 import { BuscarGuiaLiqComponent } from './file-upload/buscar-guia-liq/buscar-guia-liq.component';
 import { FacturaItemComponent } from './wizard/factura-item/factura-item.component';
+import { FacturaConsultaComponent } from './wizard/factura-consulta/factura-consulta.component';
 
 @NgModule({
   imports: [
@@ -55,6 +59,7 @@ import { FacturaItemComponent } from './wizard/factura-item/factura-item.compone
     MatInputModule,
     MatListModule,
     MatCardModule,
+    MatToolbarModule,
     MatTooltipModule,
     MatChipsModule,
     MatAutocompleteModule,
@@ -63,6 +68,7 @@ import { FacturaItemComponent } from './wizard/factura-item/factura-item.compone
     MatProgressBarModule,
     MatRadioModule,
     MatTableModule,
+    MatExpansionModule,
     MatPaginatorModule,
     MatCheckboxModule,
     SatPopoverModule,
@@ -85,7 +91,8 @@ import { FacturaItemComponent } from './wizard/factura-item/factura-item.compone
                 FacturaPopUpComponent,
                 OrdenesServicioComponent,
                 BuscarGuiaLiqComponent,
-                FacturaItemComponent],
+                FacturaItemComponent,
+                FacturaConsultaComponent],
    entryComponents: [FacturaPopUpComponent, FacturaItemComponent, OrdenesServicioComponent, BuscarGuiaLiqComponent]
 })
 export class AppFormsModule {
