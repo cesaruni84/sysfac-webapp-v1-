@@ -289,6 +289,7 @@ export class FileUploadComponent implements OnInit {
       this.rows = data_.guias;
       this.rowsSelected = data_.guias;
 
+
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
         this.IGV_DEFAULT = data2.valor;
@@ -350,6 +351,8 @@ export class FileUploadComponent implements OnInit {
                                 fechaFin).subscribe(data_ => {
       this.listadoGuias = data_;
       this.rows = data_;
+
+      console.log(data_);
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
@@ -447,13 +450,13 @@ export class FileUploadComponent implements OnInit {
 
   /** Gets the total items of all transactions. */
   sumTotalCantidad() {
-    this.totalCantidadGuiasLiq_ = this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+    this.totalCantidadGuiasLiq_ = this.rowsSelected.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
     return this.totalCantidadGuiasLiq_ ;
   }
 
   /** Gets the total cost of all transactions. */
   sumSubTotalImporte() {
-    this.subTotalImpGuiasLiq_ =  this.rows.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+    this.subTotalImpGuiasLiq_ =  this.rowsSelected.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
     return this.subTotalImpGuiasLiq_;
   }
 

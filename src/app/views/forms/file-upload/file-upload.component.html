@@ -347,20 +347,20 @@
                                                     <div [style.fontSize.px]="12">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
-                                            <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="125" prop="nroguia">
+                                            <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="125" prop="serie">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
 
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="125" prop="nroguia2">
+                                            <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="125" prop="secuencia">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="240" prop="guiaDetalle">
+                                            <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="200" prop="guiaDetalle">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
                                                 </ng-template>
@@ -372,7 +372,7 @@
                                                 </ng-template>
                                             </ngx-datatable-column> -->
 
-                                            <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="80" prop="totalCantidad">
+                                            <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="70" prop="totalCantidad">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div align="right">
                                                         <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
@@ -387,7 +387,7 @@
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="90" prop="tarifa">
+                                            <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="80" prop="tarifa">
                                                 <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
 
 
@@ -432,7 +432,7 @@
                                         <div fxFlex="100px">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowsSelected.length }} </mat-label>
                                         </div>
-                                        <span fxFlex="520px"></span>
+                                        <span fxFlex="320px"></span>
                                         <div fxFlex="100px">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Cantidad : </b> </mat-label>
                                         </div>
@@ -473,7 +473,7 @@
                                     <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                         <div fxFlex="80px" class="p-05">
                                         </div>
-                                        <span fxFlex="820px"></span>
+                                        <span fxFlex="620px"></span>
                                         <div fxFlex="80px">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>I.G.V. : </b> </mat-label>
                                         </div>
@@ -489,7 +489,7 @@
                                     <tr>
                                         <td width="100" class="p-05">
                                         </td>
-                                        <td width="600"></td>
+                                        <td width="400"></td>
                                         <td width="100">
                                         </td>
                                         <td width="100">
