@@ -15,7 +15,7 @@ export class ProductoService {
 
 
   listarComboProductos() {
-    return this.http.get<Producto[]>(this.url);
+    return this.http.get<Producto[]>(this.url2);
   }
 
   listarComboProductosServicios(idEmpresa: number) {

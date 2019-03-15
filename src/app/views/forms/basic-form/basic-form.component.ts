@@ -291,6 +291,7 @@ export class BasicFormComponent implements OnInit {
     // Carga de Combos Productos
     this.productoService.listarComboProductos().subscribe(data2 => {
       this.comboProductos = data2;
+      console.log(data2);
     },
     (error: HttpErrorResponse) => { // Error del Server
         this.handleError(error);
