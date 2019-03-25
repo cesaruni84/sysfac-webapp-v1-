@@ -101,27 +101,53 @@
                                             [rows]="rows" [columns]="columns" [messages]="messages">
                                             <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
                                             </ngx-datatable-column>
-                                            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                                            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
                                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
-                                            <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="100" prop="fechaTraslado">
+                                            <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="80" prop="fechaTraslado">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
+
+                                            <ngx-datatable-column name="Serie" [flexGrow]="1" [width]="60" prop="serie">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <div align="left" [style.fontSize.px]="12">{{ row?.serie}} </div>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+
+                                            <ngx-datatable-column name="Secuencia" [flexGrow]="1" [width]="80" prop="secuencia">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <div align="left" [style.fontSize.px]="12">{{ row?.secuencia }} </div>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+                                            <!-- 
+<!-- 
                                             <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="140" prop="nroguia">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
                                                 </ng-template>
+                                            </ngx-datatable-column> -->
+
+                                            <ngx-datatable-column name="Serie Cli" [flexGrow]="1" [width]="70" prop="serieCliente">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <div align="left" [style.fontSize.px]="12"> {{ row?.serieCliente}} </div>
+                                                </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="140" prop="nroguia2">
+                                            <ngx-datatable-column name="Sec. Cli" [flexGrow]="1" [width]="70" prop="secuenciaCliente">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <div align="left" [style.fontSize.px]="12"> {{ row?.secuenciaCliente }} </div>
+                                                </ng-template>
+                                            </ngx-datatable-column>
+
+                                            <!-- <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="140" prop="nroguia2">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
                                                 </ng-template>
-                                            </ngx-datatable-column>
+                                            </ngx-datatable-column> -->
 
                                             <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="200" prop="guiaDetalle">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
@@ -129,7 +155,7 @@
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="105" prop="ticketBalanza">
+                                            <ngx-datatable-column name="Tkt. Balanza" [flexGrow]="1" [width]="90" prop="ticketBalanza">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12">{{ row?.ticketBalanza }} </div>
                                                 </ng-template>
@@ -137,9 +163,9 @@
 
                                             <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="80" prop="totalCantidad">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div align="right">
-                                                        <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
-                                                    </div>
+
+                                                    <div align="left" [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
+
                                                 </ng-template>
                                             </ngx-datatable-column>
 
@@ -350,7 +376,6 @@
                                             <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="125" prop="serie">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
-
                                                 </ng-template>
                                             </ngx-datatable-column>
 
