@@ -353,12 +353,11 @@
                                         <mat-divider></mat-divider>
                                         <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="0" [limit]="100" [rowHeight]="50" [rows]="rowsSelected" [messages]="messages">
+                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarV]="'true'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rowsSelected2" [columns]="columns" [messages]="messages2">
                                             <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <span title="Consultar Guia">
                                                             <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                                                            <!--<button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Eliminar" (click)="deleteItem(row)"><mat-icon>clear</mat-icon></button> -->
                                                         </span>
                                                 </ng-template>
                                             </ngx-datatable-column>
@@ -455,7 +454,7 @@
                                     <div fxLayout="row" fxLayout.xs="column wrap" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left" class="p-05">
 
                                         <div fxFlex="100px">
-                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowsSelected.length }} </mat-label>
+                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowsSelected2.length }} </mat-label>
                                         </div>
                                         <span fxFlex="320px"></span>
                                         <div fxFlex="100px">

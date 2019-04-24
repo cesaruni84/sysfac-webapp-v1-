@@ -1,0 +1,61 @@
+<div class="m-333">
+    <!-- <span fxFlex></span> -->
+    <button mat-raised-button class="mb-05" color="primary" (click)="openPopUp({}, true)">Nuevo Registro</button>
+</div>
+<mat-card class="p-0" [@animate]="{value:'*',params:{y:'50px',delay:'300ms'}}">
+    <mat-card-content class="p-0">
+        <ngx-datatable class="material striped ml-0 mr-0" [rows]="rows" [columnMode]="'standard'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="'auto'">
+            <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="120">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <button mat-icon-button mat-sm-button matTooltip="Editar registro" color="primary" class="mr-1" (click)="openPopUp(row)"><mat-icon>edit</mat-icon></button>
+                    <button mat-icon-button mat-sm-button matTooltip="Eliminar registro" color="warn" (click)="deleteItem(row)"><mat-icon>delete</mat-icon></button>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Código" [flexGrow]="0.5" [width]="80">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.codigo }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="RUC" [flexGrow]="1 " [width]="120">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.cliente.ruc }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Razón Social / Planta" [flexGrow]="0.5" [width]="260">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.refLarga2 }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Distrito" [flexGrow]="1">
+                <ng-template let-row="row " ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.distrito }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Provincia" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.provincia }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Departamento" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.departamento }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Estado" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <mat-chip mat-sm-chip [color]="'primary'" [selected]="row.estado =='0'">{{row.estado =='0'? 'Activo' : 'Inactivo'}}</mat-chip>
+                </ng-template>
+            </ngx-datatable-column>
+
+        </ngx-datatable>
+    </mat-card-content>
+</mat-card>

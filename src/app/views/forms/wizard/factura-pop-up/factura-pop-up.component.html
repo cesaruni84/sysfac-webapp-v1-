@@ -11,19 +11,6 @@
         <br>
         <form [formGroup]="formFilter" id="ngForm" novalidate (ngSubmit)="submit()">
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left" [style.fontSize.px]="13">
-                <!-- <mat-label class="pl-1 ml-2" fxFlex="30%"> </mat-label> -->
-                <!-- <mat-form-field fxFlex="15%" class="pl-1" floatPlaceholder="never">
-                    <mat-label><b>TIPO DE ITEM</b></mat-label>
-                    <mat-select [(ngModel)]="selected2" name="indTipoProd" [formControl]="formFilter.controls['indTipoProd']">
-                        <mat-option *ngFor="let tipoProducto of comboTipoProducto" [value]="tipoProducto.id">
-                            {{tipoProducto.descripcion}}
-                        </mat-option>
-                    </mat-select>
-                <!-- </mat-form-field> -->
-                <!-- <mat-form-field fxFlex="12%">
-                    <mat-label><b>CODIGO</b></mat-label>
-                    <input matInput name="codigo" [formControl]="formFilter.controls['codigo']" maxlength="12" style="color:green">
-                </mat-form-field> -->
                 <mat-form-field fxFlex="100%" floatPlaceholder="never">
                     <mat-label style="font-size: 14px"><b>FILTRO</b></mat-label>
                     <input matInput name="descripcion" [formControl]="formFilter.controls['descripcion']">
@@ -34,18 +21,6 @@
             </div>
             <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign="left" [style.fontSize.px]="15">
-                <!-- <mat-form-field class="pl-1 ml-2" fxFlex="30%" [style.fontSize.px]="13">
-                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INI</b></mat-label>
-                    <input [(ngModel)]="valorFechaIniTraslado_" matInput name="fechaIni" [formControl]="formFilter.controls['fechaIni']" [matDatepicker]="picker" maxlength="10" style="color:#3f51b5">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <mat-form-field class="pl-1" fxFlex="30%" [style.fontSize.px]="13">
-                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN</b></mat-label>
-                    <input [(ngModel)]="valorFechaFinTraslado_" matInput name="fechaFin" [formControl]="formFilter.controls['fechaFin']" [matDatepicker]="picker2" maxlength="10" style="color:#3f51b5">
-                    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>
-                </mat-form-field> -->
                 <mat-label fxFlex="28%"></mat-label>
 
             </div>
@@ -54,23 +29,9 @@
     </mat-card-content>
 </mat-card>
 
-<!-- <div class="full-width p-0 m-0">
-        <ngx-datatable class="material grid" style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100" [rows]="rows" [columns]="columns" [messages]="messages"> -->
 
 <div class="p-0 m-0">
     <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
-        <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
-                                <div align="center" [style.fontSize.px]="14">
-                                    <span><b>LIQUIDACIONES </b></span>
-                                </div>
-                                <mat-divider></mat-divider>
-                            </mat-card-title> -->
-        <!-- <mat-card-title class="mat-bg-primary m-05">
-            <div align="center" [style.fontSize.px]="14" class="p-0 ml-1">
-                <span><mat-icon inline=true >list</mat-icon> LIQUIDACIONES</span>
-            </div>
-            <mat-divider></mat-divider>
-        </mat-card-title> -->
         <div class="margin-333">
             <ngx-datatable class="material grid" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100"
                 [rows]="rows" [columns]="columns" [messages]="messages">
@@ -113,8 +74,6 @@
 
 
 <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
-    <!-- <div fxFlex="100" class="mt-1"> -->
-    <!-- <button mat-button color="primary" type="button" [disabled]="ordenServicioForm.invalid" (click)="confirmar()"><mat-icon>info</mat-icon> Confirmar</button> -->
     <button mat-button color="primary" type="submit" form="ngForm" [disabled]="!(this.selected.length > 0)"><mat-icon>done</mat-icon> Aceptar</button>
     <span fxFlex></span>
     <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>

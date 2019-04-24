@@ -30,6 +30,7 @@ import {
   MatStepperModule,
   MatChipsModule,
   MatAutocompleteModule,
+  MatSlideToggleModule,
   MatToolbarModule,
 
 } from '@angular/material';
@@ -47,6 +48,16 @@ import { OrdenesServicioComponent } from './ordenes-servicio/ordenes-servicio.co
 import { BuscarGuiaLiqComponent } from './file-upload/buscar-guia-liq/buscar-guia-liq.component';
 import { FacturaItemComponent } from './wizard/factura-item/factura-item.component';
 import { FacturaConsultaComponent } from './wizard/factura-consulta/factura-consulta.component';
+import { MaestroFactoriaComponent } from './configuracion/maestro-factoria/maestro-factoria.component';
+import { MaestroFactoriaPopupComponent } from './configuracion/maestro-factoria/maestro-factoria-popup/maestro-factoria-popup.component';
+import { MaestroVehiculosComponent } from './configuracion/maestro-vehiculos/maestro-vehiculos.component';
+import { MaestroChoferesComponent } from './configuracion/maestro-choferes/maestro-choferes.component';
+import { MaestroTarifasComponent } from './configuracion/maestro-tarifas/maestro-tarifas.component';
+import { MaestroClientesComponent } from './configuracion/maestro-clientes/maestro-clientes.component';
+import { MaestroProductosComponent } from './configuracion/maestro-productos/maestro-productos.component';
+import { MaestroVehiculosPopupComponent } from './configuracion/maestro-vehiculos/maestro-vehiculos-popup/maestro-vehiculos-popup.component';
+import { MaestroChoferesPopupComponent } from './configuracion/maestro-choferes/maestro-choferes-popup/maestro-choferes-popup.component';
+import { MaestroTarifasPopupComponent } from './configuracion/maestro-tarifas/maestro-tarifas-popup/maestro-tarifas-popup.component';
 
 @NgModule({
   imports: [
@@ -63,6 +74,7 @@ import { FacturaConsultaComponent } from './wizard/factura-consulta/factura-cons
     MatTooltipModule,
     MatChipsModule,
     MatAutocompleteModule,
+    MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressBarModule,
@@ -92,8 +104,25 @@ import { FacturaConsultaComponent } from './wizard/factura-consulta/factura-cons
                 OrdenesServicioComponent,
                 BuscarGuiaLiqComponent,
                 FacturaItemComponent,
-                FacturaConsultaComponent],
-   entryComponents: [FacturaPopUpComponent, FacturaItemComponent, OrdenesServicioComponent, BuscarGuiaLiqComponent]
+                FacturaConsultaComponent,
+                MaestroFactoriaComponent,
+                MaestroFactoriaPopupComponent,
+                MaestroVehiculosComponent,
+                MaestroChoferesComponent,
+                MaestroTarifasComponent,
+                MaestroClientesComponent,
+                MaestroProductosComponent,
+                MaestroVehiculosPopupComponent,
+                MaestroChoferesPopupComponent,
+                MaestroTarifasPopupComponent],
+   entryComponents: [FacturaPopUpComponent,
+                      FacturaItemComponent,
+                      OrdenesServicioComponent,
+                      BuscarGuiaLiqComponent,
+                      MaestroFactoriaPopupComponent,
+                      MaestroVehiculosPopupComponent,
+                      MaestroChoferesPopupComponent,
+                      MaestroTarifasPopupComponent]
 })
 export class AppFormsModule {
 

@@ -385,12 +385,10 @@ export class BasicFormComponent implements OnInit {
       const fe = new Date(this.basicForm.get('fechaEmision').value);
       fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
       this.guiaRemision.fechaRemision = fe;
-      console.log('fe: ' + this.guiaRemision.fechaRemision);
 
       const ft = new Date(this.basicForm.get('fechaIniTraslado').value);
       ft.setTime(ft.getTime() + ft.getTimezoneOffset() * 60 * 1000);
       this.guiaRemision.fechaTraslado = ft;
-      console.log('ft: ' + this.guiaRemision.fechaTraslado);
 
       this.guiaRemision.fechaRecepcion = new Date(this.basicForm.get('fechaRecepcion').value);
 
@@ -408,28 +406,6 @@ export class BasicFormComponent implements OnInit {
       } else {
         this.insertar();
       }
-
-      // Manda POST hacia BD AWS
-      // this.guiaRemisioService.registrarGuiaRemisionBD(this.guiaRemision).subscribe((data_) => {
-      //   this.infoResponse_ = data_;
-      //   this.progressBar.mode = 'determinate';
-      //   console.log('mensaje: ' + this.infoResponse_.alertMessage);
-      //   this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 , panelClass: ['green-snackbar'] });
-
-      //   // Resetea Formulario
-      //   this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-      //     window.location.reload();
-      //   });
-      // },
-      // (error: HttpErrorResponse) => {
-      //   this.progressBar.mode = 'determinate';
-      //   this.submitButton.disabled = false;
-      //   this.basicForm.enable();
-      //   this.errorResponse_ = error.error;
-      //   this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['red-snackbar'] });
-      //   console.log(this.errorResponse_.errorMessage);
-      // });
-
    }
   }
 

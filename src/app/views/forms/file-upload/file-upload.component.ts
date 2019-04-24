@@ -70,6 +70,19 @@ export class FileUploadComponent implements OnInit {
     // Footer selected message
     selectedMessage: 'seleccionados'
   };
+
+    // Manejo default de mensajes en grilla
+    messages2: any = {
+      // Message to show when array is presented
+      // but contains no values
+      emptyMessage: '-',
+  
+      // Footer total message
+      totalMessage: 'total',
+  
+      // Footer selected message
+      selectedMessage: 'seleccionados'
+    };
   
   // Ng Model
   liquidacionModel: Liquidacion;
@@ -93,6 +106,7 @@ export class FileUploadComponent implements OnInit {
   listadoGuias: GuiaRemision[];
   rowsSelected = [];
   rows = [];
+  rowsSelected2  = [];
   columns = [];
   temp = [];
 
@@ -240,7 +254,20 @@ export class FileUploadComponent implements OnInit {
         }
       });
     } else {
-      this.rowsSelected = this.temp;
+      // this.rowsSelected = this.temp;
+      console.log('paso por aqui');
+      this.temp.forEach(element => {
+        console.log(element);
+        this.rowsSelected.push(element);
+      });
+
+      console.log(this.rowsSelected);
+      this.rowsSelected2 = [];
+      this.rowsSelected2 = this.rowsSelected;
+      console.log(this.rowsSelected2);
+
+
+
       this.valorOrigenSelected_ = this.filtroOrigen_;
       this.valorDestinoSelected_ = this.filtroDestino_;
       this.valorFechaIniTraslado_ = this.filtroFechaIni_;

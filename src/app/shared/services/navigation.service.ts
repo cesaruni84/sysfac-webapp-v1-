@@ -520,7 +520,6 @@ export class NavigationService {
       tooltip: 'Forms',
       icon: 'monetization_on',
       state: 'forms',
-      badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
         { name: 'Registro', state: 'liquidacion',  },
         { name: 'Consulta', state: 'busquedaLiquidaciones' },
@@ -540,16 +539,19 @@ export class NavigationService {
       ]
     },
     {
-      name: 'Tablas Maestras',
+      name: 'Configuración',
       type: 'dropDown',
       tooltip: 'Tables',
-      icon: 'format_line_spacing',
-      state: 'tables',
+      icon: 'settings',
+      state: 'forms',
+      badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
-        { name: 'Clientes', state: 'fullscreen' },
-        { name: 'Productos', state: 'fullscreen' },
-        { name: 'Vehiculos', state: 'paging' },
-        { name: 'Tarifas', state: 'filter' },
+        { name: 'Plantas', state: 'configuracion/factorias' },
+        { name: 'Tarifas', state: 'configuracion/tarifas' },
+        { name: 'Choferes', state: 'configuracion/choferes' },
+        { name: 'Vehículos', state: 'configuracion/vehiculos' },
+        { name: 'Productos', state: 'configuracion/productos' },
+        { name: 'Clientes', state: 'configuracion/clientes' },
       ]
     },
     {

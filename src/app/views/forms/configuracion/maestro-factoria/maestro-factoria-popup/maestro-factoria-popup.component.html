@@ -1,0 +1,113 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>location_city</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<div fxLayout="row wrap">
+    <form id="itemFormPlanta" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+
+            <div fxFlex="70" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>CLIENTE</b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="cliente" [formControl]="itemForm_.controls['cliente']" (selectionChange)="seleccionarCliente($event)">
+                        <mat-option *ngFor="let cliente of comboClientes" [value]="cliente">
+                            {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['cliente'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>RUC</b></mat-label>
+                    <input matInput name="ruc" [formControl]="itemForm_.controls['ruc']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['ruc'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>CODIGO</b></mat-label>
+                    <input matInput name="codigo" [formControl]="itemForm_.controls['codigo']">
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['codigo'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="70" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>NOMBRE PLANTA</b></mat-label>
+                    <input matInput name="nombre" [formControl]="itemForm_.controls['nombre']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['nombre'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="100" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DIRECCION</b></mat-label>
+                    <input matInput name="direccion" [formControl]="itemForm_.controls['direccion']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['direccion'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DISTRITO</b></mat-label>
+                    <input matInput name="distrito" [formControl]="itemForm_.controls['distrito']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>PROVINCIA</b></mat-label>
+                    <input matInput name="provincia" [formControl]="itemForm_.controls['provincia']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DEPARTAMENTO</b></mat-label>
+                    <input matInput name="departamento" [formControl]="itemForm_.controls['departamento']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pt-1 pr-1">
+                <mat-slide-toggle [formControl]="itemForm_.controls['estado']">Activo</mat-slide-toggle>
+            </div>
+
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+
+
+
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormPlanta"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,117 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>local_atm</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<div fxLayout="row wrap">
+    <form id="itemFormPlanta" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="12" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>ORIGEN</b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="origen" [formControl]="itemForm_.controls['origen']" (selectionChange)="seleccionarOrigen($event)">
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
+                            {{factoria.refLarga2}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['origen'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DESTINO</b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="destino" [formControl]="itemForm_.controls['destino']" (selectionChange)="seleccionarDestino($event)">
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
+                            {{factoria.refLarga2}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['destino'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>DIRECCION ORIGEN</b></mat-label>
+                    <textarea matInput name="direOrigen" [formControl]="itemForm_.controls['direOrigen']"></textarea>
+                    <mat-icon matSuffix>home</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['direOrigen'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>DIRECCION DESTINO</b></mat-label>
+                    <textarea matInput name="direDestino" [formControl]="itemForm_.controls['direDestino']"> </textarea>
+                    <mat-icon matSuffix>home</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['direDestino'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="18" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>TARIFA</b></mat-label>
+                    <input matInput name="importe" [formControl]="itemForm_.controls['importe']" type="number">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['importe'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="20" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>MONEDA</b></mat-label>
+                    <mat-select name="moneda" [formControl]="itemForm_.controls['moneda']">
+                        <mat-option *ngFor="let moneda of comboMonedas" [value]="moneda.id">
+                            {{moneda.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['moneda'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="12" class="pt-1 pr-1">
+                <mat-slide-toggle [formControl]="itemForm_.controls['estado']">Activo</mat-slide-toggle>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>NOTAS</b></mat-label>
+                    <input matInput name="notas" [formControl]="itemForm_.controls['notas']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['notas'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormPlanta"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>

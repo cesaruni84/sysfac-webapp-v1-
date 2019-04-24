@@ -70,9 +70,6 @@ export class FacturaItemComponent implements OnInit {
     //   total: [{value: itemFactura.total || 0.00, disabled: true}],
     // });
 
-    console.log(this.comboProductos);
-    console.log(itemFactura.productos);
-
 
     this.itemForm_ = this.fb.group({
       productos: [{value: itemFactura.productos || '', disabled: false}],
@@ -193,20 +190,6 @@ export class FacturaItemComponent implements OnInit {
 
 
   submit() {
-    // let itemFacturaReturn: FacturaItem;
-
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-    // itemFacturaReturn.id = this.itemForm.get('tarifa') .value;
-
-
     this.dialogRef.close(this.itemForm_.getRawValue());
   }
 

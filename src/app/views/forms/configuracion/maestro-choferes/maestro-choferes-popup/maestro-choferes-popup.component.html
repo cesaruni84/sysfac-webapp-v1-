@@ -1,0 +1,117 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>airline_seat_recline_normal</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<div fxLayout="row wrap">
+    <form id="itemFormPlanta" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>NOMBRES</b></mat-label>
+                    <input matInput name="nombres" [formControl]="itemForm_.controls['nombres']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['nombres'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>APELLIDOS</b></mat-label>
+                    <input matInput name="apellidos" [formControl]="itemForm_.controls['apellidos']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['apellidos'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="25" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>DNI</b></mat-label>
+                    <input matInput name="dni" [formControl]="itemForm_.controls['dni']" maxlength="8" (keypress)='validaDigitos($event)'>
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['dni'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>TELEFONO</b></mat-label>
+                    <input matInput name="telefono" [formControl]="itemForm_.controls['telefono']" (keypress)='validaDigitos($event)'>
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['telefono'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>EMAIL</b></mat-label>
+                    <input matInput name="email" [formControl]="itemForm_.controls['email']">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['email'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="55" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>VEHICULO ASIGNADO (Tracto/Bombona/Marca)</b></mat-label>
+                    <mat-select [compareWith]="compareObjects" name="vehiculo" [formControl]="itemForm_.controls['vehiculo']" (selectionChange)="seleccionarVehiculo($event)">
+                        <mat-option *ngFor="let vehiculo of comboVehiculos" [value]="vehiculo">
+                            {{ vehiculo.placaTracto + ' / '+ vehiculo.placaBombona + ' / ' + vehiculo.modelo}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['vehiculo'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="45" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>NRO. CERT. INSCRIPCION </b></mat-label>
+                    <input matInput name="certificado" [formControl]="itemForm_.controls['certificado']">
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['certificado'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>NRO. LICENCIA CONDUCIR </b></mat-label>
+                    <input matInput name="licencia" [formControl]="itemForm_.controls['licencia']">
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['licencia'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormPlanta"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>
