@@ -1,7 +1,7 @@
 <mat-tab-group class="p-05">
     <mat-tab label="INFORMACION BASICA" align="center">
 
-        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="submit(facturaForm.value, facturaForm.valid, $event)">
+        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="submit()">
             <div fxLayout="row wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
