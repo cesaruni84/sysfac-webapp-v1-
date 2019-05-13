@@ -7,6 +7,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
   templateUrl: './ngx-table-popup.component.html'
 })
 export class NgxTablePopupComponent implements OnInit {
+  
   public itemForm: FormGroup;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,

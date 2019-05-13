@@ -14,42 +14,44 @@
                 </div>
                 <mat-divider></mat-divider>
             </mat-card-title> -->
+            <mat-card-content class="mb-0 p-0">
 
-
-            <mat-card-content class="mt-1">
                 <form [formGroup]="formFilter" novalidate>
-                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="start left">
-                        <mat-form-field class="pl-05" fxFlex="20%">
-                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INI EMISION</b></mat-label>
-                            <input matInput name="fechaIniLiq" [formControl]="formFilter.controls['fechaIniLiq']" [matDatepicker]="picker" maxlength="10" style="color:#3f51b5">
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" class="m-0 p-0" fxLayoutAlign="start left">
+
+                        <mat-form-field fxFlex="12%">
+                            <mat-label style="font-size: 13px"><b>SERIE</b></mat-label>
+                            <input matInput name="serie" [formControl]="formFilter.controls['serie']" maxlength="5" style="color:green;">
+                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field class="pl-01" fxFlex="15%">
+                            <mat-label style="font-size: 13px"><b>CORRELATIVO</b></mat-label>
+                            <input matInput name="secuencial" [formControl]="formFilter.controls['secuencial']" maxlength="8" style="color:green">
+                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                        </mat-form-field>
+
+
+                        <mat-form-field class="pl-01" fxFlex="20%">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO EMISION</b></mat-label>
+                            <input matInput name="fechaIni" [formControl]="formFilter.controls['fechaIni']" [matDatepicker]="picker" maxlength="10" style="color:#3f51b5">
                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                             <mat-datepicker #picker></mat-datepicker>
                         </mat-form-field>
 
                         <mat-form-field class="pl-1" fxFlex="20%">
                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN EMISION</b></mat-label>
-                            <input matInput name="fechaFinLiq" [formControl]="formFilter.controls['fechaFinLiq']" [matDatepicker]="picker2" maxlength="10" style="color:#3f51b5">
+                            <input matInput name="fechaFin" [formControl]="formFilter.controls['fechaFin']" [matDatepicker]="picker2" maxlength="10" style="color:#3f51b5">
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                             <mat-datepicker #picker2></mat-datepicker>
                         </mat-form-field>
 
-                        <mat-form-field class="pl-1" fxFlex="8%">
-                            <mat-label style="font-size: 14px"><b>SERIE</b></mat-label>
-                            <input matInput type="text" name="serieDocumento" [formControl]="formFilter.controls['serieDocumento']" maxlength="5" style="color:green;">
-                        </mat-form-field>
-
-                        <mat-form-field fxFlex="10%">
-                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>CORRELATIVO</b></mat-label>
-                            <input matInput [(ngModel)]="valorNroSerieLiq_" name="nroSerieLiq" [formControl]="formFilter.controls['nroSerieLiq']" maxlength="8" style="color:green">
-                        </mat-form-field>
-
-                        <mat-form-field fxFlex="35%" class="pl-1" floatPlaceholder="never">
-                            <mat-label><b>CLIENTE</b></mat-label>
-                            <mat-select [compareWith]="" [(ngModel)]="valorOrigenSelected_" name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
+                        <mat-form-field fxFlex="21%" class="pl-1">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
+                            <mat-select name="estado" [formControl]="formFilter.controls['estado']">
                                 <mat-option value="0">Todos</mat-option>
-                                <mat-option *ngFor="let factoria2 of comboFactorias" [value]="factoria2.id">
-                                    {{factoria2.refLarga2}}
-                                </mat-option>
+                                <mat-option value="1">Registrado</mat-option>
+                                <mat-option value="2">Vencido</mat-option>
                             </mat-select>
                         </mat-form-field>
 
@@ -65,95 +67,44 @@
 
                     </div>
 
-
-
+                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="start left">
+                    </div>
 
                     <br>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%">
-                        <button mat-raised-button class="link-btn" (click)="asignarOrdenServicio({}, true)"><mat-icon>note_add</mat-icon> Nuevo Documento</button>
+                        <mat-form-field fxFlex="38%" floatPlaceholder="never">
+                            <mat-label><b>CLIENTE</b></mat-label>
+                            <mat-select [compareWith]="compareObjects" name="cliente" [formControl]="formFilter.controls['cliente']">
+                                <mat-option value="0">Todos</mat-option>
+                                <mat-option *ngFor="let cliente of comboClientes" [value]="cliente.id">
+                                    {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <!-- <button mat-raised-button class="link-btn" (click)="asignarOrdenServicio({}, true)"><mat-icon>note_add</mat-icon> Nuevo Documento</button> -->
                         <span fxFlex></span>
-                        <button mat-raised-button align="right" color="primary" (click)="filtrarLiquidaciones()"><mat-icon>search</mat-icon>Buscar</button>
-                        <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
+                        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="start center" class="pr-1">
+                            <button mat-raised-button color="primary" (click)="buscarDocumento()"><mat-icon>search</mat-icon>Buscar</button>
+                            <button mat-raised-button color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
+                        </div>
+
                     </div>
                 </form>
             </mat-card-content>
         </mat-card>
 
 
-        <div class="p-0 m-0">
-            <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
-                <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'">
-                    <div align="center" [style.fontSize.px]="14">
-                        <span><b>LIQUIDACIONES </b></span>
-                    </div>
-                    <mat-divider></mat-divider>
-                </mat-card-title> -->
-                <mat-card-title class="mat-bg-primary m-05">
-                    <div align="center" [style.fontSize.px]="14" class="p-0 ml-1">
-                        <span><mat-icon inline=true >list</mat-icon> LIQUIDACIONES</span>
-                    </div>
-                    <mat-divider></mat-divider>
-                </mat-card-title>
-                <div class="full-width p-0 m-0">
-                    <ngx-datatable class="material grid" style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100" [rows]="rows" [columns]="columns" [messages]="messages">
 
-                        <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
-                            <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
-                            </ng-template>
-                        </ngx-datatable-column>
-
-                        <ngx-datatable-column name="Nro. Liquidación" [flexGrow]="1" [width]="110" prop="nrodoc">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <div [style.fontSize.px]="12"> {{ row?.nrodoc }} </div>
-                            </ng-template>
-                        </ngx-datatable-column>
-                        <!-- 
-                        <ngx-datatable-column name="F. Emisión Liq." [flexGrow]="1" [width]="100" prop="fechaEmision">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
-                            </ng-template>
-                        </ngx-datatable-column> -->
-
-                        <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="100" prop="cantidad">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <div align="center" [style.fontSize.px]="12">{{ row?.totalCantidad | number: '1.2-2' }}</div>
-                            </ng-template>
-                        </ngx-datatable-column>
-
-                        <ngx-datatable-column name="Referencia" [flexGrow]="1" [width]="280" prop="glosa">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <div [style.fontSize.px]="12"> {{ row?.glosa }} </div>
-                            </ng-template>
-                        </ngx-datatable-column>
-
-                        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="100" prop="estado">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <mat-chip mat-sm-chip class="full-width" [color]="'primary'" align="center" [selected]="row.estado =='1'">{{row.estado == '1' ? 'Vigente' : 'Vencido'}}</mat-chip>
-                            </ng-template>
-                        </ngx-datatable-column>
-
-                        <ngx-datatable-column name="Total Importe" [flexGrow]="1" [width]="150" prop="importeTotal">
-                            <ng-template let-row="row" ngx-datatable-cell-template>
-                                <div align="center" [style.fontSize.px]="12">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
-                            </ng-template>
-                        </ngx-datatable-column>
-                    </ngx-datatable>
-                </div>
-            </mat-card>
-        </div>
-
+        <!-- Listado de Documentos -->
         <div class="mat-box-shadow margin-333 p-0">
-
-            <ngx-datatable class="material striped" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' [selectAllRowsOnPage]="false" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'"
-                [limit]="5" [rows]="rows" [columns]="columns" [messages]="messages">
-                <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="70">
+            <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'" [limit]="5" [rows]="rows" [columns]="columns" [messages]="messages">
+                <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <span title="Consultar Liquidación {{ row?.nrodoc }}">
-                            <button mat-icon-button mat-sm-button color="primary" class="mr-1"  (click)="consultarLiquidacion(row)"><mat-icon align ="center top">monetization_on</mat-icon></button>
-                        <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
+                        <span title="Consultar Documento {{ row?.serie + '-' + row?.secuencia}}">
+                            <button mat-icon-button mat-sm-button color="primary"  class="mr-1"  (click)="consultarDocumento(row)"><mat-icon align ="center top">payment</mat-icon></button>
+                            <button mat-icon-button mat-sm-button color="primary"  (click)="consultarDocumento(row)"><mat-icon align ="center top">cloud_upload</mat-icon></button>
+
+                            <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
                         </span>
                     </ng-template>
                 </ngx-datatable-column>
@@ -164,15 +115,15 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Nro. Documento" [flexGrow]="1" [width]="160" prop="nrodoc">
+                <ngx-datatable-column name="Nro. Documento" [flexGrow]="1" [width]="130" prop="nrodoc">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.nrodoc }} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.serie + '-' + row?.secuencia }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Cliente" [flexGrow]="1" [width]="250" prop="nrodoc">
+                <ngx-datatable-column name="Cliente" [flexGrow]="1" [width]="220" prop="nrodoc">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.nrodoc }} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.cliente.razonSocial }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
@@ -198,27 +149,32 @@
 
                 <ngx-datatable-column name="Importe" [flexGrow]="1" [width]="120" prop="importeTotal">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div align="center" [style.fontSize.px]="12">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
+                        <div align="center" [style.fontSize.px]="12">S/ {{ row?.totalDocumento | number: '1.2-2' }}</div>
                     </ng-template>
                 </ngx-datatable-column>
 
 
-
-                <ngx-datatable-column name="Env. Sunat" [flexGrow]="1" [width]="80" prop="factura.ordenServicio">
+                <ngx-datatable-column name="Glosa" [flexGrow]="1" [width]="180" prop="factura.observacion">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row.factura? 'row?.factura.ordenServicio' : '-' }} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.observacion }} </div>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Env. Sunat" [flexGrow]="1" [width]="100" prop="factura.ordenServicio">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div [style.fontSize.px]="12"> {{ row?.envioSunat === 0? 'NO' : 'SI' }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
 
-
+                <!--
                 <ngx-datatable-column name="Observación" [flexGrow]="1" [width]="200" prop="destino.refLarga1" [sortable]="true">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span title="{{ row?.destino.refLarga1 }}">
                         <div [style.fontSize.px]="12"> {{ row?.destino.refLarga1 }} </div>
                     </span>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column>-->
 
 
                 <!-- <ngx-datatable-column name="Total Cantidad" [flexGrow]="1" [width]="150" prop="totalCantidad">
@@ -226,8 +182,6 @@
                         <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }}</div>
                     </ng-template>
                 </ngx-datatable-column> -->
-
-
 
                 <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>

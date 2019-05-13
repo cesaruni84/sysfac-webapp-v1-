@@ -24,6 +24,8 @@ export class Liquidacion {
     destino: Factoria;
     guias: GuiaRemision[];
     ordenServicio: OrdenServicio;
+    notas1: string;
+    notas2: string;
 
     constructor () {
 

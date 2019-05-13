@@ -12,8 +12,8 @@
                     </div>
                 </form>
             </mat-step> -->
-            <mat-step [stepControl]="formBusqueda">
-                <form [formGroup]="formBusqueda" novalidate (ngSubmit)="submit()">
+            <mat-step [stepControl]="formBusqueda" [completed]="false">
+                <form [formGroup]="formBusqueda" novalidate (ngSubmit)="agregarGuias()">
                     <ng-template matStepLabel>Seleccionar Guias para Liquidación</ng-template>
 
                     <div fxLayout="row" fxLayoutWrap="wrap">
@@ -98,7 +98,7 @@
                                         <mat-divider></mat-divider>
                                         <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
                                         <ngx-datatable class="material" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' [selectAllRowsOnPage]="false" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'" [limit]="5"
-                                            [rows]="rows" [columns]="columns" [messages]="messages">
+                                            [rows]="rowsGuias" [columns]="columns" [messages]="messages">
                                             <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
                                             </ngx-datatable-column>
                                             <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
@@ -278,8 +278,8 @@
 
                                         <mat-form-field fxFlex="40%" class="full-width" appearance="">
                                             <mat-label><b>ORIGEN</b></mat-label>
-                                            <mat-select [(ngModel)]="valorOrigenSelected_" [compareWith]="compareObjects" name="origen" [formControl]="formLiquidacion.controls['origen']">
-                                                <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
+                                            <mat-select name="origen" [compareWith]="compareObjects" [formControl]="formLiquidacion.controls['origen']">
+                                                <mat-option *ngFor="let factoria of valorOrigenSelected_" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
@@ -287,8 +287,8 @@
 
                                         <mat-form-field fxFlex="42.5%" class="full-width" appearance="">
                                             <mat-label><b>DESTINO</b></mat-label>
-                                            <mat-select [(ngModel)]="valorDestinoSelected_" [compareWith]="compareObjects" name="destino" [formControl]="formLiquidacion.controls['destino']">
-                                                <mat-option *ngFor="let factoria2 of comboFactoriasDestino" [value]="factoria2">
+                                            <mat-select name="destino" [compareWith]="compareObjects" [formControl]="formLiquidacion.controls['destino']">
+                                                <mat-option *ngFor="let factoria2 of valorDestinoSelected_" [value]="factoria2">
                                                     {{factoria2.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
@@ -353,7 +353,7 @@
                                         <mat-divider></mat-divider>
                                         <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarV]="'true'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rowsSelected2" [columns]="columns" [messages]="messages2">
+                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rows" [columns]="columns" [messages]="messages2">
                                             <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <span title="Consultar Guia">
@@ -454,7 +454,7 @@
                                     <div fxLayout="row" fxLayout.xs="column wrap" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left" class="p-05">
 
                                         <div fxFlex="100px">
-                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowsSelected2.length }} </mat-label>
+                                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rows.length }} </mat-label>
                                         </div>
                                         <span fxFlex="320px"></span>
                                         <div fxFlex="100px">
@@ -540,7 +540,6 @@
                         <button mat-raised-button class="mat-primary" color="primary" class="mr-1" [disabled]="false"><mat-icon>save</mat-icon> Grabar</button>
                         <button mat-raised-button class="mat-primary" color="primary" type="button" class="mr-1" (click)="cancelarLiquidacion()" [disabled]="false"><mat-icon>cancel</mat-icon> Cancelar</button>
                         <button mat-raised-button class="mat-primary" color="primary" type="button" (click)="imprimirLiquidacion()" [disabled]="!edicion"><mat-icon>print</mat-icon> Imprimir</button>
-
                         <!-- <button mat-raised-button class="mat-primary" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Cancelar</button> -->
                     </div>
                 </form>

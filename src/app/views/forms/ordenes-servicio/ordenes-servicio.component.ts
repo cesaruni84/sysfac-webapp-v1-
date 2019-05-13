@@ -37,6 +37,7 @@ export class OrdenesServicioComponent implements OnInit {
   public ordenServicioForm: FormGroup;
 
   rows = [];
+  liquidaciones = [];
   temp = [];
   columns = [];
   usuarioSession: Usuario;
@@ -223,7 +224,30 @@ export class OrdenesServicioComponent implements OnInit {
           this.ordenServicioModel.empresa = this.usuarioSession.empresa;
           this.ordenServicioModel.usuarioRegistro = this.usuarioSession.codigo ;
           this.ordenServicioModel.usuarioActualiza = this.usuarioSession.codigo ;
-          this.ordenServicioModel.liquidaciones = this.rows;
+
+
+         this.rows.forEach(element => {
+
+          let value = {
+            id: 0,
+          };
+
+            value.id = element.id;
+            this.liquidaciones.push(value);
+          });
+
+          /*this.liquidaciones = this.rows.map(function(item) {
+            delete
+             item.id;
+            return item;
+          });*/
+
+          console.log(this.liquidaciones);
+
+          this.ordenServicioModel.liquidaciones = this.liquidaciones;
+
+
+
           this.grabar();
 
         } else {// Cancelar

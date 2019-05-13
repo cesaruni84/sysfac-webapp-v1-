@@ -70,7 +70,7 @@
                     </mat-select>
                 </mat-form-field>
                 <section fxFlex="10%" class="pl-1">
-                    <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
+                    <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Con Orden de Servicio </mat-checkbox>
                 </section>
             </div>
             <br>
@@ -99,6 +99,8 @@
             </ng-template>
         </ngx-datatable-column>
 
+
+
         <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ rowIndex + 1 }} </div>
@@ -106,60 +108,63 @@
         </ngx-datatable-column>
         <ngx-datatable-column name="Nro. Liquidación" [flexGrow]="1" [width]="110" prop="nrodoc">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.nrodoc }} </div>
-            </ng-template>
-        </ngx-datatable-column>
 
-        <ngx-datatable-column name="F. Emisión Liq." [flexGrow]="1" [width]="100" prop="fechaEmision" [cellClass]="'my-custom-cell'">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
-            </ng-template>
-        </ngx-datatable-column>
-
-        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" [width]="120" prop="factura.ordenServicio">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row.ordenServicio != null ? row?.ordenServicio.nroOrden : '-'}} </div>
-
+                <a [routerLink]="['/forms/liquidacion/']" [queryParams]="{nroDocLiq: row?.nrodoc}">
+                    <div [style.fontSize.px]="12 " style="color:#3f51b5 "> {{ row?.nrodoc }} </div>
+                </a>
 
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Origen" [flexGrow]="1" [width]="200" prop="origen.refLarga1" [sortable]="true">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <span title="{{ row?.origen.refLarga1 }}" style="color:#3f51b5">
-            <div [style.fontSize.px]="12"> {{ row?.origen.refLarga1 }} </div>
+        <ngx-datatable-column name="F. Emisión Liq. " [flexGrow]="1 " [width]="100 " prop="fechaEmision " [cellClass]=" 'my-custom-cell' ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <div [style.fontSize.px]="12 " style="color:#3f51b5 "> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Nro Ord. Servicio " [flexGrow]="1 " [width]="120 " prop="factura.ordenServicio ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <div [style.fontSize.px]="12 " style="color:#3f51b5 "> {{ row.ordenServicio != null ? row?.ordenServicio.nroOrden : '-'}} </div>
+
+
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Origen " [flexGrow]="1 " [width]="200 " prop="origen.refLarga1 " [sortable]="true ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <span title="{{ row?.origen.refLarga1 }} " style="color:#3f51b5 ">
+            <div [style.fontSize.px]="12 "> {{ row?.origen.refLarga1 }} </div>
             </span>
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="200" prop="destino.refLarga1" [sortable]="true">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <span title="{{ row?.destino.refLarga1 }}" style="color:#3f51b5">
-            <div [style.fontSize.px]="12"> {{ row?.destino.refLarga1 }} </div>
+        <ngx-datatable-column name="Destino " [flexGrow]="1 " [width]="200 " prop="destino.refLarga1 " [sortable]="true ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <span title="{{ row?.destino.refLarga1 }} " style="color:#3f51b5 ">
+            <div [style.fontSize.px]="12 "> {{ row?.destino.refLarga1 }} </div>
             </span>
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110" prop="estado">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <mat-chip mat-sm-chip class="full-width" [color]="'primary'" align="center" [selected]="row.estado =='1'">{{row.estado == '1' ? 'Vigente' : 'Vencido'}}</mat-chip>
+        <ngx-datatable-column name="Estado " [flexGrow]="1 " [width]="110 " prop="estado ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <mat-chip mat-sm-chip class="full-width " [color]=" 'primary' " align="center " [selected]="row.estado=='1' ">{{row.estado == '1' ? 'Vigente' : 'Vencido'}}</mat-chip>
             </ng-template>
         </ngx-datatable-column>
 
-        <!-- <ngx-datatable-column name="Total Cantidad" [flexGrow]="1" [width]="150" prop="totalCantidad">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }}</div>
+        <!-- <ngx-datatable-column name="Total Cantidad " [flexGrow]="1 " [width]="150 " prop="totalCantidad ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <div [style.fontSize.px]="12 "> {{ row?.totalCantidad | number: '1.2-2' }}</div>
             </ng-template>
         </ngx-datatable-column> -->
 
-        <ngx-datatable-column name="Total Importe" [flexGrow]="1" [width]="150" prop="importeTotal">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <div align="center" [style.fontSize.px]="12" style="color:#3f51b5">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
+        <ngx-datatable-column name="Total Importe " [flexGrow]="1 " [width]="150 " prop="importeTotal ">
+            <ng-template let-row="row " ngx-datatable-cell-template>
+                <div align="center " [style.fontSize.px]="12 " style="color:#3f51b5 ">S/ {{ row?.importeTotal | number: '1.2-2' }}</div>
             </ng-template>
         </ngx-datatable-column>
-
-        <!-- <ngx-datatable-column name="Balance" [flexGrow]="1">
-          <ng-template let-row="row" ngx-datatable-cell-template>
+        <!-- <ngx-datatable-column name="Balance " [flexGrow]="1 ">
+          <ng-template let-row="row " ngx-datatable-cell-template>
               {{ row?.balance | currency }}
           </ng-template>
       </ngx-datatable-column> -->

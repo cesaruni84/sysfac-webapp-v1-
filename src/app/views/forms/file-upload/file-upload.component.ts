@@ -3,7 +3,7 @@ import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
 import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } from '@angular/material';
@@ -25,6 +25,7 @@ import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
 import { BasicFormComponent } from '../basic-form/basic-form.component';
+import { map, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-file-upload',
@@ -47,6 +48,8 @@ export class FileUploadComponent implements OnInit {
   // Usuario sesionado
   usuarioSession: Usuario;
   formLiquidacion: FormGroup;
+
+  guias_remision =[];
 
   // Combos de Formularios
   public comboFactorias: Factoria[] = [];
@@ -76,14 +79,14 @@ export class FileUploadComponent implements OnInit {
       // Message to show when array is presented
       // but contains no values
       emptyMessage: '-',
-  
+
       // Footer total message
       totalMessage: 'total',
-  
+
       // Footer selected message
       selectedMessage: 'seleccionados'
     };
-  
+
   // Ng Model
   liquidacionModel: Liquidacion;
   // valorNroDocumentoLiq_: string;
@@ -94,8 +97,8 @@ export class FileUploadComponent implements OnInit {
   valorFechaFinTraslado_: Date;
   valorFechaRegistro_: Date;
   valorGlosa_: string;
-  valorOrigenSelected_: any;
-  valorDestinoSelected_: any;
+  valorOrigenSelected_: Factoria[]= [];
+  valorDestinoSelected_: Factoria[]= [];
   motivoTrasladoSelected_: any;
 
   // Manejo de usuario
@@ -104,11 +107,10 @@ export class FileUploadComponent implements OnInit {
 
   // Listado de Guias
   listadoGuias: GuiaRemision[];
+  rowsGuias = [];
   rowsSelected = [];
   rows = [];
-  rowsSelected2  = [];
   columns = [];
-  temp = [];
 
   // Variables Totales
   totalCantidadGuiasLiq_: number;
@@ -123,8 +125,8 @@ export class FileUploadComponent implements OnInit {
   secondFormGroup: FormGroup;
   formBusqueda: FormGroup;
 
-  filtroDestino_: any;
-  filtroOrigen_: any;
+  filtroDestino_: Factoria;
+  filtroOrigen_: Factoria;
   filtroFechaIni_: Date;
   filtroFechaFin_: Date;
 
@@ -177,7 +179,6 @@ export class FileUploadComponent implements OnInit {
     } else {
       this.defaultValues();
     }
-    console.log(this.formLiquidacion);
 
   }
 
@@ -189,8 +190,8 @@ export class FileUploadComponent implements OnInit {
       estado: new FormControl({value: '0', disabled: true}, ),
       situacion: new FormControl({value: '0', disabled: true}, ),
       moneda: new FormControl({value: '0', disabled: false}, ),
-      origen: new FormControl({value: '', disabled: true}, Validators.required),
-      destino: new FormControl({value: '', disabled: true}, Validators.required ),
+      origen: new FormControl({value: '', disabled: false}, Validators.required),
+      destino: new FormControl({value: '', disabled: false}, Validators.required ),
       motivoTraslado: new FormControl({value: '', disabled: true}, ),
       fechaIniTraslado: new FormControl({value: '', disabled: true}, [
         Validators.minLength(10),
@@ -216,13 +217,14 @@ export class FileUploadComponent implements OnInit {
   cargarCombosFormulario() {
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
-      this.valorOrigenSelected_ = this.comboFactorias[0];
+      // this.valorOrigenSelected_.push(this.comboFactorias[0]);
       this.filtroOrigen_ = this.comboFactorias[0];
+
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
-      this.valorDestinoSelected_ = this.comboFactoriasDestino[1];
+      // this.valorDestinoSelected_.push(this.comboFactoriasDestino[1]);
       this.filtroDestino_ =  this.comboFactoriasDestino[1];
     });
 
@@ -239,14 +241,50 @@ export class FileUploadComponent implements OnInit {
     );
   }
 
-  submit() {
+  agregarGuias() {
+      this.rowsSelected.forEach(element => {
+        let repetido: boolean = false;
+        if (this.rows.length > 0) {
+          this.rows.forEach(element2 => {
+              if (element.id == element2.id){
+                repetido = true;
+              }
+          });
+        }
+        if (!repetido){
+          let rowData = { ...element};
+          this.rows.splice(this.rows.length, 0, rowData);
+          this.rows = [...this.rows];
+        }
+      });
+
+      let rowDataorigen = { ...this.filtroOrigen_};
+      this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
+      this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
+      this.formLiquidacion.patchValue({
+         origen: this.valorOrigenSelected_[0],
+       });
+
+      let rowDataDestino = { ...this.filtroDestino_};
+      this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
+      this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
+      this.formLiquidacion.patchValue({
+        destino: this.valorDestinoSelected_[0],
+      });
+
+      this.valorFechaIniTraslado_ = this.filtroFechaIni_;
+      this.valorFechaFinTraslado_ = this.filtroFechaFin_;
+  }
+
+  /* ORIGINAL
+  agregarGuias() {
     if (this.edicion) {
       this.confirmService.confirm({message: `Desea reemplazar las guias asociadas a esta liquidación ?`})
       .subscribe(res => {
         if (res) { // OK
-          this.rowsSelected = this.temp;
-          this.valorOrigenSelected_ = this.filtroOrigen_;
-          this.valorDestinoSelected_ = this.filtroDestino_;
+          this.rows = this.rowsSelected;
+          this.valorOrigenSelected_.push(this.filtroOrigen_);
+          this.valorDestinoSelected_.push(this.filtroDestino_);
           this.valorFechaIniTraslado_ = this.filtroFechaIni_;
           this.valorFechaFinTraslado_ = this.filtroFechaFin_;
         } else {// Cancelar
@@ -254,32 +292,55 @@ export class FileUploadComponent implements OnInit {
         }
       });
     } else {
-      // this.rowsSelected = this.temp;
-      console.log('paso por aqui');
-      this.temp.forEach(element => {
-        console.log(element);
-        this.rowsSelected.push(element);
+      // Registro Nuevo de Liquidación
+
+
+      this.rowsSelected.forEach(element => {
+
+        let repetido: boolean = false;
+        if (this.rows.length > 0) {
+          this.rows.forEach(element2 => {
+              if (element.id == element2.id){
+                repetido = true;
+              }
+          });
+        }
+
+        if (!repetido){
+          let rowData = { ...element};
+          this.rows.splice(this.rows.length, 0, rowData);
+          this.rows = [...this.rows];
+        }
       });
 
-      console.log(this.rowsSelected);
-      this.rowsSelected2 = [];
-      this.rowsSelected2 = this.rowsSelected;
-      console.log(this.rowsSelected2);
 
 
+      let rowDataorigen = { ...this.filtroOrigen_};
+      this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
+      this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
+      this.formLiquidacion.patchValue({
+         origen: this.valorOrigenSelected_[0],
+       });
 
-      this.valorOrigenSelected_ = this.filtroOrigen_;
-      this.valorDestinoSelected_ = this.filtroDestino_;
+
+      let rowDataDestino = { ...this.filtroDestino_};
+      this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
+      this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
+      this.formLiquidacion.patchValue({
+        destino: this.valorDestinoSelected_[0],
+      });
+
       this.valorFechaIniTraslado_ = this.filtroFechaIni_;
       this.valorFechaFinTraslado_ = this.filtroFechaFin_;
     }
 
 
-  }
+  }*/
+
 
 
   onSelect({ selected }) {
-    this.temp = selected;
+    this.rowsSelected = selected;
     this.selected.splice(0, this.selected.length);
     this.selected.push(...selected);
   }
@@ -305,16 +366,37 @@ export class FileUploadComponent implements OnInit {
       this.valorFechaFinTraslado_ = data_.fecFinTraslado;
       this.filtroFechaFin_ = data_.fecFinTraslado;
       this.valorFechaRegistro_ = data_.fechaEmision;
-      this.valorOrigenSelected_ = data_.origen;
+
+      if (data_.notas1) {
+        let valuesOrigen: number[] = data_.notas1.split(',').map(origen => {
+          return parseInt(origen);
+        } );
+        this.valorOrigenSelected_ = this.comboFactorias.filter(factoria => valuesOrigen.includes(factoria.id));
+        this.formLiquidacion.patchValue({
+          origen: this.valorOrigenSelected_[0],
+        });
+      }
+
+      if (data_.notas2) {
+        let valuesDestino: number[] = data_.notas2.split(',').map(destino => {
+          return parseInt(destino);
+        } );
+        this.valorDestinoSelected_ = this.comboFactoriasDestino.filter(factoria => valuesDestino.includes(factoria.id));
+        this.formLiquidacion.patchValue({
+          destino: this.valorDestinoSelected_[0],
+        });
+      }
+
+
+
       this.filtroOrigen_ = data_.origen;
-      this.valorDestinoSelected_ = data_.destino;
       this.filtroDestino_ = data_.destino;
       this.motivoTrasladoSelected_ = data_.motivo.id;
       this.valorGlosa_ = data_.glosa;
 
       // Guias asociadas
       this.rows = data_.guias;
-      this.rowsSelected = data_.guias;
+      // this.rowsSelected = data_.guias;
 
 
       // Obtiene % impuesto I.G.V - 1
@@ -343,7 +425,6 @@ export class FileUploadComponent implements OnInit {
     this.valorFechaRegistro_ = new Date();
     this.valorFechaIniTraslado_.setDate((this.valorFechaIniTraslado_ .getDate()) - 30);
     this.motivoTrasladoSelected_ = 1;
-
     this.filtroFechaIni_ = this.valorFechaIniTraslado_;
     this.filtroFechaFin_ = this.valorFechaFinTraslado_;
 
@@ -360,12 +441,13 @@ export class FileUploadComponent implements OnInit {
     this.filtroFechaIni_ = new Date();
     this.filtroFechaFin_ = new Date();
     this.filtroFechaIni_.setDate((this.filtroFechaIni_ .getDate()) - 30);
-    this.rows = [];
+    this.rowsGuias = [];
   }
 
 
   buscarGuiasXLiquidar_() {
 
+    this.rowsGuias = [];
     this.loader.open();
 
     const fechaIni = formatDate(this.filtroFechaIni_, 'yyyy-MM-dd', this.locale);
@@ -377,9 +459,7 @@ export class FileUploadComponent implements OnInit {
                                 fechaIni,
                                 fechaFin).subscribe(data_ => {
       this.listadoGuias = data_;
-      this.rows = data_;
-
-      console.log(data_);
+      this.rowsGuias = data_;
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
@@ -389,48 +469,6 @@ export class FileUploadComponent implements OnInit {
     });
 
   }
-
-  // buscarGuiasXLiquidar(isNew: boolean) {
-
-  //     this.filtros.origen = this.valorOrigenSelected_;
-  //     this.filtros.destino = this.valorDestinoSelected_;
-  //     this.filtros.fechaIni = this.valorFechaIniTraslado_;
-  //     this.filtros.fechaFin = this.valorFechaFinTraslado_;
-
-  //     let title = isNew ? 'ASIGNAR ORDEN DE SERVICIO' : 'Actualizar Item';
-  //     let dialogRef: MatDialogRef<any> = this.dialog.open(BuscarGuiaLiqComponent, {
-  //       width: '1040px',
-  //       height: '580px',
-  //       disableClose: true,
-  //       data: { title: title, payload: this.filtros}
-  //     });
-  //     dialogRef.afterClosed()
-  //       .subscribe(res => {
-  //         if (!res) {
-  //           // If user press cancel
-  //           return;
-  //         }
-  //         this.loader.open();
-  //         if (isNew) {
-  //           // this.crudService.addItem(res)
-  //           //   .subscribe(data => {
-  //               this.rows = res;
-  //               this.loader.close();
-  //               this.snackBar.open('Se agregaron guias seleccionadas', 'OK', { duration: 4000 });
-  //           //   });
-  //         } else {
-  //           // this.crudService.updateItem(data._id, res)
-  //           //   .subscribe(data => {
-  //           //     this.items = data;
-  //           //     this.loader.close();
-  //           //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
-  //           //   });
-  //         }
-  //       });
-
-
-  // }
-
 
   consultarGuia(row) {
     const _nroSerie = row.serie;
@@ -477,13 +515,13 @@ export class FileUploadComponent implements OnInit {
 
   /** Gets the total items of all transactions. */
   sumTotalCantidad() {
-    this.totalCantidadGuiasLiq_ = this.rowsSelected.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+    this.totalCantidadGuiasLiq_ = this.rows.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
     return this.totalCantidadGuiasLiq_ ;
   }
 
   /** Gets the total cost of all transactions. */
   sumSubTotalImporte() {
-    this.subTotalImpGuiasLiq_ =  this.rowsSelected.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+    this.subTotalImpGuiasLiq_ =  this.rows.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
     return this.subTotalImpGuiasLiq_;
   }
 
@@ -510,6 +548,7 @@ export class FileUploadComponent implements OnInit {
   grabaFormulario(model: any, isValid: boolean, e: Event) {
 
     this.loader.open();
+    this.guias_remision = [];
 
     if (this.formLiquidacion.invalid) {
       console.log('hay errores aun');
@@ -550,17 +589,30 @@ export class FileUploadComponent implements OnInit {
             motivoTrasladoTemp.id = this.formLiquidacion.get('motivoTraslado').value;
             this.liquidacionModel.motivo =  motivoTrasladoTemp;
 
-            // let origenTemp = new Factoria();
-            // origenTemp = this.formLiquidacion.get('origen').value;
-            // this.liquidacionModel.origen = origenTemp;
+            // ORIGEN
             this.liquidacionModel.origen = this.formLiquidacion.get('origen').value;
+            let arrayOrigen: number[] = [];
+            this.valorOrigenSelected_.forEach(item => {
+              arrayOrigen.push(item.id);
+            });
+            this.liquidacionModel.notas1 = arrayOrigen.join();
 
-            // let destinoTemp = new Factoria();
-            // destinoTemp.id = this.formLiquidacion.get('destino').value;
-            // this.liquidacionModel.destino = destinoTemp;
+            // DESTINO
             this.liquidacionModel.destino = this.formLiquidacion.get('destino').value;
+            let arrayDestino: number[] = [];
+            this.valorDestinoSelected_.forEach(item => {
+              arrayDestino.push(item.id);
+            });
+            this.liquidacionModel.notas2 = arrayDestino.join();
 
-            this.liquidacionModel.guias = this.rowsSelected;
+            this.rows.forEach(element => {
+                let guia: GuiaRemision = new GuiaRemision();
+                guia.id = element.id;
+                this.guias_remision.push(guia);
+            });
+
+            this.liquidacionModel.guias = this.guias_remision;
+
             console.log(this.liquidacionModel);
             console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
 
@@ -594,12 +646,7 @@ export class FileUploadComponent implements OnInit {
     (error: HttpErrorResponse) => {
       this.loader.close();
       this.errorResponse_ = error.error;
-      console.log(this.errorResponse_);
-      // if ( !this.errorResponse_ === undefined) {
-        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
-      //} else {
-        // this.snackBar.open('Hay problemas de conexión con el Servidor.', 'cerrar', { duration: 20000 });
-      //}
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
       console.log(this.errorResponse_.errorMessage);
     });
   }
@@ -623,14 +670,12 @@ export class FileUploadComponent implements OnInit {
     (error: HttpErrorResponse) => {
       this.loader.close();
       this.errorResponse_ = error.error;
-      console.log(this.errorResponse_);
       this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 10000 });
-      console.log(this.errorResponse_.errorMessage);
     });
   }
 
   cancelarLiquidacion() {
-    this.router.navigate(['/dashboard']);
+      this.router.navigate(['/dashboard']);
   }
 
   imprimirLiquidacion() {
@@ -650,7 +695,9 @@ export class FileUploadComponent implements OnInit {
   }
 
   compareObjects(o1: any, o2: any): boolean {
-    return o1.name === o2.name && o1.id === o2.id;
+    // return o1.name === o2.name && o1.id === o2.id;
+    return o1 && o2 ? o2.id === o2.id : o1 === o2;
+
   }
 
       // Completar Zeros
@@ -673,9 +720,9 @@ export class FileUploadComponent implements OnInit {
   updateTarifa(event, cell, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
-    this.rowsSelected[rowIndex][cell] = event.target.value;
-    this.rowsSelected = [...this.rowsSelected];
-    console.log('UPDATED!', this.rowsSelected[rowIndex][cell]);
+    this.rows[rowIndex][cell] = event.target.value;
+    this.rows = [...this.rows];
+    console.log('UPDATED!', this.rows[rowIndex][cell]);
 
     this.updateSubTotalRow('subTotal', rowIndex);
     this.recalcularTotales();
@@ -685,18 +732,18 @@ export class FileUploadComponent implements OnInit {
   updateSubTotalRow(cell, rowIndex) {
     console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
-    this.rowsSelected[rowIndex][cell] = this.rowsSelected[rowIndex]['tarifa'] * this.rowsSelected[rowIndex]['totalCantidad'] ;
-    this.rowsSelected = [...this.rowsSelected];
-    console.log('UPDATED!', this.rowsSelected[rowIndex][cell]);
+    this.rows[rowIndex][cell] = this.rows[rowIndex]['tarifa'] * this.rows[rowIndex]['totalCantidad'] ;
+    this.rows = [...this.rows];
+    console.log('UPDATED!', this.rows[rowIndex][cell]);
     this.recalcularTotales();
   }
 
   validarGuias() {
     let resultado = true;
 
-    this.rowsSelected.forEach((item, i) => {
+    this.rows.forEach((item, i) => {
       // this.subTotal += (item.product.price.sale * item.data.quantity);
-       if (this.rowsSelected[i]['tarifa'] === 0.00) {
+       if (this.rows[i]['tarifa'] === 0.00) {
         resultado = false;
           // console.log('aun quedan valores de 0.00');
        }
@@ -718,6 +765,10 @@ export class FileUploadComponent implements OnInit {
 
   get nroDocumentoLiq (): FormControl {
     return this.formLiquidacion.get('nroDocumentoLiq') as FormControl;
+  }
+
+  get origen_ (): FormControl {
+    return this.formLiquidacion.get('origen') as FormControl;
   }
 
   captureScreen() {

@@ -1,5 +1,5 @@
 import { FacturaDocumento } from './../../../shared/models/facturacion.model';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV } from '../../../shared/models/tipos_facturacion';
@@ -21,6 +21,12 @@ import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
+import { FacturaItemGuiasComponent } from './factura-item-guias/factura-item-guias.component';
+import { FacturaItem } from '../../../shared/models/facturacion.model';
+import { formatDate } from '@angular/common';
+import { ItemFacturaService } from '../../../shared/services/facturacion/item-factura.service';
+import { OrdenServicio } from '../../../shared/models/orden-servicio';
+import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 
 @Component({
   selector: 'app-wizard',
@@ -54,6 +60,9 @@ export class WizardComponent implements OnInit {
 
 
   esNuevo: boolean = true;
+  conGuiaRemision_: boolean = false;
+  conOrdenServicio_: boolean = false;
+  subTipoFactura: string;
 
 
   // Grilla Detalle de Factura
@@ -68,8 +77,8 @@ export class WizardComponent implements OnInit {
   infoResponse_: InfoResponse;
   step = 0;
 
-  // Documento
-  documentoModel: FacturaDocumento;
+  ordenes_servicio = [];
+  guias_remision = [];
 
 
   // Manejo default de mensajes en grilla
@@ -92,6 +101,13 @@ export class WizardComponent implements OnInit {
   public comboMonedas: Moneda[];
   public comboTiposIGV: TipoIGV[];
   public comboClientes: Cliente[];
+
+
+  public facturaDocumento: FacturaDocumento;
+  public listaItemsFactura: FacturaItem[] = [];
+
+
+
   public comboEstadosFactura = [
     { id: 1, codigo: '001' , descripcion: 'Registrado' },
     { id: 2, codigo: '002' , descripcion: 'Enviado a Facturador SUNAT'},
@@ -100,11 +116,14 @@ export class WizardComponent implements OnInit {
     { id: 5, codigo: '005' , descripcion: 'Anulada'},
   ];
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(
+              @Inject(LOCALE_ID) private locale: string,
+              private formBuilder: FormBuilder,
               private tiposGenService: TiposGenericosService,
               private loader: AppLoaderService,
               private dialog: MatDialog,
               private confirmService: AppConfirmService,
+              private itemFacturaService: ItemFacturaService,
               private snack: MatSnackBar,
               private userService: UsuarioService,
               private ordenServicioService: OrdenServicioService,
@@ -135,8 +154,10 @@ export class WizardComponent implements OnInit {
       ],
       estado: [{value: '', disabled: true}],
       observacion: [''],
-      nroOrdenServicio: [{value: '', disabled: false}, [Validators.required]],
+     // nroOrdenServicio: [{value: '', disabled: false}, [Validators.required]],
       moneda: [''],
+      conOrdenServicio: [''],
+      conGuiaRemision: [''],
     });
 
 
@@ -238,17 +259,7 @@ export class WizardComponent implements OnInit {
   }
 
 
-  submit(a:any, b:any, c:any) {
-    this.loader.open();
 
-    if (this.rows.length === 0) {
-        this.snack.open('Debe añadir al menos un item para el documento', 'OK', { duration: 2000 });
-        this.loader.close();
-    } else {
-
-    }
-
-  }
 
   getControls(frmGrp: FormGroup, key: string) {
     return (<FormArray>frmGrp.controls[key]).controls;
@@ -283,18 +294,112 @@ export class WizardComponent implements OnInit {
   }
 
 
-    /**
+  /**
    * Abre Pop-up para Añadir/Actualiza item
    */
   buscarItem(data: any = {}, isNew?) {
-    let title = isNew ? 'Añadir Item' : 'Actualizar Item';
-    let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaItemComponent, {
-      width: '740px',
-     // height: '580px',
-      disableClose: true,
-      data: { title: title, payload: data }
-    });
-    dialogRef.afterClosed()
+    if (this.conOrdenServicio_) {
+      this.buscarOrdenServicioItem(data, isNew);
+    } else {
+      if (this.conGuiaRemision_) {
+        this.buscarGuiaRemisionItem(data, isNew);
+      } else {
+        // Item por Defecto
+        let title = isNew ? 'Añadir Item' : 'Actualizar Item';
+        let dialogRef: MatDialogRef<any> = this.dialog.open(FacturaItemComponent, {
+          width: '740px',
+          // height: '580px',
+          disableClose: true,
+          data: { title: title, payload: data }
+        });
+
+        dialogRef.afterClosed()
+          .subscribe(item => {
+            if (!item) {
+              // If user press cancel
+              return;
+            }
+            if (isNew) {
+              let rowData = { ...item };
+              this.rows.splice(this.rows.length, 0, rowData);
+              this.rows = [...this.rows];
+              this.actualizaTotales();
+              this.snack.open('Item añadido!!', 'OK', { duration: 1000 });
+              this.subTipoFactura = '1';
+            } else {
+
+              this.rows = this.rows.map(element => {
+                if (element.id === data.id) {
+                  return Object.assign({}, element, item);
+                }
+                return element;
+              });
+              this.actualizaTotales();
+              this.snack.open('Item actualizado!!', 'OK', { duration: 1000 });
+            }
+          });
+      }
+    }
+  }
+
+  /**
+   * Abre Pop-up para Añadir Guia de Remisión
+   */
+  buscarGuiaRemisionItem(data3: any = {}, isNew?) {
+    let title2 = isNew ? 'Seleccionar Guia de Remisión' : 'Actualizar Item';
+    let dialogRef2: MatDialogRef<any> = this.dialog.open(FacturaItemGuiasComponent, {
+        width: '1240px',
+       // height: '580px',
+        disableClose: true,
+        data: { title: title2, payload: data3 }
+      });
+
+    dialogRef2.afterClosed()
+      .subscribe(item => {
+        if (!item) {
+          // If user press cancel
+          return;
+        }
+
+        console.log(item);
+
+        if (isNew) {
+          item.forEach(element => {
+            let rowData = { ...element};
+            this.rows.splice(this.rows.length, 0, rowData);
+            this.rows = [...this.rows];
+            this.actualizaTotales();
+          });
+          this.snack.open(item.length + ' Item(s) añadido(s)!!', 'OK', { duration: 1000 });
+          this.subTipoFactura = '3';
+        } else {
+
+          this.rows = this.rows.map(element => {
+            if (element.id === data3.id) {
+              return Object.assign({}, element, item);
+            }
+            return element;
+          });
+          this.actualizaTotales();
+          this.snack.open('Item actualizado!!', 'OK', { duration: 1000 });
+        }
+      });
+  }
+
+
+ /**
+   * Abre Pop-up para Añadir Ordenes de Servicio
+   */
+  buscarOrdenServicioItem(data2: any = {}, isNew?) {
+    let title2 = isNew ? 'Seleccionar Orden Servicio' : 'Actualizar Item';
+    let dialogRef2: MatDialogRef<any> = this.dialog.open(FacturaPopUpComponent, {
+        width: '940px',
+       // height: '580px',
+        disableClose: true,
+        data: { title: title2, payload: data2 }
+      });
+
+    dialogRef2.afterClosed()
       .subscribe(item => {
         if (!item) {
           // If user press cancel
@@ -306,10 +411,11 @@ export class WizardComponent implements OnInit {
             this.rows = [...this.rows];
             this.actualizaTotales();
             this.snack.open('Item añadido!!', 'OK', { duration: 1000 });
+            this.subTipoFactura = '2';
         } else {
 
           this.rows = this.rows.map(element => {
-            if (element.id === data.id) {
+            if (element.id === data2.id) {
               return Object.assign({}, element, item);
             }
             return element;
@@ -319,6 +425,7 @@ export class WizardComponent implements OnInit {
         }
       });
   }
+
 
   /**
  * Abre Pop-up para edición de item
@@ -336,8 +443,6 @@ export class WizardComponent implements OnInit {
           // If user press cancel
           return;
         }
-
-        console.log(itemActualizado);
 
         this.rows = this.rows.map(element => {
           if (element.id === data.id) {
@@ -365,6 +470,92 @@ export class WizardComponent implements OnInit {
         }
       });
   }
+
+
+  submit() {
+    this.loader.open();
+
+    if (this.rows.length === 0) {
+        this.snack.open('Debe añadir al menos un item para el documento', 'OK', { duration: 2000 });
+        this.loader.close();
+    } else {
+
+       this.facturaDocumento = new FacturaDocumento();
+       this.ordenes_servicio = [];
+       this.guias_remision = [];
+       this.facturaDocumento.tipoDocumento = this.facturaForm.controls['tipoDocumento'].value.id;
+       this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
+       this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
+       this.facturaDocumento.fechaEmision = this.facturaForm.controls['fechaEmision'].value;
+       this.facturaDocumento.fechaVencimiento = this.facturaForm.controls['fechaVencimiento'].value;
+       this.facturaDocumento.nroOrden = this.rows[0].codigo || '';
+       this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
+       this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
+       this.facturaDocumento.tipoOperacion = this.facturaForm.controls['tipoOperacion'].value.id;
+       this.facturaDocumento.moneda = this.facturaForm.controls['moneda'].value;
+       this.facturaDocumento.formaPago = this.facturaForm.controls['formaPago'].value;
+       this.facturaDocumento.cliente = this.facturaForm.controls['cliente'].value;
+       this.facturaDocumento.notas = this.subTipoFactura; // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+       this.facturaDocumento.tipoAfectacion = 1;  // 10-Operación Gravada.
+       this.facturaDocumento.anticipos = this.anticipos;
+       this.facturaDocumento.descuentos = this.descuentos;
+       this.facturaDocumento.empresa = this.usuarioSession.empresa;
+       this.facturaDocumento.envioSunat = 0; // 0 : Documento No enviado, 1: Documento Enviado a SUNAT
+       this.facturaDocumento.estadoEnvioSunat = 0;
+       this.facturaDocumento.igv = this.valorIGV;
+       this.facturaDocumento.isc = this.otrosTributos;
+       this.facturaDocumento.otrosCargos = this.otrosCargos;
+       this.facturaDocumento.otrosTributos = this.otrosTributos;
+       this.facturaDocumento.subTotalVentas = this.totalSum;
+       this.facturaDocumento.totalDocumento = this.importeTotal;
+       this.facturaDocumento.ventaTotal = this.importeTotal;
+
+
+       this.rows.forEach(element => {
+          let os_obj: OrdenServicio = new OrdenServicio();
+          let guia: GuiaRemision = new GuiaRemision();
+          if (this.subTipoFactura === '2') {
+            os_obj.id = element.id;
+            this.ordenes_servicio.push(os_obj);
+          } else if (this.subTipoFactura === '3') {
+            guia.id = element.id;
+            this.guias_remision.push(guia);
+          }
+       });
+
+       this.facturaDocumento.ordenesServicio = this.ordenes_servicio;
+       this.facturaDocumento.guiasRemision = this.guias_remision;
+
+       this.facturaDocumento.items = this.rows.map(item => {
+          delete item.id;
+          return item;
+        } );
+
+
+
+       this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
+       this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
+
+
+       console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
+
+
+      this.itemFacturaService.registrarDocumentoElectronico(this.facturaDocumento, this.usuarioSession.empresa.id).subscribe(data_ => {
+        this.infoResponse_ = data_;
+        this.loader.close();
+        this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+      },
+      (error: HttpErrorResponse) => {
+        this.loader.close();
+        this.errorResponse_ = error.error;
+        this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+      });
+
+    }
+
+  }
+
+
 
     /**
    * Obtiene una lista de todas las guias de remisión asociadas a la orden de servicio

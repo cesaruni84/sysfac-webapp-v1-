@@ -163,6 +163,15 @@
 
                                     <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="3.0%" fxLayoutAlign=" left">
                                         <span fxFlex></span>
+
+
+
+                                        <section class="pl-1 ml-05">
+                                            <mat-checkbox name="conOrdenServicio" [(ngModel)]="conOrdenServicio_" [disabled]="conGuiaRemision_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conOrdenServicio']">Orden de Servicio </mat-checkbox>
+                                        </section>
+                                        <section class="pl-1 ml-05">
+                                            <mat-checkbox name="conGuiaRemision" [(ngModel)]="conGuiaRemision_" [disabled]="conOrdenServicio_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conGuiaRemision']">Guia de Remisión </mat-checkbox>
+                                        </section>
                                         <div align="right">
                                             <button mat-raised-button matTooltip="Buscar item de producto o servicio" type="button" color="primary" class="mr-1" (click)="buscarItem({}, true)"><mat-icon>add box</mat-icon> Añadir Item </button>
                                         </div>
@@ -192,13 +201,13 @@
                                             </ng-template>
                                         </ngx-datatable-column>
 
-                                        <!-- <ngx-datatable-column name="Código" [flexGrow]="1" [width]="110" prop="codigo" [cellClass]="'my-custom-cell'">
-                                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                            <div [style.fontSize.px]="12"> {{ row?.codigo }} </div>
-                                        </ng-template>
-                                    </ngx-datatable-column> -->
+                                        <ngx-datatable-column name="CODIGO" [flexGrow]="1" [width]="130" prop="codigo" [cellClass]="'my-custom-cell'">
+                                            <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                                                <div [style.fontSize.px]="12"> {{ row?.codigo }} </div>
+                                            </ng-template>
+                                        </ngx-datatable-column>
 
-                                        <ngx-datatable-column name="DESCRIPCION" [flexGrow]="1" [width]="290" prop="descripcion">
+                                        <ngx-datatable-column name="DESCRIPCION" [flexGrow]="1" [width]="230" prop="descripcion">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
                                                 <div [style.fontSize.px]="12"> {{ row?.descripcion }} </div>
                                             </ng-template>
@@ -210,7 +219,7 @@
                                             </ng-template>
                                         </ngx-datatable-column>
 
-                                        <ngx-datatable-column name="UM" [flexGrow]="1" [width]="80" prop="unidadMedida">
+                                        <ngx-datatable-column name="UM" [flexGrow]="1" [width]="100" prop="unidadMedida">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
                                                 <div [style.fontSize.px]="12"> {{ row?.unidadMedida.descripcion }} </div>
                                             </ng-template>
@@ -222,18 +231,18 @@
                                             </ng-template>
                                         </ngx-datatable-column>
 
-                                        <ngx-datatable-column name="DESCUENTOS" [flexGrow]="1" [width]="120" prop="descuentos">
+                                        <ngx-datatable-column name="DESCUENTOS" [flexGrow]="1" [width]="100" prop="descuentos">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
                                                 <div align="center" [style.fontSize.px]="12"> {{row?.descuentos | number: '1.2-2'}}</div>
                                             </ng-template>
                                         </ngx-datatable-column>
 
-                                        <ngx-datatable-column name="TIPO IGV" [flexGrow]="1" [width]="100" prop="tipoIGV">
+                                        <!-- <ngx-datatable-column name="TIPO IGV" [flexGrow]="1" [width]="100" prop="tipoIGV">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
                                                 <div align="left" [style.fontSize.px]="12"> {{ row?.tipoIGV.nemonico }}</div>
                                             </ng-template>
-                                        </ngx-datatable-column>
-                                        <ngx-datatable-column name=" TOTAL ITEM" [flexGrow]="1" [width]="150" prop="importeTotal">
+                                        </ngx-datatable-column> -->
+                                        <ngx-datatable-column name=" TOTAL ITEM" [flexGrow]="1" [width]="120" prop="importeTotal">
                                             <ng-template let-row="row" ngx-datatable-cell-template>
                                                 <div align="center" [style.fontSize.px]="12"> {{ row?.total | number: '1.2-2' }}</div>
                                             </ng-template>
@@ -269,151 +278,17 @@
                                         <!-- Observación -->
                                         <mat-form-field fxFlex="100%" appearance="">
                                             <mat-label><b>OBSERVACION</b></mat-label>
-                                            <input matInput name="observacion" [formControl]="facturaForm.controls['observacion']" style="color:#3f51b5">
+                                            <textarea matInput name="observacion" cdkAutosizeMinRows="5" [formControl]="facturaForm.controls['observacion']" style="color:#3f51b5"></textarea>
                                             <mat-icon matSuffix>comment</mat-icon>
                                         </mat-form-field>
                                     </div>
-                                    <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
-
-
-                                        <!-- Orden de Servicio -->
-                                        <mat-form-field fxFlex="50%" appearance="">
-                                            <mat-label><b>ORDEN DE COMPRA / SERVICIO</b></mat-label>
-                                            <input matInput name="nroOrdenServicio" [formControl]="facturaForm.controls['nroOrdenServicio']" style="color:#3f51b5" (keydown.enter)='buscarGuiasPorOS($event)'>
-                                            <mat-icon matSuffix>dvr</mat-icon>
-                                            <mat-hint align="start"><strong>Presione ENTER para buscar guias de remisión asociadas </strong> </mat-hint>
-                                        </mat-form-field>
-
-                                    </div>
-
                                     <br>
-                                    <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="6%" fxLayoutAlign=" left">
-
-                                        <mat-accordion class="example-headers-align full-width">
-                                            <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
-                                                <mat-expansion-panel-header>
-                                                    <mat-panel-title>
-                                                        <b>Información Adicional</b> </mat-panel-title>
-                                                    <mat-panel-description>
-                                                    </mat-panel-description>
-                                                    <mat-icon>info</mat-icon>
-                                                </mat-expansion-panel-header>
-
-
-                                                <!-- <div class="mat-box-shadow m-0"> -->
-
-                                                <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
-
-                                                <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="0" [limit]="100" [rowHeight]="50" [rows]="rows_guias" [messages]="messages">
-                                                    <!-- <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
-                                                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                                                    <span title="Consultar Guia">
-                                                                                <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                                                                            </span>
-                                                                </ng-template>
-                                                            </ngx-datatable-column> -->
-
-                                                    <!-- <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
-                                                                <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                                    <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
-                                                                </ng-template>
-                                                            </ngx-datatable-column> -->
-
-                                                    <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="160" prop="nroguia">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                            <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
-
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-
-                                                    <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="120" prop="fechaTraslado">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                            <div [style.fontSize.px]="12">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-
-
-                                                    <!-- <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="125" prop="nroguia2">
-                                                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                                                    <div [style.fontSize.px]="12"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
-                                                                </ng-template>
-                                                            </ngx-datatable-column>
-        
-                                                            <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="240" prop="guiaDetalle">
-                                                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                                                    <div [style.fontSize.px]="12"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
-                                                                </ng-template>
-                                                            </ngx-datatable-column> -->
-
-                                                    <!-- <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="105" prop="ticketBalanza">
-                                                                    <ng-template let-row="row" ngx-datatable-cell-template>
-                                                                        <div [style.fontSize.px]="12">{{ row?.ticketBalanza }} </div>
-                                                                    </ng-template>
-                                                                </ngx-datatable-column> -->
-
-                                                    <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="120" prop="totalCantidad">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                            <div align="center">
-                                                                <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
-                                                            </div>
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-
-
-                                                    <ngx-datatable-column name="UM" [flexGrow]="1" [width]="100" prop="unidadMedida">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                            <div [style.fontSize.px]="12">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-
-
-                                                    <ngx-datatable-column name="" [flexGrow]="1" [width]="140" prop="filler">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-                                                    <!-- <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="90" prop="tarifa">
-                                                        <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
-
-
-                                                            <div align="right">
-                                                                <span title="Doble click para editar" (click)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
-                                                                                    {{value | number: '1.2-2'}}
-                                                                                    </span>
-                                                                <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
-                                                            </div>
-                                                        </ng-template>
-                                                    </ngx-datatable-column>
-
-                                                    <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="130" prop="subTotal">
-                                                        <ng-template let-row="row" ngx-datatable-cell-template>
-                                                            <div align="center" [style.fontSize.px]="12">
-                                                                {{ row?.subTotal | number: '1.2-2' }}
-                                                            </div>
-                                                        </ng-template>
-                                                    </ngx-datatable-column> -->
-
-                                                </ngx-datatable>
-
-                                                <!-- </div> -->
-
-                                            </mat-expansion-panel>
-
-
-                                            <!-- <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-                                                <mat-expansion-panel-header>
-                                                    <mat-panel-title>
-                                                        Self aware panel
-                                                    </mat-panel-title>
-                                                    <mat-panel-description>
-                                                        Currently I am {{panelOpenState ? 'open' : 'closed'}}
-                                                    </mat-panel-description>
-                                                </mat-expansion-panel-header>
-                                                <p>I'm visible because I am open</p>
-                                            </mat-expansion-panel> -->
-                                        </mat-accordion>
-
-
+                                    <div align="left">
+                                        <button mat-raised-button type="submit" matTooltip="Graba factura en el sistema" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar Factura</button>
+                                        <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Envia Factura a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button>
+                                        <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Imprime comprobante electrónico" color="warn"><mat-icon>print</mat-icon> Imprimir Factura</button>
                                     </div>
+                                    <br>
                                 </mat-card-content>
                             </mat-card>
                         </div>
@@ -472,7 +347,6 @@
                                         <span fxFlex></span>
                                         <span class="text-muted2" style="color:#3f51b5"> {{simbolo }} {{ importeTotal | number: '1.2-2'}}</span>
                                     </div>
-                                    <br>
                                 </mat-card-content>
                             </mat-card>
                         </div>
@@ -482,12 +356,7 @@
 
             </div>
             <br>
-            <div align="center">
-                <button mat-raised-button type="submit" matTooltip="Graba factura en el sistema" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar Factura</button>
-                <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Envia Factura a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button>
-                <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Imprime comprobante electrónico" color="warn"><mat-icon>print</mat-icon> Imprimir Factura</button>
 
-            </div>
         </form>
         <!-- </mat-card-content>
         </mat-card> -->

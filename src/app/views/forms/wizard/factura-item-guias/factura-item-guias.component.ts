@@ -1,30 +1,28 @@
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { Usuario } from '../../../../shared/models/usuario.model';
-import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../../shared/models/error_response.model';
-import { Factoria } from '../../../../shared/models/factoria.model';
-import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
-import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
-import { GuiaRemisionService } from '../../../../shared/services/guias/guia-remision.service';
-import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
-import { formatDate } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ProductoService } from '../../../../shared/services/productos/producto.service';
-import { OrdenServicioService } from '../../../../shared/services/liquidacion/orden-servicio.service';
-import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
-import { FacturaItem } from '../../../../shared/models/facturacion.model';
-import { Producto } from '../../../../shared/models/producto.model';
-import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { TipoIGV, TipoItem } from '../../../../shared/models/tipos_facturacion';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
+import { FacturaItem } from '../../../../shared/models/facturacion.model';
+import { ErrorResponse, InfoResponse } from '../../../../shared/models/error_response.model';
+import { Factoria } from '../../../../shared/models/factoria.model';
+import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/unidad-medida.service';
+import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
+import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
+import { GuiaRemisionService } from '../../../../shared/services/guias/guia-remision.service';
+import { OrdenServicioService } from '../../../../shared/services/liquidacion/orden-servicio.service';
+import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
+import { formatDate } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Producto } from '../../../../shared/models/producto.model';
+import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
+import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 
 @Component({
-  selector: 'app-factura-pop-up',
-  templateUrl: './factura-pop-up.component.html',
-  styleUrls: ['./factura-pop-up.component.scss'],
+  selector: 'app-factura-item-guias',
+  templateUrl: './factura-item-guias.component.html',
+  styleUrls: ['./factura-item-guias.component.scss'],
   providers: [
     {
         provide: DateAdapter, useClass: AppDateAdapter
@@ -34,7 +32,7 @@ import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/u
     }
     ]
 })
-export class FacturaPopUpComponent implements OnInit {
+export class FacturaItemGuiasComponent implements OnInit {
 
   rows = [];
   temp = [];
@@ -50,8 +48,10 @@ export class FacturaPopUpComponent implements OnInit {
   public comboTiposIGV: TipoIGV[]= [];
   public comboTiposItem: TipoItem[]= [];
   public comboUnidades: UnidadMedida[]= [];
+  public comboFactorias: Factoria[] = [];
+  public comboFactoriasDestino: Factoria[] = [];
   public itemFactura: FacturaItem;
-
+  public listaItemsFactura: FacturaItem[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
 
@@ -72,19 +72,15 @@ export class FacturaPopUpComponent implements OnInit {
   errorResponse_: ErrorResponse;
   infoResponse_: InfoResponse;
 
-  // Combos para filtros de búsqueda
-  comboFactorias: Factoria[];
-  comboFactoriasDestino: Factoria[];
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<FacturaPopUpComponent>,
-    private factoriaService: FactoriaService,
+    public dialogRef: MatDialogRef<FacturaItemGuiasComponent>,
     private fb: FormBuilder,
     private userService: UsuarioService,
-    private productoService: ProductoService,
     private ordenServicioService: OrdenServicioService,
+    private factoriaService: FactoriaService,
     private guiaRemisionService: GuiaRemisionService,
     private unidadMedidaService: UnidadMedidaService,
     private tiposGenService: TiposGenericosService,
@@ -97,9 +93,9 @@ export class FacturaPopUpComponent implements OnInit {
     const fechaIniTraslado_ = new Date();
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
 
-    this.loader.open();
     this.formFilter = this.fb.group({
-      nroOrdenServicio: ['', ],
+      filtroOrigen: ['', ],
+      filtroDestino: ['', ],
       filtroFechaIni: new FormControl(fechaIniTraslado_, ),
       filtroFechaFin: new FormControl(fechaActual_, ),
     });
@@ -108,17 +104,17 @@ export class FacturaPopUpComponent implements OnInit {
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
+    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+      this.comboFactorias = data1;
+    });
+
+    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
+      this.comboFactoriasDestino = data3;
+    });
+
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidades = data3;
     });
-
-    // Lista ordenes de servicio por Empresa
-    this.ordenServicioService.listarOrdenesServicioPorEmpresa(this.usuarioSession.empresa.id).subscribe(data3 => {
-      this.rows = data3;
-      console.log(data3);
-      this.loader.close();
-    });
-
 
   }
 
@@ -143,19 +139,17 @@ export class FacturaPopUpComponent implements OnInit {
       }
   }
 
+  buscarGuiasPorFacturar() {
 
-  buscarOrdenServicio() {
-
-    this.selected = [];
     this.loader.open();
-    let nroOrden  =  this.formFilter.controls['nroOrdenServicio'].value;
+    const origen = this.formFilter.controls['filtroOrigen'].value || 0;
+    const destino = this.formFilter.controls['filtroDestino'].value || 0;
     const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
 
-    this.ordenServicioService.listarOrdenesServicioPorFiltro(this.usuarioSession.empresa.id,
-                                nroOrden || '',
-                                0,
-                                0,
+    this.guiaRemisionService.listarGuiasRemisionPorFacturar(this.usuarioSession.empresa.id,
+                                origen,
+                                destino,
                                 fechaIni,
                                 fechaFin).subscribe(data_ => {
       this.rows = data_;
@@ -164,24 +158,22 @@ export class FacturaPopUpComponent implements OnInit {
     (error: HttpErrorResponse) => {
       this.loader.close();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000});
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
     });
 
   }
+
 
   compareObjects(o1: any, o2: any): boolean {
     return o1.codigo === o2.codigo && o1.id === o2.id;
   }
 
   onSelect({ selected }) {
-    this.listaItemsSelected = selected;
 
-    if (this.listaItemsSelected.length > 1 ){
-      this.snackBar.open('Seleccione solo 1 orden de servicio', 'cerrar', { duration: 5000});
-    } else {
-      this.selected.splice(0, this.selected.length);
-      this.selected.push(...selected);
-    }
+    this.listaItemsSelected = selected;
+    console.log(this.listaItemsSelected);
+    this.selected.splice(0, this.selected.length);
+    this.selected.push(...selected);
 
   }
 
@@ -194,26 +186,27 @@ export class FacturaPopUpComponent implements OnInit {
     //
     this.listaItemsSelected.forEach(element => {
      let item: FacturaItem = new FacturaItem();
-     item.id = element.id;   // temporal
-     item.codigo = element.nroOrden;
-     item.descripcion = element.glosa;
+     item.id = element.id;
+     item.codigo = element.serie + '-' + element.secuencia;
+     item.descripcion = element.guiaDetalle[0].producto.nombre ;
      item.cantidad = element.totalCantidad;
-     item.descuentos = element.descuentos;
+     item.descuentos = 0.00;
      item.factorDescuento = 0;
-     // item.productos = new Producto();
-     item.subTotal = element.subTotal;
+     item.productos = element.guiaDetalle[0].producto;
+     item.subTotal = element.totalCantidad * element.tarifa;
      item.tipoDescuento = 0;
-     item.valorIGV = element.igvAplicado;
+     item.valorIGV = 0.18 * (item.subTotal); // CALCULAR
      item.valorISC = 0.00;
-     item.tipoIGV = 1;  // VALOR POR DEFECTO
+     item.tipoIGV = 1;  // VALOR POR DEFECTO : 10-OPERACION ONEROSA
      item.tipo = this.comboTiposItem[0].id; // VALOR POR DEFECTO
-     item.total = element.valorCompra;   // VALOR DE COMPRA PARA APLICAR DESCUENTO
+     item.total = element.totalCantidad * element.tarifa;  // CALCULAR
      item.unidadMedida = this.comboUnidades[0]; // VALOR POR DEFECTO
-     item.tarifa = element.subTotal / element.totalCantidad ;
+     item.tarifa = element.tarifa;
      this.itemFactura = item;
+     this.listaItemsFactura.push(this.itemFactura);
     });
-    this.dialogRef.close(this.itemFactura);
+    console.log(this.listaItemsFactura);
+    this.dialogRef.close(this.listaItemsFactura);
   }
-
 
 }

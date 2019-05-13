@@ -1,70 +1,92 @@
-<mat-card class="p-0">
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>dvr</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
 
-    <mat-card-title class="mat-bg-primary m-0">
-        <div align="center" [style.fontSize.px]="15" class="p-0">
-            <span>Búsqueda de Items</span>
+<mat-card-content class="mb-0 p-05">
+    <br>
+    <form [formGroup]="formFilter" id="ngForm" novalidate (ngSubmit)="submit()">
+
+
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
+            <mat-form-field fxFlex="40%" floatPlaceholder="never">
+                <mat-label style="font-size: 14px"><b>NRO. DE ORDEN</b></mat-label>
+                <input matInput name="nroOrdenServicio" [formControl]="formFilter.controls['nroOrdenServicio']" style="color:#3f51b5">
+            </mat-form-field>
+
+            <mat-form-field fxFlex="20%" appearance="">
+                <mat-label><b>FECHA INICIO </b></mat-label>
+                <input matInput name="filtroFechaIni" [formControl]="formFilter.controls['filtroFechaIni']" [matDatepicker]="appDatepicker_" maxlength="10" style="color:#3f51b5">
+                <mat-datepicker-toggle matSuffix [for]="appDatepicker_"></mat-datepicker-toggle>
+                <mat-datepicker touchUi #appDatepicker_></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field fxFlex="20%" appearance="">
+                <mat-label><b>FECHA FIN</b></mat-label>
+                <input matInput name="filtroFechaFin" [formControl]="formFilter.controls['filtroFechaFin']" [matDatepicker]="picker_" valuemaxlength="10" style="color:#3f51b5">
+                <mat-datepicker-toggle matSuffix [for]="picker_"></mat-datepicker-toggle>
+                <mat-datepicker touchUi #picker_ disabled="false"></mat-datepicker>
+            </mat-form-field>
+
+            <div align="center" fxFlex="20%" data-html2canvas-ignore="true">
+                <button mat-raised-button type="button" color="primary" (click)="buscarOrdenServicio()"><mat-icon>search</mat-icon> Buscar </button>
+            </div>
         </div>
-        <mat-divider></mat-divider>
-    </mat-card-title>
-
-    <mat-card-content class="mb-0 p-05">
-        <br>
-        <form [formGroup]="formFilter" id="ngForm" novalidate (ngSubmit)="submit()">
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left" [style.fontSize.px]="13">
-                <mat-form-field fxFlex="100%" floatPlaceholder="never">
-                    <mat-label style="font-size: 14px"><b>FILTRO</b></mat-label>
-                    <input matInput name="descripcion" [formControl]="formFilter.controls['descripcion']">
-                </mat-form-field>
-                <div align="right" data-html2canvas-ignore="true">
-                    <button mat-raised-button align="right" type="button" color="primary" (click)="buscarItemFactura()"><mat-icon>search</mat-icon></button>
-                </div>
-            </div>
-            <br>
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign="left" [style.fontSize.px]="15">
-                <mat-label fxFlex="28%"></mat-label>
-
-            </div>
-
-        </form>
-    </mat-card-content>
-</mat-card>
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign="left" [style.fontSize.px]="15">
+            <mat-label fxFlex="28%"></mat-label>
+        </div>
+    </form>
+</mat-card-content>
 
 
 <div class="p-0 m-0">
     <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
         <div class="margin-333">
-            <ngx-datatable class="material grid" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100"
+            <ngx-datatable class="material grid" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 940px" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'" [limit]="5"
                 [rows]="rows" [columns]="columns" [messages]="messages">
 
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="true" [headerCheckboxable]="true" [checkboxable]="true">
                 </ngx-datatable-column>
-                <ngx-datatable-column name="CODIGO" [flexGrow]="1" [width]="80" prop="codigo">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.codigo }} </div>
+
+
+                <ngx-datatable-column name="Item" [flexGrow]="1" [width]="65" prop="id">
+                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="TIPO ITEM" [flexGrow]="1" [width]="100" prop="tipo">
+                <ngx-datatable-column name="Nro. Orden" [flexGrow]="1" [width]="100" prop="codigo">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div align="center" [style.fontSize.px]="12"> {{row.tipo.id == '1' ? 'BIEN' : 'SERVICIO'}}</div>
+                        <div [style.fontSize.px]="12"> {{ row?.nroOrden }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="DESCRIPCION" [flexGrow]="1" [width]="280" prop="descripcion">
+
+                <ngx-datatable-column name="Cliente" [flexGrow]="1" [width]="180" prop="codigo2">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.descripcion }} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.cliente.razonSocial }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="UM" [flexGrow]="1" [width]="100" prop="unidadMedida">
+
+                <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="280" prop="descripcion">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12">{{ row?.unidadMedida.valor}} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.glosa }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="P.UNIT." [flexGrow]="1" [width]="150" prop="tarifa">
+                <ngx-datatable-column name="F. Orden" [flexGrow]="1" [width]="100" prop="unidadMedida">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.tarifa | number: '1.2-2' }} </div>
+                        <div [style.fontSize.px]="12">{{ row?.fechaOrden | date: 'dd/MM/yyyy' }} </div>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Importe Total" [flexGrow]="1" [width]="150" prop="tarifa">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div [style.fontSize.px]="12"> {{ row?.importeTotal | number: '1.2-2' }} </div>
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
@@ -74,7 +96,7 @@
 
 
 <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
-    <button mat-button color="primary" type="submit" form="ngForm" [disabled]="!(this.selected.length > 0)"><mat-icon>done</mat-icon> Aceptar</button>
+    <button mat-button color="primary" type="submit" form="ngForm" [disabled]="!(this.listaItemsSelected.length > 0 && this.listaItemsSelected.length < 2 ) "><mat-icon>done</mat-icon> Aceptar</button>
     <span fxFlex></span>
     <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
 </div>

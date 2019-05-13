@@ -56,4 +56,10 @@ public tiposIgvDB = [
     { id: 19, codigo: '40' , descripcion: 'Exportación' , nemonico: '' }
 
 ];
+
+public tiposItemFactura = [
+    { id: 1, codigo: '001' , descripcion: ' BIEN' },
+    { id: 2, codigo: '002' , descripcion: ' SERVICIO' },
+  ];
+
 }

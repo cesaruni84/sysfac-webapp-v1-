@@ -56,4 +56,14 @@ export class GuiaRemisionService {
     return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV0', { params: params });
   }
 
+
+  listarGuiasRemisionPorFacturar(idEmpresa: number, idOrigen: number, idDestino: number, fechaIni: string, fechaFin: string) {
+    const params = new HttpParams().set('origen', idOrigen.toString())
+                                    .set('destino', idDestino.toString())
+                                    .set('fechaIni', fechaIni.toString())
+                                    .set('fechaFin', fechaFin.toString());
+
+    return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV4', { params: params });
+  }
+
 }

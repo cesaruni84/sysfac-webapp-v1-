@@ -35,6 +35,10 @@ export class LiquidacionService {
     return this.http.get<Liquidacion>(this.url + idEmpresa + '/liquidaciones/SRV1', {params: params});
   }
 
+  listarLiquidacionesPorEmpresa(idEmpresa: number){
+    return this.http.get<Liquidacion[]>(this.url + idEmpresa + '/liquidaciones');
+  }
+
   listarLiquidacionesPorFiltro(idEmpresa: number,
                                 nroDocLiq: string,
                                 idOrigen: number,

@@ -86,7 +86,6 @@ export class RichTextEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-
     const fechaActual_ = new Date();
     const fechaIniTraslado_ = new Date();
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
@@ -107,14 +106,19 @@ export class RichTextEditorComponent implements OnInit {
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
-      console.log( this.comboFactorias);
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
-      console.log( this.comboFactoriasDestino);
 
     });
+
+    this.loader.open();
+    this.liquidacionService.listarLiquidacionesPorEmpresa(this.usuarioSession.empresa.id).subscribe(liquidaciones => {
+      this.rows = liquidaciones;
+      this.loader.close();
+    });
+
 
   }
 
@@ -201,7 +205,6 @@ export class RichTextEditorComponent implements OnInit {
             this.loader.close();
             return;
           }
-          this.loader.open();
           if (isNew) {
             this.filtrarLiquidaciones();
             this.loader.close();

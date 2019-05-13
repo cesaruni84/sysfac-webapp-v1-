@@ -1,7 +1,7 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
-import { MatSnackBar, MatDialog, MatDialogRef } from '@angular/material';
+import { MatSnackBar, MatDialog, MatDialogRef, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
@@ -16,11 +16,22 @@ import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OrdenesServicioComponent } from '../../ordenes-servicio/ordenes-servicio.component';
 import { Cliente } from '../../../../shared/models/cliente.model';
+import { ClienteService } from 'app/shared/services/facturacion/cliente.service';
+import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
+import { ItemFacturaService } from '../../../../shared/services/facturacion/item-factura.service';
 
 @Component({
   selector: 'app-factura-consulta',
   templateUrl: './factura-consulta.component.html',
-  styleUrls: ['./factura-consulta.component.scss']
+  styleUrls: ['./factura-consulta.component.scss'],
+  providers: [
+    {
+        provide: DateAdapter, useClass: AppDateAdapter
+    },
+    {
+        provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
+    }
+    ],
 })
 export class FacturaConsultaComponent implements OnInit {
 
@@ -34,12 +45,6 @@ export class FacturaConsultaComponent implements OnInit {
   // Ng Model
   formFilter: FormGroup;
   public valorNroSerieLiq_: string;
-  public fechaIniTraslado_: Date;
-  public fechaFinTraslado_: Date;
-  public valorEstadoSelected_: any = '0';
-  public valorOrigenSelected_: any = '0';
-  public valorDestinoSelected_: any = '0';
-  public facturado: boolean = false;
   
   // Manejo default de mensajes en grilla
   messages: any = {
@@ -70,9 +75,10 @@ export class FacturaConsultaComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userService: UsuarioService,
-    private liquidacionService: LiquidacionService,
+    private itemFacturaService: ItemFacturaService,
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
+    private clienteService: ClienteService,
     private dialog: MatDialog,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
@@ -85,29 +91,20 @@ export class FacturaConsultaComponent implements OnInit {
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
 
     this.formFilter = new FormGroup({
-      serieDocumento:  new FormControl('',),
-      nroSerieLiq: new FormControl('', CustomValidators.digits),
-      fechaIniLiq: new FormControl(fechaIniTraslado_, ),
-      fechaFinLiq: new FormControl(fechaActual_, ),
-      origenSelected: new FormControl('', ),
-      destinoSelected: new FormControl('', ),
-      estadoSelected: new FormControl('0', ),
-      esFacturado: new FormControl(this.facturado, ),
+      serie: new FormControl('',),
+      secuencial: new FormControl('', CustomValidators.digits),
+      fechaIni: new FormControl(fechaIniTraslado_, ),
+      fechaFin: new FormControl(fechaActual_, ),
+      estado: new FormControl('0', ),
+      cliente:  new FormControl('0',),
    });
 
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
-    // Carga de Combos Factorias
-    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
-      this.comboFactorias = data1;
-      console.log( this.comboFactorias);
-    });
-
-    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
-      this.comboFactoriasDestino = data3;
-      console.log( this.comboFactoriasDestino);
-
+    // Combo Clientes
+    this.clienteService.listarClientesPorEmpresa(this.usuarioSession.empresa.id).subscribe(dataClientes => {
+      this.comboClientes = dataClientes;
     });
 
   }
@@ -140,30 +137,26 @@ export class FacturaConsultaComponent implements OnInit {
       }
   }
 
-  filtrarLiquidaciones() {
+  buscarDocumento() {
     this.loader.open();
-    this.selected = [];
+    this.rows = [];
 
     // Obtiene valores de parametros para la búsqueda
-    let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
-    const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
-    const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
-    const origen = this.formFilter.controls['origenSelected'].value;
-    const destino = this.formFilter.controls['destinoSelected'].value;
-    const estado  =  this.formFilter.controls['estadoSelected'].value;
+    let nroSerie  =  this.formFilter.controls['serie'].value;
+    let nroDocumento  =  this.formFilter.controls['secuencial'].value;
+    const fechaIni = formatDate(this.formFilter.controls['fechaIni'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['fechaFin'].value, 'yyyy-MM-dd', this.locale);
+    const idCLiente = this.formFilter.controls['cliente'].value;
+    const estado  =  this.formFilter.controls['estado'].value;
+    const FACTURA = 1; // FACTURA=1
 
-    const conFactura  =  this.formFilter.controls['esFacturado'].value;
-    let valorConFactura = 0;
-    if (conFactura) {
-      valorConFactura = 1;
-    }
-    this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
-                                                        nroDocLiq || '',
-                                                        origen,
-                                                        destino,
-                                                        estado ,
-                                                        valorConFactura,
-                                                        fechaIniLiq, fechaFinLiq).subscribe(data_ => {
+    this.itemFacturaService.listarDocumentosPorFiltro(this.usuarioSession.empresa.id,
+                                                        nroSerie || '',
+                                                        nroDocumento || '',
+                                                        FACTURA,
+                                                        idCLiente ,
+                                                        estado,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       console.log(this.rows);
       this.loader.close();
@@ -172,51 +165,10 @@ export class FacturaConsultaComponent implements OnInit {
       this.loader.close();
       this.rows = [];
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 3000 });
     });
 
   }
-
-
-  asignarOrdenServicio(data: any = {}, isNew?) {
-
-    if (this.selected.length > 0) {
-      let title = isNew ? 'ASIGNAR ORDEN DE SERVICIO' : 'Actualizar Item';
-      let dialogRef: MatDialogRef<any> = this.dialog.open(OrdenesServicioComponent, {
-        width: '840px',
-        height: '640px',
-        disableClose: true,
-        data: { title: title, payload: this.liquidacionesSelected }
-      });
-      dialogRef.afterClosed()
-        .subscribe(res => {
-          if (!res) {
-            // If user press cancel
-            return;
-          }
-          this.loader.open();
-          if (isNew) {
-            this.filtrarLiquidaciones();
-            // this.crudService.addItem(res)
-            //   .subscribe(data => {
-            //     this.items = data;
-            //     this.loader.close();
-            //     this.snack.open('Member Added!', 'OK', { duration: 4000 });
-            //   });
-          } else {
-            // this.crudService.updateItem(data._id, res)
-            //   .subscribe(data => {
-            //     this.items = data;
-            //     this.loader.close();
-            //     this.snack.open('Member Updated!', 'OK', { duration: 4000 });
-            //   });
-          }
-        });
-    } else {
-      return;
-    }
-  }
-
 
   onSelect({ selected }) {
 
@@ -232,8 +184,12 @@ export class FacturaConsultaComponent implements OnInit {
   }
 
   // Envia a Página de Consulta de Documento de Liquidación
-  consultarLiquidacion(row) {
-    this.router.navigate(['/forms/liquidacion'], { queryParams: { nroDocLiq: row.nrodoc } });
+  consultarDocumento(row) {
+    this.router.navigate(['/forms/facturacion/registro'], { queryParams: { nroDocLiq: row.nrodoc } });
+  }
+
+  compareObjects(o1: any, o2: any): boolean {
+    return o1.ruc === o2.ruc && o1.id === o2.id;
   }
 
 }

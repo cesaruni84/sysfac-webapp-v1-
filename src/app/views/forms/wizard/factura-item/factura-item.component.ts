@@ -27,7 +27,10 @@ export class FacturaItemComponent implements OnInit {
   tarifa_: number;
   descuentos_: number;
   valorIGV_: number;
+  valorISC_: number;
+
   total_: number;
+  subTotal_: number;
 
   comboTipoProducto = [
     { id: 1, codigo: '001' , descripcion: ' BIEN' },
@@ -80,8 +83,10 @@ export class FacturaItemComponent implements OnInit {
       unidadMedida: [{value: itemFactura.unidadMedida || '', disabled: false}],
       tarifa: [{value: '', disabled: false}],
       descuentos: [{value: '', disabled: false}],
-      tipoIGV: [{value: itemFactura.tipoIGV || this.comboTiposIGV[0], disabled: false}],
+      tipoIGV: [{value: itemFactura.tipoIGV || 1, disabled: false}],
       valorIGV: [{value: '', disabled: true}],
+      valorISC: [{value: '', disabled: true}],
+      subTotal: [{value: '', disabled: true}],
       total: [{value: '', disabled: true}],
     });
 
@@ -136,6 +141,7 @@ export class FacturaItemComponent implements OnInit {
     this.descuentos_ = itemFactura.descuentos || 0.00;
     this.valorIGV_ = itemFactura.valorIGV || 0.00;
     this.total_ = itemFactura.total || 0.00;
+    this.valorISC_ = 0.00;
   }
 
   despuesDigitarTarifa(event: any) {
@@ -190,6 +196,11 @@ export class FacturaItemComponent implements OnInit {
 
 
   submit() {
+    this.itemForm_.patchValue({
+      subTotal: this.total_,
+      valorISC: this.valorISC_,
+
+    });
     this.dialogRef.close(this.itemForm_.getRawValue());
   }
 

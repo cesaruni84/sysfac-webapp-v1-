@@ -4,6 +4,7 @@ import { Producto } from './producto.model';
 import { Cliente } from './cliente.model';
 import { Empresa } from './empresa.model';
 import { OrdenServicio } from './orden-servicio';
+import { GuiaRemision } from './guia_remision.model';
 
 export class FacturaDocumento {
 
@@ -41,14 +42,15 @@ export class FacturaDocumento {
     empresa: Empresa;
     formaPago: FormaPago;
     moneda: Moneda;
-    ordenServicio: OrdenServicio;
-    items: FacturaItem;
+    items: FacturaItem[];
+    ordenesServicio: OrdenServicio[];
+    guiasRemision: GuiaRemision[];
 }
 
 
-export interface FacturaItem {
+export class FacturaItem {
     id: number;
-    tipo: TipoItem;
+    tipo: number;
     codigo: string;
     descripcion: string;
     cantidad: number;
@@ -56,8 +58,8 @@ export interface FacturaItem {
     tipoDescuento: number;
     factorDescuento: number;
     descuentos: number;
-    subtotal: number;
-    tipoIGV: TipoIGV;
+    subTotal: number;
+    tipoIGV: number;
     valorIGV: number;
     valorISC: number;
     total: number;

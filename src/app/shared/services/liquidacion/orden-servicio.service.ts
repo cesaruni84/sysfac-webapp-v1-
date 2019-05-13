@@ -29,6 +29,11 @@ export class OrdenServicioService {
     return this.http.put<any>(this.url + idEmpresa + '/orden-servicio/' + ordenServicio.id, ordenServicio, this.httpOptions);
   }
 
+  listarOrdenesServicioPorEmpresa(idEmpresa: number) {
+    return this.http.get<OrdenServicio[]>(this.url + idEmpresa + '/ordenes-servicio');
+  }
+
+
   obtenerOrdenServicioPorNroDoc(idEmpresa: number, nroOrden: string) {
     const params = new HttpParams().set('nroOrden', nroOrden);
     return this.http.get<OrdenServicio>(this.url + idEmpresa + '/ordenes-servicio/SRV1', {params: params});
@@ -51,6 +56,6 @@ export class OrdenServicioService {
                                     .set('fechaIni', fechaIni.toString())
                                     .set('fechaFin', fechaFin.toString());
 
-    return this.http.get<OrdenServicio[]>(this.url + idEmpresa + '/orden-servicio/SRV0', { params: params });
+    return this.http.get<OrdenServicio[]>(this.url + idEmpresa + '/ordenes-servicio/SRV0', { params: params });
   }
 }

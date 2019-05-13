@@ -100,7 +100,7 @@
                 <mat-form-field class="full-width">
                     <mat-label><b>TIPO IGV (18%) </b></mat-label>
                     <mat-select [compareWith]="compareObjects" name="tipoIGV" [formControl]="itemForm_.controls['tipoIGV']">
-                        <mat-option *ngFor="let tipoAfectacion of comboTiposIGV" [value]="tipoAfectacion">
+                        <mat-option *ngFor="let tipoAfectacion of comboTiposIGV" [value]="tipoAfectacion.id">
                             {{tipoAfectacion.codigo + ' - ' + tipoAfectacion.descripcion}}
                         </mat-option>
                     </mat-select>
