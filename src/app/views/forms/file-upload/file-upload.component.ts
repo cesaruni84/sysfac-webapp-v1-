@@ -353,7 +353,6 @@ export class FileUploadComponent implements OnInit {
       // Id de base de datos
       this.idNroDocLiq = data_.id;
 
-
       // this.valorNroDocumentoLiq_ = this.nroDocLiqQuery;
       this.formLiquidacion.patchValue({
         nroDocumentoLiq: this.nroDocLiqQuery,
@@ -362,10 +361,10 @@ export class FileUploadComponent implements OnInit {
       this.situacionLiquidacion_ = data_.situacion.toString();
       this.monedaLiquidacion_ = data_.moneda.toString();
       this.valorFechaIniTraslado_ = data_.fecIniTraslado;
-      this.filtroFechaIni_ = data_.fecIniTraslado;
       this.valorFechaFinTraslado_ = data_.fecFinTraslado;
-      this.filtroFechaFin_ = data_.fecFinTraslado;
       this.valorFechaRegistro_ = data_.fechaEmision;
+      this.motivoTrasladoSelected_ = data_.motivo.id;
+      this.valorGlosa_ = data_.glosa;
 
       if (data_.notas1) {
         let valuesOrigen: number[] = data_.notas1.split(',').map(origen => {
@@ -381,23 +380,22 @@ export class FileUploadComponent implements OnInit {
         let valuesDestino: number[] = data_.notas2.split(',').map(destino => {
           return parseInt(destino);
         } );
-        this.valorDestinoSelected_ = this.comboFactoriasDestino.filter(factoria => valuesDestino.includes(factoria.id));
+
+        this.valorDestinoSelected_ = this.comboFactorias.filter(factoria => valuesDestino.includes(factoria.id));
         this.formLiquidacion.patchValue({
           destino: this.valorDestinoSelected_[0],
         });
       }
 
 
-
+      // Valores de Filtro
       this.filtroOrigen_ = data_.origen;
       this.filtroDestino_ = data_.destino;
-      this.motivoTrasladoSelected_ = data_.motivo.id;
-      this.valorGlosa_ = data_.glosa;
+      this.filtroFechaFin_ = new Date();
+      this.filtroFechaIni_ = new Date(this.filtroFechaFin_.getFullYear(), this.filtroFechaFin_.getMonth(), 1);
 
       // Guias asociadas
       this.rows = data_.guias;
-      // this.rowsSelected = data_.guias;
-
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -411,8 +409,6 @@ export class FileUploadComponent implements OnInit {
       this.loader.close();
       this.errorResponse_ = error.error;
       this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
-      console.log(this.errorResponse_.errorMessage);
-
     });
   }
 
@@ -423,7 +419,9 @@ export class FileUploadComponent implements OnInit {
     this.valorFechaIniTraslado_ = new Date();
     this.valorFechaFinTraslado_ = new Date();
     this.valorFechaRegistro_ = new Date();
-    this.valorFechaIniTraslado_.setDate((this.valorFechaIniTraslado_ .getDate()) - 30);
+    // this.valorFechaIniTraslado_.setDate((this.valorFechaIniTraslado_ .getDate()) - 30);
+    this.valorFechaIniTraslado_  =   new Date(this.valorFechaIniTraslado_.getFullYear(), this.valorFechaIniTraslado_.getMonth(), 1);
+
     this.motivoTrasladoSelected_ = 1;
     this.filtroFechaIni_ = this.valorFechaIniTraslado_;
     this.filtroFechaFin_ = this.valorFechaFinTraslado_;
@@ -438,9 +436,9 @@ export class FileUploadComponent implements OnInit {
   nuevaBusqueda() {
     this.filtroOrigen_ = this.comboFactorias[0];
     this.filtroDestino_ =  this.comboFactoriasDestino[1];
-    this.filtroFechaIni_ = new Date();
     this.filtroFechaFin_ = new Date();
-    this.filtroFechaIni_.setDate((this.filtroFechaIni_ .getDate()) - 30);
+    // this.filtroFechaIni_.setDate((this.filtroFechaIni_ .getDate()) - 30);
+    this.filtroFechaIni_  =   new Date(this.filtroFechaFin_.getFullYear(), this.filtroFechaFin_.getMonth(), 1);
     this.rowsGuias = [];
   }
 
@@ -492,26 +490,35 @@ export class FileUploadComponent implements OnInit {
         });
   }
 
-
-
-  deleteItem(row) {
+      /**
+   * Elimina item de grilla
+   */
+  eliminarGuia(row: GuiaRemision , rowindex) {
     this.confirmService.confirm({message: `Descartar guia:  ${row.serie + '-' + row.secuencia} ?`})
       .subscribe(res => {
         if (res) {
-          this.loader.open();
-          // this.crudService.removeItem(row)
-          //   .subscribe(data => {
-          //     this.rows = data;
-          //     this.loader.close();
-          //     this.snackBar.open('Guia descartada para liquidación!', 'OK', { duration: 4000 })
-          //   });
+          let i = this.rows.indexOf(row);
+          this.rows.splice(i, 1);
+          this.recalcularTotales();
 
-          //  let i = this.rows.indexOf(row);
-          //  this.rows.splice(i, 1);
-          //  of(this.rows.slice()).pipe(delay(1000));
+          if (this.edicion) {
+            this.guiaRemisionService.actualizarGuiaRemisionLiquidacion(row, this.idNroDocLiq).subscribe(data_ => {
+              this.snackBar.open('Item eliminado!', 'OK', { duration: 1000 });
+            },
+            (error: HttpErrorResponse) => {
+              this.loader.close();
+              this.errorResponse_ = error.error;
+              this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000});
+            });
+
+          } else {
+            this.snackBar.open('Item eliminado!', 'OK', { duration: 1000 });
+          }
+
         }
       });
   }
+
 
   /** Gets the total items of all transactions. */
   sumTotalCantidad() {
@@ -565,17 +572,28 @@ export class FileUploadComponent implements OnInit {
             this.snackBar.open('Importe de tarifa es igual a 0.00, configurar la tarifa para la ruta seleccionada.', 'OK', { duration: 5000 });
             this.loader.close();
           } else {
-            console.log(this.rows);
             this.liquidacionModel.tipocod = 'LST';
            //  this.valorNroDocumentoLiq_ = this.pad(this.valorNroDocumentoLiq_, 12) ;
            //  this.liquidacionModel.nrodoc = this.valorNroDocumentoLiq_;
             this.liquidacionModel.nrodoc = this.pad(this.nroDocumentoLiq.value, 12);
 
-            this.liquidacionModel.fechaEmision = this.valorFechaRegistro_;
+            const fr = new Date(this.formLiquidacion.get('fechaRegistro').value);
+            fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fechaEmision = fr;
+
             this.liquidacionModel.estado = this.formLiquidacion.get('estado').value;
             this.liquidacionModel.situacion = this.formLiquidacion.get('situacion').value;
-            this.liquidacionModel.fecIniTraslado =  this.valorFechaIniTraslado_;
-            this.liquidacionModel.fecFinTraslado =  this.valorFechaFinTraslado_;
+
+
+            const fini = new Date(this.formLiquidacion.get('fechaIniTraslado').value);
+            fini.setTime(fini.getTime() + fini.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fecIniTraslado =  fini;
+
+            const ffin = new Date(this.formLiquidacion.get('fechaFinTraslado').value);
+            ffin.setTime(ffin.getTime() + ffin.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fecFinTraslado =  ffin;
+
+
             this.liquidacionModel.glosa = this.formLiquidacion.get('glosa').value;
             this.liquidacionModel.moneda = this.formLiquidacion.get('moneda').value;
             this.liquidacionModel.totalCantidad = this.totalCantidadGuiasLiq_;
@@ -612,8 +630,6 @@ export class FileUploadComponent implements OnInit {
             });
 
             this.liquidacionModel.guias = this.guias_remision;
-
-            console.log(this.liquidacionModel);
             console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
 
             if (this.edicion) {
@@ -636,7 +652,7 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 3000 });
 
       // Resetea Formulario
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
@@ -647,7 +663,6 @@ export class FileUploadComponent implements OnInit {
       this.loader.close();
       this.errorResponse_ = error.error;
       this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
-      console.log(this.errorResponse_.errorMessage);
     });
   }
 
@@ -663,9 +678,9 @@ export class FileUploadComponent implements OnInit {
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 10000 });
 
       // Resetea Formulario
-      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        window.location.reload();
-      });
+      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        // window.location.reload();
+      // });
     },
     (error: HttpErrorResponse) => {
       this.loader.close();
@@ -774,7 +789,6 @@ export class FileUploadComponent implements OnInit {
   captureScreen() {
     const doc = new jspdf('l');
     this.listadoGuias = this.rows;
-    console.log(this.listadoGuias) ;
 
     var lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
 

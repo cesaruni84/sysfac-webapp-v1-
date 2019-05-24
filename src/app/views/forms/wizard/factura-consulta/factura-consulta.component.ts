@@ -183,10 +183,19 @@ export class FacturaConsultaComponent implements OnInit {
     this.excelService.generarReporteLiquidaciones(this.rows);
   }
 
-  // Envia a Página de Consulta de Documento de Liquidación
+  // Envia a Página de Consulta de Documento de Facturaciòn
   consultarDocumento(row) {
-    this.router.navigate(['/forms/facturacion/registro'], { queryParams: { nroDocLiq: row.nrodoc } });
+    const serieDoc = row.serie;
+    const secuenciaDoc = row.secuencia;
+    const tipoDoc = row.tipoDocumento;
+
+    this.router.navigate(['/forms/facturacion/registro'],
+                              { queryParams: { tipoDoc: tipoDoc,
+                                                serie: serieDoc ,
+                                                secuencia: secuenciaDoc }
+                          });
   }
+
 
   compareObjects(o1: any, o2: any): boolean {
     return o1.ruc === o2.ruc && o1.id === o2.id;

@@ -13,6 +13,7 @@ export class GuiaRemisionService {
 
   url = `${HOST}/empresas/`;
   url2 = `${HOST}/guias`;
+  url3 = `${HOST}/liquidaciones`;
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -41,6 +42,10 @@ export class GuiaRemisionService {
     return this.http.put<any>(this.url2 + '/' + guiaRemision.id, guiaRemision, this.httpOptions);
   }
 
+  actualizarGuiaRemisionLiquidacion(guiaRemision: GuiaRemision, idLiquidacion: number) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put<any>(this.url3 + '/' + idLiquidacion + '/guias/'+ guiaRemision.id , guiaRemision, this.httpOptions);
+  }
   obtenerGuiaRemisionxNroGuia(idEmpresa: number, nroSerie: string , nroSecuencia: string ) {
     const params = new HttpParams().set('nroSerie', nroSerie).set('nroSecuencia', nroSecuencia);
     return this.http.get<GuiaRemision>(this.url + idEmpresa + '/guias/SRV3', {params: params});

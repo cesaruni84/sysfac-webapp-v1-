@@ -24,7 +24,11 @@ export class ItemFacturaService {
   registrarDocumentoElectronico(documento: FacturaDocumento, idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<any>(this.url + idEmpresa + '/documentos', documento, this.httpOptions);
+  }
 
+  actualizarDocumentoElectronico(documento: FacturaDocumento, idEmpresa: number) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put<any>(this.url + idEmpresa + '/documentos/' + documento.id, documento, this.httpOptions);
   }
 
   listarDocumentosPorFiltro(idEmpresa: number,
@@ -44,6 +48,14 @@ export class ItemFacturaService {
                                       .set('fechaFin', fechaFin.toString());
 
     return this.http.get<FacturaDocumento[]>(this.url + idEmpresa + '/documentos/SRV2', { params: params });
+}
+
+obtenerDocumentPorSerie(idEmpresa: number, tipoDocumento: number, serieDoc: string, secuenciaDoc: string) {
+  const params = new HttpParams().set('tipoDocumento', tipoDocumento.toString())
+                                  .set('nroSerie', serieDoc.toString())
+                                  .set('nroSecuencia', secuenciaDoc.toString());
+
+  return this.http.get<FacturaDocumento>(this.url + idEmpresa + '/documentos/SRV1', { params: params });
 }
 
 

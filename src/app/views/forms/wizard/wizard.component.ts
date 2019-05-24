@@ -27,6 +27,7 @@ import { formatDate } from '@angular/common';
 import { ItemFacturaService } from '../../../shared/services/facturacion/item-factura.service';
 import { OrdenServicio } from '../../../shared/models/orden-servicio';
 import { GuiaRemision } from 'app/shared/models/guia_remision.model';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-wizard',
@@ -60,8 +61,14 @@ export class WizardComponent implements OnInit {
 
 
   esNuevo: boolean = true;
+  nroSerieQuery: string;
+  nroSecuenciaQuery: string;
+  tipoDocumentoQuery: number;
+
+  edicion: boolean = true;
   conGuiaRemision_: boolean = false;
   conOrdenServicio_: boolean = false;
+  idDocumento: number;
   subTipoFactura: string;
 
 
@@ -101,8 +108,6 @@ export class WizardComponent implements OnInit {
   public comboMonedas: Moneda[];
   public comboTiposIGV: TipoIGV[];
   public comboClientes: Cliente[];
-
-
   public facturaDocumento: FacturaDocumento;
   public listaItemsFactura: FacturaItem[] = [];
 
@@ -124,10 +129,16 @@ export class WizardComponent implements OnInit {
               private dialog: MatDialog,
               private confirmService: AppConfirmService,
               private itemFacturaService: ItemFacturaService,
+              private route: ActivatedRoute,
+              private router: Router,
               private snack: MatSnackBar,
               private userService: UsuarioService,
               private ordenServicioService: OrdenServicioService,
-              private clienteService: ClienteService) { }
+              private clienteService: ClienteService) { 
+
+    this.validarGrabarActualizar();
+
+    }
 
   ngOnInit() {
     this.facturaForm = this.formBuilder.group({
@@ -161,11 +172,18 @@ export class WizardComponent implements OnInit {
     });
 
 
-    // Carga Valores de Formulario
-    this.cargarValoresFormulario();
+    if (this.edicion) {
+      this.cargarCombos();
+      this.recuperarDocumentoBD();
 
-    // Carga valores de Totales
-    this.cargaValoresTotales();
+    } else {
+      // Carga Valores de Formulario Default
+      this.cargarValoresFormulario();
+
+      // Carga valores de Totales Default
+      this.cargaValoresTotales();
+    }
+
 
   }
 
@@ -217,6 +235,17 @@ export class WizardComponent implements OnInit {
     this.importeTotal = 0.00;
   }
 
+
+  validarGrabarActualizar() {
+    this.route.queryParams.subscribe(params => {
+        this.nroSerieQuery = params.serie;
+        this.nroSecuenciaQuery =  params.secuencia;
+        this.tipoDocumentoQuery =  params.tipoDoc;
+        this.edicion = (this.nroSerieQuery) != null ;
+      }
+    );
+  }
+
   selecccionarSimbolo() {
       this.simbolo = (this.moneda.value as Moneda).nemonico;
   }
@@ -257,6 +286,71 @@ export class WizardComponent implements OnInit {
     this.comboTiposIGV = this.tiposGenService.retornarTiposIGV();
 
   }
+
+    // Obtiene datos de base de datos
+    recuperarDocumentoBD()  {
+      this.loader.open();
+      this.itemFacturaService.obtenerDocumentPorSerie(this.usuarioSession.empresa.id,
+                                                      this.tipoDocumentoQuery,
+                                                      this.nroSerieQuery,
+                                                      this.nroSecuenciaQuery).subscribe((documento) => {
+        // Id de base de datos
+        this.idDocumento = documento.id;
+        console.log(documento);
+
+        // Completa valores de formulario cabecerea
+        this.facturaForm.patchValue({
+          tipoDocumento: this.comboTiposDocumento[0],
+          serieDocumento: documento.serie,
+          numeroDocumento: documento.secuencia,
+          fechaEmision: documento.fechaEmision,
+          fechaVencimiento: documento.fechaVencimiento,
+          estado: this.comboEstadosFactura.find(o => o.id === documento.estado),
+          tipoOperacion: this.comboTiposOperacion.find(o => o.id === documento.tipoOperacion),
+          moneda: this.comboMonedas.find(o => o.id === documento.moneda.id),
+          formaPago: this.comboFormasPago.find(o => o.id === documento.formaPago.id),
+          tipoAfectacionIGV: this.comboTiposIGV.find(o => o.id === documento.tipoAfectacion),
+          cliente: this.comboClientes.find(o => o.id === documento.cliente.id),
+          direccion: documento.cliente.direccion,
+          observacion: documento.observacion
+        });
+
+        // Completa items
+        this.rows = documento.items;
+
+         // Completa totales
+         this.totalSum = documento.subTotalVentas;
+         this.simbolo = 'S/';
+         this.subTotal = documento.subTotalVentas;
+         this.anticipos = documento.anticipos;
+         this.descuentos = documento.descuentos;
+         this.valorVenta = 0.00;
+         this.valorIGV = documento.igv;
+         this.otrosCargos = documento.otrosCargos;
+         this.otrosTributos = documento.otrosTributos;
+         this.importeTotal = documento.totalDocumento;
+
+         // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+         this.subTipoFactura = documento.notas;
+         this.ordenes_servicio = documento.ordenesServicio;
+         this.guias_remision = documento.guiasRemision;
+
+        if (this.ordenes_servicio.length > 0) {
+          this.conOrdenServicio_  = true;
+        }
+
+        if (this.guias_remision.length > 0) {
+          this.conGuiaRemision_  = true;
+        }
+
+         this.loader.close();
+
+      }, (error: HttpErrorResponse) => {
+        this.loader.close();
+        this.errorResponse_ = error.error;
+        this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+      });
+    }
 
 
 
@@ -531,28 +625,46 @@ export class WizardComponent implements OnInit {
           return item;
         } );
 
-
-
        this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
        this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
-
-
        console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
 
 
-      this.itemFacturaService.registrarDocumentoElectronico(this.facturaDocumento, this.usuarioSession.empresa.id).subscribe(data_ => {
-        this.infoResponse_ = data_;
-        this.loader.close();
-        this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
-      },
-      (error: HttpErrorResponse) => {
-        this.loader.close();
-        this.errorResponse_ = error.error;
-        this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
-      });
+      if (!this.edicion) {
+        this.registrar();
+      }else {
+        this.actualizar();
+      }
 
     }
 
+  }
+
+  registrar() {
+    this.itemFacturaService.registrarDocumentoElectronico(this.facturaDocumento, this.usuarioSession.empresa.id).subscribe(data_ => {
+      this.infoResponse_ = data_;
+      this.loader.close();
+      this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.errorResponse_ = error.error;
+      this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+    });
+  }
+
+  actualizar() {
+    this.facturaDocumento.id = this.idDocumento;
+    this.itemFacturaService.actualizarDocumentoElectronico(this.facturaDocumento, this.usuarioSession.empresa.id).subscribe(data_ => {
+      this.infoResponse_ = data_;
+      this.loader.close();
+      this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.errorResponse_ = error.error;
+      this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+    });
   }
 
 

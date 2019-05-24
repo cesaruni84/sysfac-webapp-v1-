@@ -356,9 +356,10 @@
                                         <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rows" [columns]="columns" [messages]="messages2">
                                             <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <span title="Consultar Guia">
-                                                            <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>
-                                                        </span>
+                                                    <span>
+                                                                                     <!-- <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>-->
+                                                            <button mat-icon-button mat-sm-button type="button" color="warn"   matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
+                                                    </span>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
