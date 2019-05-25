@@ -2,7 +2,7 @@ import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.a
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
-import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
@@ -146,13 +146,14 @@ export class FileUploadComponent implements OnInit {
               @Inject(LOCALE_ID) private locale: string,
               ) {
 
-    this.validarGrabarActualizar();
-    this.usuarioSession = this.userService.getUserLoggedIn();
+
 
   }
 
   ngOnInit() {
     // Recupera datos de usuario de session
+    this.validarGrabarActualizar();
+    this.usuarioSession = this.userService.getUserLoggedIn();
     this.initForm();
 
     // this.firstFormGroup = this.fb.group({
@@ -275,68 +276,6 @@ export class FileUploadComponent implements OnInit {
       this.valorFechaIniTraslado_ = this.filtroFechaIni_;
       this.valorFechaFinTraslado_ = this.filtroFechaFin_;
   }
-
-  /* ORIGINAL
-  agregarGuias() {
-    if (this.edicion) {
-      this.confirmService.confirm({message: `Desea reemplazar las guias asociadas a esta liquidación ?`})
-      .subscribe(res => {
-        if (res) { // OK
-          this.rows = this.rowsSelected;
-          this.valorOrigenSelected_.push(this.filtroOrigen_);
-          this.valorDestinoSelected_.push(this.filtroDestino_);
-          this.valorFechaIniTraslado_ = this.filtroFechaIni_;
-          this.valorFechaFinTraslado_ = this.filtroFechaFin_;
-        } else {// Cancelar
-          this.loader.close();
-        }
-      });
-    } else {
-      // Registro Nuevo de Liquidación
-
-
-      this.rowsSelected.forEach(element => {
-
-        let repetido: boolean = false;
-        if (this.rows.length > 0) {
-          this.rows.forEach(element2 => {
-              if (element.id == element2.id){
-                repetido = true;
-              }
-          });
-        }
-
-        if (!repetido){
-          let rowData = { ...element};
-          this.rows.splice(this.rows.length, 0, rowData);
-          this.rows = [...this.rows];
-        }
-      });
-
-
-
-      let rowDataorigen = { ...this.filtroOrigen_};
-      this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
-      this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
-      this.formLiquidacion.patchValue({
-         origen: this.valorOrigenSelected_[0],
-       });
-
-
-      let rowDataDestino = { ...this.filtroDestino_};
-      this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
-      this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
-      this.formLiquidacion.patchValue({
-        destino: this.valorDestinoSelected_[0],
-      });
-
-      this.valorFechaIniTraslado_ = this.filtroFechaIni_;
-      this.valorFechaFinTraslado_ = this.filtroFechaFin_;
-    }
-
-
-  }*/
-
 
 
   onSelect({ selected }) {
@@ -469,12 +408,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   consultarGuia(row) {
-    const _nroSerie = row.serie;
-    const _nroSecuencia = row.secuencia;
-
     // Envia a Página de Edición de Guia
-    //this.router.navigate(['/forms/basic'], { queryParams: { _serie: _nroSerie , _secuencia: _nroSecuencia } });
-
       let dialogRef: MatDialogRef<any> = this.dialog.open(BasicFormComponent, {
         width: '1640px',
         height: '580px',
@@ -502,8 +436,10 @@ export class FileUploadComponent implements OnInit {
           this.recalcularTotales();
 
           if (this.edicion) {
+            this.loader.open();
             this.guiaRemisionService.actualizarGuiaRemisionLiquidacion(row, this.idNroDocLiq).subscribe(data_ => {
               this.snackBar.open('Item eliminado!', 'OK', { duration: 1000 });
+              this.loader.close();
             },
             (error: HttpErrorResponse) => {
               this.loader.close();
@@ -653,11 +589,16 @@ export class FileUploadComponent implements OnInit {
       this.infoResponse_ = data_;
       this.loader.close();
       this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 3000 });
+      // this.router.navigated = false;
+      // this.router.navigate([this.router.url]);
+      // this.router.navigate(['/forms/busquedaLiquidaciones']);
+      // this.ngOnInit();
+
 
       // Resetea Formulario
-      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
         window.location.reload();
-      });
+      // });
     },
     (error: HttpErrorResponse) => {
       this.loader.close();
