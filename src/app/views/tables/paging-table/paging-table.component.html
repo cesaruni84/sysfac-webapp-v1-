@@ -106,6 +106,12 @@
                 <div [style.fontSize.px]="13"> {{ row?.nroSecuencia }} </div>
             </ng-template>
         </ngx-datatable-column>
+
+        <ngx-datatable-column name="Guía Rem. Cliente" [flexGrow]="1">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="13">{{ row?.nroGuiaCliente }}</div>
+            </ng-template>
+        </ngx-datatable-column>
         <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <div [style.fontSize.px]="13"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
@@ -165,11 +171,7 @@
                 {{ row?.balance | currency }}
             </ng-template>
         </ngx-datatable-column> -->
-        <ngx-datatable-column name="Guía Rem. Cliente" [flexGrow]="1">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13">{{ row?.nroGuiaCliente }}</div>
-            </ng-template>
-        </ngx-datatable-column>
+
 
         <ngx-datatable-column name="Usuario Reg." [flexGrow]="1" [width]="110" prop="usuarioRegistra">
             <ng-template let-row="row" ngx-datatable-cell-template>

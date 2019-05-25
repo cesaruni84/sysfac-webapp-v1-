@@ -597,7 +597,8 @@ export class FileUploadComponent implements OnInit {
 
       // Resetea Formulario
       // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        window.location.reload();
+       // window.location.reload();
+        history.go(0);
       // });
     },
     (error: HttpErrorResponse) => {
