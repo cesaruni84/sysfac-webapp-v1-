@@ -505,7 +505,7 @@ export class FileUploadComponent implements OnInit {
       } else {
            // Completa valores
           if (!this.validarGuias() ){
-            this.snackBar.open('Importe de tarifa es igual a 0.00, configurar la tarifa para la ruta seleccionada.', 'OK', { duration: 5000 });
+            this.snackBar.open('Tarifa es igual a 0.00, configurar valor para la ruta seleccionada.', 'OK', { duration: 5000 });
             this.loader.close();
           } else {
             this.liquidacionModel.tipocod = 'LST';
@@ -588,7 +588,7 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 3000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 2000 });
       // this.router.navigated = false;
       // this.router.navigate([this.router.url]);
       // this.router.navigate(['/forms/busquedaLiquidaciones']);
@@ -596,10 +596,10 @@ export class FileUploadComponent implements OnInit {
 
 
       // Resetea Formulario
-      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+     this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
        // window.location.reload();
         history.go(0);
-      // });
+       });
     },
     (error: HttpErrorResponse) => {
       this.loader.close();
