@@ -1,14 +1,11 @@
-import { FacturaDocumento } from './../../../shared/models/facturacion.model';
+import { Documento } from './../../../shared/models/facturacion.model';
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV } from '../../../shared/models/tipos_facturacion';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ClienteService } from '../../../shared/services/facturacion/cliente.service';
 import { Cliente } from '../../../shared/models/cliente.model';
 import { TiposGenericosService } from '../../../shared/services/util/tiposGenericos.service';
-import { GetValueByKeyPipe } from '../../../shared/pipes/get-value-by-key.pipe';
 import { DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog, MatSnackBar } from '@angular/material';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
@@ -22,12 +19,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { FacturaItemGuiasComponent } from './factura-item-guias/factura-item-guias.component';
-import { FacturaItem } from '../../../shared/models/facturacion.model';
-import { formatDate } from '@angular/common';
+import { DocumentoItem } from '../../../shared/models/facturacion.model';
 import { ItemFacturaService } from '../../../shared/services/facturacion/item-factura.service';
-import { OrdenServicio } from '../../../shared/models/orden-servicio';
 import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Liquidacion } from '../../../shared/models/liquidacion.model';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-wizard',
@@ -84,7 +81,7 @@ export class WizardComponent implements OnInit {
   infoResponse_: InfoResponse;
   step = 0;
 
-  ordenes_servicio = [];
+  liquidaciones_ = [];
   guias_remision = [];
 
 
@@ -108,8 +105,8 @@ export class WizardComponent implements OnInit {
   public comboMonedas: Moneda[];
   public comboTiposIGV: TipoIGV[];
   public comboClientes: Cliente[];
-  public facturaDocumento: FacturaDocumento;
-  public listaItemsFactura: FacturaItem[] = [];
+  public facturaDocumento: Documento;
+  public listaItemsFactura: DocumentoItem[] = [];
 
 
 
@@ -138,7 +135,7 @@ export class WizardComponent implements OnInit {
 
     this.validarGrabarActualizar();
 
-    }
+  }
 
   ngOnInit() {
     this.facturaForm = this.formBuilder.group({
@@ -165,7 +162,7 @@ export class WizardComponent implements OnInit {
       ],
       estado: [{value: '', disabled: true}],
       observacion: [''],
-     // nroOrdenServicio: [{value: '', disabled: false}, [Validators.required]],
+      ordenServicio: [{value: '', disabled: false}],
       moneda: [''],
       conOrdenServicio: [''],
       conGuiaRemision: [''],
@@ -185,28 +182,6 @@ export class WizardComponent implements OnInit {
     }
 
 
-  }
-
-    /**
-   * Update prices as soon as something changed on units group
-   */
-  private updateTotalUnitPrice(units: any) {
-    // get our units group controll
-    const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
-    // before recount total price need to be reset.
-    this.totalSum = 0;
-
-    for (let i = 0; i < units.length; i++) {
-
-    // for ( var i in units) {
-      let totalUnitPrice = (units[i].cantidad * units[i].unitPrice);
-      // now format total price with angular currency pipe
-      // let totalUnitPriceFormatted = this.currencyPipe.transform(totalUnitPrice, 'USD', 'symbol-narrow', '1.2-2');
-      // update total sum field on unit and do not emit event myFormValueChanges$ in this case on units
-      control.at(+i).get('unitTotalPrice').setValue(totalUnitPrice, {onlySelf: true, emitEvent: false});
-      // update total price for all units
-      this.totalSum += totalUnitPrice;
-    }
   }
 
   cargarValoresFormulario() {
@@ -296,7 +271,6 @@ export class WizardComponent implements OnInit {
                                                       this.nroSecuenciaQuery).subscribe((documento) => {
         // Id de base de datos
         this.idDocumento = documento.id;
-        console.log(documento);
 
         // Completa valores de formulario cabecerea
         this.facturaForm.patchValue({
@@ -312,11 +286,12 @@ export class WizardComponent implements OnInit {
           tipoAfectacionIGV: this.comboTiposIGV.find(o => o.id === documento.tipoAfectacion),
           cliente: this.comboClientes.find(o => o.id === documento.cliente.id),
           direccion: documento.cliente.direccion,
-          observacion: documento.observacion
+          observacion: documento.observacion,
+          ordenServicio: documento.nroOrden || ''
         });
 
         // Completa items
-        this.rows = documento.items;
+        this.rows = documento.documentoitemSet;
 
          // Completa totales
          this.totalSum = documento.subTotalVentas;
@@ -332,10 +307,10 @@ export class WizardComponent implements OnInit {
 
          // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
          this.subTipoFactura = documento.notas;
-         this.ordenes_servicio = documento.ordenesServicio;
+         this.liquidaciones_ = documento.liquidaciones;
          this.guias_remision = documento.guiasRemision;
 
-        if (this.ordenes_servicio.length > 0) {
+        if (this.liquidaciones_.length > 0) {
           this.conOrdenServicio_  = true;
         }
 
@@ -346,9 +321,7 @@ export class WizardComponent implements OnInit {
          this.loader.close();
 
       }, (error: HttpErrorResponse) => {
-        this.loader.close();
-        this.errorResponse_ = error.error;
-        this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+        this.handleError(error);
       });
     }
 
@@ -393,7 +366,7 @@ export class WizardComponent implements OnInit {
    */
   buscarItem(data: any = {}, isNew?) {
     if (this.conOrdenServicio_) {
-      this.buscarOrdenServicioItem(data, isNew);
+      this.buscarLiquidacionItem(data, isNew);
     } else {
       if (this.conGuiaRemision_) {
         this.buscarGuiaRemisionItem(data, isNew);
@@ -455,8 +428,6 @@ export class WizardComponent implements OnInit {
           return;
         }
 
-        console.log(item);
-
         if (isNew) {
           item.forEach(element => {
             let rowData = { ...element};
@@ -482,12 +453,12 @@ export class WizardComponent implements OnInit {
 
 
  /**
-   * Abre Pop-up para Añadir Ordenes de Servicio
+   * Abre Pop-up para Añadir Liquidación
    */
-  buscarOrdenServicioItem(data2: any = {}, isNew?) {
-    let title2 = isNew ? 'Seleccionar Orden Servicio' : 'Actualizar Item';
+  buscarLiquidacionItem(data2: any = {}, isNew?) {
+    let title2 = isNew ? 'Seleccionar Liquidación' : 'Actualizar Item';
     let dialogRef2: MatDialogRef<any> = this.dialog.open(FacturaPopUpComponent, {
-        width: '940px',
+        width: '1080px',
        // height: '580px',
         disableClose: true,
         data: { title: title2, payload: data2 }
@@ -500,12 +471,14 @@ export class WizardComponent implements OnInit {
           return;
         }
         if (isNew) {
-            let rowData = { ...item};
+          item.forEach(element => {
+            let rowData = { ...element};
             this.rows.splice(this.rows.length, 0, rowData);
             this.rows = [...this.rows];
             this.actualizaTotales();
-            this.snack.open('Item añadido!!', 'OK', { duration: 1000 });
-            this.subTipoFactura = '2';
+          });
+          this.snack.open(item.length + ' Item(s) añadido(s)!!', 'OK', { duration: 1000 });
+          this.subTipoFactura = '2';
         } else {
 
           this.rows = this.rows.map(element => {
@@ -574,15 +547,15 @@ export class WizardComponent implements OnInit {
         this.loader.close();
     } else {
 
-       this.facturaDocumento = new FacturaDocumento();
-       this.ordenes_servicio = [];
+       this.facturaDocumento = new Documento();
+       this.liquidaciones_ = [];
        this.guias_remision = [];
        this.facturaDocumento.tipoDocumento = this.facturaForm.controls['tipoDocumento'].value.id;
        this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
        this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
        this.facturaDocumento.fechaEmision = this.facturaForm.controls['fechaEmision'].value;
        this.facturaDocumento.fechaVencimiento = this.facturaForm.controls['fechaVencimiento'].value;
-       this.facturaDocumento.nroOrden = this.rows[0].codigo || '';
+       this.facturaDocumento.nroOrden = this.facturaForm.controls['ordenServicio'].value;
        this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
        this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
        this.facturaDocumento.tipoOperacion = this.facturaForm.controls['tipoOperacion'].value.id;
@@ -606,21 +579,21 @@ export class WizardComponent implements OnInit {
 
 
        this.rows.forEach(element => {
-          let os_obj: OrdenServicio = new OrdenServicio();
+          let liquidacion: Liquidacion = new Liquidacion();
           let guia: GuiaRemision = new GuiaRemision();
           if (this.subTipoFactura === '2') {
-            os_obj.id = element.id;
-            this.ordenes_servicio.push(os_obj);
+            liquidacion.id = element.id;
+            this.liquidaciones_.push(liquidacion);
           } else if (this.subTipoFactura === '3') {
             guia.id = element.id;
             this.guias_remision.push(guia);
           }
        });
 
-       this.facturaDocumento.ordenesServicio = this.ordenes_servicio;
+       this.facturaDocumento.liquidaciones = this.liquidaciones_;
        this.facturaDocumento.guiasRemision = this.guias_remision;
 
-       this.facturaDocumento.items = this.rows.map(item => {
+       this.facturaDocumento.documentoitemSet = this.rows.map(item => {
           delete item.id;
           return item;
         } );
@@ -645,11 +618,12 @@ export class WizardComponent implements OnInit {
       this.infoResponse_ = data_;
       this.loader.close();
       this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+      this.snack._openedSnackBarRef.afterDismissed().subscribe(() => {
+        this.redirectTo('/forms/facturacion/registro');
+      });
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+      this.handleError(error);
     });
   }
 
@@ -661,55 +635,20 @@ export class WizardComponent implements OnInit {
       this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snack.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
-    });
-  }
-
-
-
-    /**
-   * Obtiene una lista de todas las guias de remisión asociadas a la orden de servicio
-   */
-  buscarGuiasPorOS(event: any) {
-    this.ordenServicioService.listarGuiasPorOrdenServicio(this.usuarioSession.empresa.id ,
-      this.nroOrdenServicio_.value).subscribe((data_) => {
-      this.rows_guias = data_;
-      this.setStep(1);
-    },
-    (error: HttpErrorResponse) => {
-      this.rows_guias = [];
-      this.setStep(0);
       this.handleError(error);
     });
   }
 
 
-
-    /**
-   * Default Panel
-   */
-  setStep(index: number) {
-    this.step = index;
+  nuevoDocumento() {
+    // this.router.navigate([]);
+    this.redirectTo('/forms/facturacion/registro');
   }
 
-    /**
-   * Add new unit row into form
-   */
-   addUnit() {
-    const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
-    control.push(this.obtenerFacturaDetalle());
+  redirectTo(uri: string) {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+    this.router.navigate([uri]));
   }
-
-  /**
-   * Remove unit row from form on click delete button
-   */
-   removeUnit(i: number) {
-    const control = <FormArray>this.facturaForm.controls['facturaDetalle'];
-    control.removeAt(i);
-  }
-
 
   /**  Actualiza campos Descuentos */
   actualizaTotales() {
@@ -767,16 +706,17 @@ export class WizardComponent implements OnInit {
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       // this.errorResponse_ = error.error;
-      this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 3000 });
+      this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
       console.error('An error occurred:', error.error.message);
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
       if (error.error.codeMessage != null ) {
         this.errorResponse_ = error.error;
-        this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 3000 });
+        this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
       } else {
-        this.snack.open('Ocurrió un error inesperado!!, intenta nuevamente.', 'OK', { duration: 3000 });
+        this.snack.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
         console.error(
           `Backend returned code ${error.status}, ` +
           `body was: ${error.error}`);

@@ -167,7 +167,7 @@
 
 
                                         <section class="pl-1 ml-05">
-                                            <mat-checkbox name="conOrdenServicio" [(ngModel)]="conOrdenServicio_" [disabled]="conGuiaRemision_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conOrdenServicio']">Orden de Servicio </mat-checkbox>
+                                            <mat-checkbox name="conOrdenServicio" [(ngModel)]="conOrdenServicio_" [disabled]="conGuiaRemision_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conOrdenServicio']">Liquidación </mat-checkbox>
                                         </section>
                                         <section class="pl-1 ml-05">
                                             <mat-checkbox name="conGuiaRemision" [(ngModel)]="conGuiaRemision_" [disabled]="conOrdenServicio_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conGuiaRemision']">Guia de Remisión </mat-checkbox>
@@ -276,17 +276,25 @@
                                     <br>
                                     <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                                         <!-- Observación -->
-                                        <mat-form-field fxFlex="100%" appearance="">
+                                        <mat-form-field fxFlex="70%" appearance="">
                                             <mat-label><b>OBSERVACION</b></mat-label>
-                                            <textarea matInput name="observacion" cdkAutosizeMinRows="5" [formControl]="facturaForm.controls['observacion']" style="color:#3f51b5"></textarea>
-                                            <mat-icon matSuffix>comment</mat-icon>
+                                            <input matInput name="observacion" [formControl]="facturaForm.controls['observacion']" style="color:#3f51b5">
+                                            <mat-icon matSuffix inline="true">comment</mat-icon>
+                                        </mat-form-field>
+                                        <!-- Orden de Servicio -->
+                                        <mat-form-field fxFlex="30%" appearance="">
+                                            <mat-label><b>ORDEN DE SERVICIO</b></mat-label>
+                                            <input matInput name="ordenServicio" type="text" [formControl]="facturaForm.controls['ordenServicio']" style="color:#3f51b5">
+                                            <mat-icon matSuffix inline="true">edit</mat-icon>
                                         </mat-form-field>
                                     </div>
-                                    <br>
+                                    <br> <br>
                                     <div align="left">
                                         <button mat-raised-button type="submit" matTooltip="Graba factura en el sistema" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar Factura</button>
-                                        <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Envia Factura a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button>
-                                        <button mat-raised-button type="button" [disabled]="esNuevo" matTooltip="Imprime comprobante electrónico" color="warn"><mat-icon>print</mat-icon> Imprimir Factura</button>
+                                        <button mat-raised-button type="button" [disabled]="true" matTooltip="Envia Documento a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button>
+                                        <button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Imprime documento electrónico" color="warn" class="mr-1"><mat-icon>print</mat-icon> Imprimir Factura</button>
+                                        <button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Nuevo documento electrónico" color="primary" (click)="nuevoDocumento()"><mat-icon>note_add</mat-icon> Nueva Factura</button>
+
                                     </div>
                                     <br>
                                 </mat-card-content>
@@ -347,6 +355,7 @@
                                         <span fxFlex></span>
                                         <span class="text-muted2" style="color:#3f51b5"> {{simbolo }} {{ importeTotal | number: '1.2-2'}}</span>
                                     </div>
+                                    <br>
                                 </mat-card-content>
                             </mat-card>
                         </div>

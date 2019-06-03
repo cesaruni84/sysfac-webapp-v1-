@@ -1,6 +1,6 @@
 import { TiposGenericosService } from './../../../../shared/services/util/tiposGenericos.service';
 import { ProductoService } from './../../../../shared/services/productos/producto.service';
-import { FacturaItem } from './../../../../shared/models/facturacion.model';
+import { DocumentoItem } from './../../../../shared/models/facturacion.model';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -54,7 +54,7 @@ export class FacturaItemComponent implements OnInit {
     this.defaultValues(this.data.payload);
     this.buildItemForm(this.data.payload);
   }
-  buildItemForm(itemFactura: FacturaItem) {
+  buildItemForm(itemFactura: DocumentoItem) {
 
     console.log(itemFactura);
 
@@ -135,7 +135,7 @@ export class FacturaItemComponent implements OnInit {
     this.valorIGV_ = 0.18 * this.total_;
   }
 
-  defaultValues(itemFactura: FacturaItem) {
+  defaultValues(itemFactura: DocumentoItem) {
     this.cantidad_ = itemFactura.cantidad || 1.00;
     this.tarifa_ = itemFactura.tarifa;
     this.descuentos_ = itemFactura.descuentos || 0.00;

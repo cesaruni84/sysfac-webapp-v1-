@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { FacturaDocumento } from '../../models/facturacion.model';
+import { Documento } from '../../models/facturacion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +21,13 @@ export class ItemFacturaService {
     return this.http.get<any[]>(this.url + idCodigo + '/clientes');
   }
 
-  registrarDocumentoElectronico(documento: FacturaDocumento, idEmpresa: number) {
+  registrarDocumentoElectronico(documento: Documento, idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    console.log(documento);
     return this.http.post<any>(this.url + idEmpresa + '/documentos', documento, this.httpOptions);
   }
 
-  actualizarDocumentoElectronico(documento: FacturaDocumento, idEmpresa: number) {
+  actualizarDocumentoElectronico(documento: Documento, idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.put<any>(this.url + idEmpresa + '/documentos/' + documento.id, documento, this.httpOptions);
   }
@@ -47,7 +48,7 @@ export class ItemFacturaService {
                                       .set('fechaIni', fechaIni.toString())
                                       .set('fechaFin', fechaFin.toString());
 
-    return this.http.get<FacturaDocumento[]>(this.url + idEmpresa + '/documentos/SRV2', { params: params });
+    return this.http.get<Documento[]>(this.url + idEmpresa + '/documentos/SRV2', { params: params });
 }
 
 obtenerDocumentPorSerie(idEmpresa: number, tipoDocumento: number, serieDoc: string, secuenciaDoc: string) {
@@ -55,7 +56,7 @@ obtenerDocumentPorSerie(idEmpresa: number, tipoDocumento: number, serieDoc: stri
                                   .set('nroSerie', serieDoc.toString())
                                   .set('nroSecuencia', secuenciaDoc.toString());
 
-  return this.http.get<FacturaDocumento>(this.url + idEmpresa + '/documentos/SRV1', { params: params });
+  return this.http.get<Documento>(this.url + idEmpresa + '/documentos/SRV1', { params: params });
 }
 
 

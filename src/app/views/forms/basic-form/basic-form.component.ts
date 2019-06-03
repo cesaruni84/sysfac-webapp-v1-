@@ -143,7 +143,6 @@ export class BasicFormComponent implements OnInit {
         this.serieQuery = params._serie;
         this.secuenciaQuery = params._secuencia;
         this.edicion = (this.serieQuery && this.secuenciaQuery) != null ;
-        console.log(this.edicion);
       }
     );
   }
@@ -156,7 +155,6 @@ export class BasicFormComponent implements OnInit {
     )
     .subscribe((data_) => {
       // this.initForm(data_);
-      console.log(data_);
       this.valorIdGuia_ = data_.id;
       this.estadoSelected_ = data_.estado.toString();
       this.valorFechaEmision_ = data_.fechaRemision;
@@ -188,7 +186,6 @@ export class BasicFormComponent implements OnInit {
     }, (error: HttpErrorResponse) => {
       this.errorResponse_ = error.error;
       this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['red-snackbar'] });
-      console.log(this.errorResponse_.errorMessage);
     });
   }
 
@@ -285,13 +282,9 @@ export class BasicFormComponent implements OnInit {
     this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
       this.comboFactoriasDestino = data7;
     });
-
-
-
     // Carga de Combos Productos
     this.productoService.listarComboProductos().subscribe(data2 => {
       this.comboProductos = data2;
-      console.log(data2);
     },
     (error: HttpErrorResponse) => { // Error del Server
         this.handleError(error);
@@ -333,7 +326,6 @@ export class BasicFormComponent implements OnInit {
   // Grabar Guia de Remisión
   grabarGuiaRemision(model: any, isValid: boolean, e: Event) {
 
-    console.log(this.basicForm.status);
    if (this.basicForm.invalid) {
       console.log('hay errores aun');
    }else {
@@ -414,12 +406,11 @@ export class BasicFormComponent implements OnInit {
     this.guiaRemisioService.registrarGuiaRemisionBD(this.guiaRemision).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.progressBar.mode = 'determinate';
-      console.log('mensaje: ' + this.infoResponse_.alertMessage);
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 , panelClass: ['green-snackbar'] });
 
       // Resetea Formulario
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        window.location.reload();
+        this.redirectTo('/forms/basic');
       });
     },
     (error: HttpErrorResponse) => {
@@ -427,34 +418,25 @@ export class BasicFormComponent implements OnInit {
       this.submitButton.disabled = false;
       this.basicForm.enable();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['green-snackbar'] });
-      console.log(this.errorResponse_.errorMessage);
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000 });
     });
   }
 
   actualizar() {
     // Manda PUT hacia BD AWS
     this.guiaRemision.id = this.valorIdGuia_;
-    console.log(this.guiaRemision.fechaRemision);
 
     this.guiaRemisioService.actualizarGuiaRemisionBD(this.guiaRemision).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.progressBar.mode = 'determinate';
-      console.log('mensaje: ' + this.infoResponse_.alertMessage);
-      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 , panelClass: ['green-snackbar'] });
-
-      // Resetea Formulario
-      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        this.router.navigate(['/forms/paging']);
-      });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 });
     },
     (error: HttpErrorResponse) => {
       this.progressBar.mode = 'determinate';
       this.submitButton.disabled = false;
       this.basicForm.enable();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['red-snackbar'] });
-      console.log(this.errorResponse_.errorMessage);
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['blue-snackbar'] });
     });
   }
 
@@ -462,7 +444,10 @@ export class BasicFormComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-
+  redirectTo(uri: string) {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+    this.router.navigate([uri]));
+  }
 
   onChangeFechaEmision(type: string, event: MatDatepickerInputEvent<Date>) {
     this.valorFechaIniTraslado_ = event.value;

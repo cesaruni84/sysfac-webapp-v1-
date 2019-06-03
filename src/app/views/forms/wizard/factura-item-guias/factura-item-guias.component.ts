@@ -3,7 +3,7 @@ import { Usuario } from '../../../../shared/models/usuario.model';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { TipoIGV, TipoItem } from '../../../../shared/models/tipos_facturacion';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
-import { FacturaItem } from '../../../../shared/models/facturacion.model';
+import { DocumentoItem } from '../../../../shared/models/facturacion.model';
 import { ErrorResponse, InfoResponse } from '../../../../shared/models/error_response.model';
 import { Factoria } from '../../../../shared/models/factoria.model';
 import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
@@ -50,8 +50,8 @@ export class FacturaItemGuiasComponent implements OnInit {
   public comboUnidades: UnidadMedida[]= [];
   public comboFactorias: Factoria[] = [];
   public comboFactoriasDestino: Factoria[] = [];
-  public itemFactura: FacturaItem;
-  public listaItemsFactura: FacturaItem[] = [];
+  public itemFactura: DocumentoItem;
+  public listaItemsFactura: DocumentoItem[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
 
@@ -169,12 +169,9 @@ export class FacturaItemGuiasComponent implements OnInit {
   }
 
   onSelect({ selected }) {
-
     this.listaItemsSelected = selected;
-    console.log(this.listaItemsSelected);
     this.selected.splice(0, this.selected.length);
     this.selected.push(...selected);
-
   }
 
   submit() {
@@ -185,7 +182,7 @@ export class FacturaItemGuiasComponent implements OnInit {
 
     //
     this.listaItemsSelected.forEach(element => {
-     let item: FacturaItem = new FacturaItem();
+     let item: DocumentoItem = new DocumentoItem();
      item.id = element.id;
      item.codigo = element.serie + '-' + element.secuencia;
      item.descripcion = element.guiaDetalle[0].producto.nombre ;
@@ -205,7 +202,6 @@ export class FacturaItemGuiasComponent implements OnInit {
      this.itemFactura = item;
      this.listaItemsFactura.push(this.itemFactura);
     });
-    console.log(this.listaItemsFactura);
     this.dialogRef.close(this.listaItemsFactura);
   }
 

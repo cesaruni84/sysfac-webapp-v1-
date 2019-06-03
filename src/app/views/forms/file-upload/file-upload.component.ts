@@ -588,18 +588,12 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 2000 });
-      // this.router.navigated = false;
-      // this.router.navigate([this.router.url]);
-      // this.router.navigate(['/forms/busquedaLiquidaciones']);
-      // this.ngOnInit();
-
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 3000 });
 
       // Resetea Formulario
-     this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-       // window.location.reload();
-        history.go(0);
-       });
+      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        this.redirectTo('/forms/liquidacion');
+      });
     },
     (error: HttpErrorResponse) => {
       this.loader.close();
@@ -618,11 +612,6 @@ export class FileUploadComponent implements OnInit {
       this.infoResponse_ = data_;
       this.loader.close();
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 10000 });
-
-      // Resetea Formulario
-      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        // window.location.reload();
-      // });
     },
     (error: HttpErrorResponse) => {
       this.loader.close();
@@ -633,6 +622,11 @@ export class FileUploadComponent implements OnInit {
 
   cancelarLiquidacion() {
       this.router.navigate(['/dashboard']);
+  }
+
+  redirectTo(uri: string) {
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
+    this.router.navigate([uri]));
   }
 
   imprimirLiquidacion() {

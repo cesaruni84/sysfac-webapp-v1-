@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { Usuario } from '../../../../shared/models/usuario.model';
-import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../../shared/models/error_response.model';
 import { Factoria } from '../../../../shared/models/factoria.model';
@@ -11,15 +10,14 @@ import { GuiaRemisionService } from '../../../../shared/services/guias/guia-remi
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ProductoService } from '../../../../shared/services/productos/producto.service';
 import { OrdenServicioService } from '../../../../shared/services/liquidacion/orden-servicio.service';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
-import { FacturaItem } from '../../../../shared/models/facturacion.model';
-import { Producto } from '../../../../shared/models/producto.model';
+import { DocumentoItem } from '../../../../shared/models/facturacion.model';
 import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
 import { TipoIGV, TipoItem } from '../../../../shared/models/tipos_facturacion';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
 import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/unidad-medida.service';
+import { LiquidacionService } from '../../../../shared/services/liquidacion/liquidacion.service';
 
 @Component({
   selector: 'app-factura-pop-up',
@@ -50,8 +48,8 @@ export class FacturaPopUpComponent implements OnInit {
   public comboTiposIGV: TipoIGV[]= [];
   public comboTiposItem: TipoItem[]= [];
   public comboUnidades: UnidadMedida[]= [];
-  public itemFactura: FacturaItem;
-
+  public itemFactura: DocumentoItem;
+  public listaItemsFactura: DocumentoItem[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
 
@@ -83,8 +81,8 @@ export class FacturaPopUpComponent implements OnInit {
     private factoriaService: FactoriaService,
     private fb: FormBuilder,
     private userService: UsuarioService,
-    private productoService: ProductoService,
     private ordenServicioService: OrdenServicioService,
+    private liquidacionService: LiquidacionService,
     private guiaRemisionService: GuiaRemisionService,
     private unidadMedidaService: UnidadMedidaService,
     private tiposGenService: TiposGenericosService,
@@ -94,29 +92,28 @@ export class FacturaPopUpComponent implements OnInit {
 
   ngOnInit() {
     const fechaActual_ = new Date();
-    const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
+    const fechaIni = new Date(fechaActual_.getFullYear(), fechaActual_.getMonth(), 1);
 
-    this.loader.open();
     this.formFilter = this.fb.group({
-      nroOrdenServicio: ['', ],
-      filtroFechaIni: new FormControl(fechaIniTraslado_, ),
-      filtroFechaFin: new FormControl(fechaActual_, ),
+      nroSerieLiq: ['', ],
+      fechaIniLiq: new FormControl(fechaIni, ),
+      fechaFinLiq: new FormControl(fechaActual_, ),
     });
 
 
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
-    this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
-      this.comboUnidades = data3;
+    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+      this.comboFactorias = data1;
     });
 
-    // Lista ordenes de servicio por Empresa
-    this.ordenServicioService.listarOrdenesServicioPorEmpresa(this.usuarioSession.empresa.id).subscribe(data3 => {
-      this.rows = data3;
-      console.log(data3);
-      this.loader.close();
+    this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
+      this.comboFactoriasDestino = data3;
+    });
+
+    this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data4 => {
+      this.comboUnidades = data4;
     });
 
 
@@ -144,20 +141,25 @@ export class FacturaPopUpComponent implements OnInit {
   }
 
 
-  buscarOrdenServicio() {
+  buscarLiquidacionesPorFacturar() {
 
     this.selected = [];
     this.loader.open();
-    let nroOrden  =  this.formFilter.controls['nroOrdenServicio'].value;
-    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
-    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
+    let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
+    const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
+    const origen = 0; // TODOS
+    const destino = 0; // TODOS
+    const estado  =  1; // REGISTRADO
+    const valorConFactura = 0; // SIN FACTURAR
 
-    this.ordenServicioService.listarOrdenesServicioPorFiltro(this.usuarioSession.empresa.id,
-                                nroOrden || '',
-                                0,
-                                0,
-                                fechaIni,
-                                fechaFin).subscribe(data_ => {
+    this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
+                                                            nroDocLiq || '',
+                                                            origen,
+                                                            destino,
+                                                            estado ,
+                                                            valorConFactura,
+                                                            fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
     },
@@ -169,20 +171,17 @@ export class FacturaPopUpComponent implements OnInit {
 
   }
 
+
+
+
   compareObjects(o1: any, o2: any): boolean {
     return o1.codigo === o2.codigo && o1.id === o2.id;
   }
 
   onSelect({ selected }) {
     this.listaItemsSelected = selected;
-
-    if (this.listaItemsSelected.length > 1 ){
-      this.snackBar.open('Seleccione solo 1 orden de servicio', 'cerrar', { duration: 5000});
-    } else {
-      this.selected.splice(0, this.selected.length);
-      this.selected.push(...selected);
-    }
-
+    this.selected.splice(0, this.selected.length);
+    this.selected.push(...selected);
   }
 
   submit() {
@@ -193,26 +192,26 @@ export class FacturaPopUpComponent implements OnInit {
 
     //
     this.listaItemsSelected.forEach(element => {
-     let item: FacturaItem = new FacturaItem();
+     let item: DocumentoItem = new DocumentoItem();
      item.id = element.id;   // temporal
-     item.codigo = element.nroOrden;
+     item.codigo = element.nrodoc;
      item.descripcion = element.glosa;
      item.cantidad = element.totalCantidad;
-     item.descuentos = element.descuentos;
-     item.factorDescuento = 0;
-     // item.productos = new Producto();
-     item.subTotal = element.subTotal;
-     item.tipoDescuento = 0;
-     item.valorIGV = element.igvAplicado;
+     item.descuentos = 0.00;
+     item.factorDescuento = 0; // VALOR POR DEFECTO
+     item.subTotal = element.subTotalLiq;
+     item.tipoDescuento = 0; // VALOR POR DEFECTO
+     item.valorIGV = element.IGV;
      item.valorISC = 0.00;
      item.tipoIGV = 1;  // VALOR POR DEFECTO
      item.tipo = this.comboTiposItem[0].id; // VALOR POR DEFECTO
-     item.total = element.valorCompra;   // VALOR DE COMPRA PARA APLICAR DESCUENTO
+     item.total = element.subTotalLiq;   // VALOR DE COMPRA PARA APLICAR DESCUENTO
      item.unidadMedida = this.comboUnidades[0]; // VALOR POR DEFECTO
-     item.tarifa = element.subTotal / element.totalCantidad ;
+     item.tarifa = element.subTotalLiq / element.totalCantidad ;
      this.itemFactura = item;
+     this.listaItemsFactura.push(this.itemFactura);
     });
-    this.dialogRef.close(this.itemFactura);
+    this.dialogRef.close(this.listaItemsFactura);
   }
 
 

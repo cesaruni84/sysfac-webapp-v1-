@@ -3,11 +3,10 @@ import { TipoIGV, TipoItem, FormaPago, Moneda } from './tipos_facturacion';
 import { Producto } from './producto.model';
 import { Cliente } from './cliente.model';
 import { Empresa } from './empresa.model';
-import { OrdenServicio } from './orden-servicio';
 import { GuiaRemision } from './guia_remision.model';
+import { Liquidacion } from './liquidacion.model';
 
-export class FacturaDocumento {
-
+export class Documento {
     id: number;
     tipoDocumento: number;
     serie: string;
@@ -42,13 +41,12 @@ export class FacturaDocumento {
     empresa: Empresa;
     formaPago: FormaPago;
     moneda: Moneda;
-    items: FacturaItem[];
-    ordenesServicio: OrdenServicio[];
+    documentoitemSet: DocumentoItem[];
+    liquidaciones: Liquidacion[];
     guiasRemision: GuiaRemision[];
 }
 
-
-export class FacturaItem {
+export class DocumentoItem {
     id: number;
     tipo: number;
     codigo: string;

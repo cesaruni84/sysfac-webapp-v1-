@@ -116,6 +116,7 @@ export class RichTextEditorComponent implements OnInit {
     this.loader.open();
     this.liquidacionService.listarLiquidacionesPorEmpresa(this.usuarioSession.empresa.id).subscribe(liquidaciones => {
       this.rows = liquidaciones;
+      console.log(this.rows);
       this.loader.close();
     });
 
