@@ -98,7 +98,7 @@
                                         <mat-divider></mat-divider>
                                         <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
                                         <ngx-datatable class="material" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' [selectAllRowsOnPage]="false" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'" [limit]="5"
-                                            [rows]="rowsGuias" [columns]="columns" [messages]="messages">
+                                            [rows]="rowsGuias" [messages]="messages">
                                             <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
                                             </ngx-datatable-column>
                                             <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
