@@ -353,82 +353,83 @@
                                         <mat-divider></mat-divider>
                                         <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rows" [columns]="columns" [messages]="messages2">
-                                            <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
+                                        <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'asc'}, {prop: 'secuenciaCliente', dir: 'asc'}]">
+                                            <ngx-datatable-column name="" [flexGrow]="1" [width]="30">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <span>
-                                                                                     <!-- <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>description</mat-icon></button>-->
-                                                            <button mat-icon-button mat-sm-button type="button" color="warn"   matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
+                                                        <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
                                                     </span>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                                            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="40" prop="id">
                                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                                                    <div [style.fontSize.px]="11"> {{ rowIndex + 1 }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
-                                            <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="80" prop="fechaTraslado">
+                                            <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="70" prop="fechaTraslado">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
+                                                    <div [style.fontSize.px]="11">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
-                                            <ngx-datatable-column name="Guia de Remisión" [flexGrow]="1" [width]="125" prop="serie">
+                                            <ngx-datatable-column name="Guia Rem." [flexGrow]="1" [width]="100" prop="guiaRem">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12">{{ row?.serie + '-' + row?.secuencia }} </div>
-                                                </ng-template>
-                                            </ngx-datatable-column>
-
-                                            <ngx-datatable-column name="Guia Rem. Cliente" [flexGrow]="1" [width]="125" prop="secuencia">
-                                                <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
+                                                    <div [style.fontSize.px]="11">{{ row?.serie + '-' + row?.secuencia }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="200" prop="guiaDetalle">
+                                            <ngx-datatable-column name="Guia Rem. Cli" [flexGrow]="1" [width]="100" prop="guiaRemCli">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
+                                                    <div [style.fontSize.px]="11"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <!-- <ngx-datatable-column name="Ticket Balanza" [flexGrow]="1" [width]="105" prop="ticketBalanza">
+                                            <ngx-datatable-column name="Descripción" [flexGrow]="1" [width]="130" prop="guiaDetalle">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12">{{ row?.ticketBalanza }} </div>
+                                                    <div [style.fontSize.px]="11" align="left"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
                                                 </ng-template>
-                                            </ngx-datatable-column> -->
+                                            </ngx-datatable-column>
+
+                                            <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="150" prop="destino" sorteable="true">
+                                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                                    <div [style.fontSize.px]="11" align="left">{{ row?.destinatario.nombre }} </div>
+                                                </ng-template>
+                                            </ngx-datatable-column>
 
                                             <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="70" prop="totalCantidad">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
                                                     <div align="right">
-                                                        <div [style.fontSize.px]="12"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
+                                                        <div [style.fontSize.px]="11"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
                                                     </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
 
-                                            <ngx-datatable-column name="UM" [flexGrow]="1" [width]="60" prop="unidadMedida">
+                                            <ngx-datatable-column name="UM" [flexGrow]="1" [width]="40" prop="unidadMedida">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div [style.fontSize.px]="12">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
+                                                    <div [style.fontSize.px]="11">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="P. Unitario" [flexGrow]="1" [width]="80" prop="tarifa">
+                                            <ngx-datatable-column name="P. Unit" [flexGrow]="1" [width]="50" prop="tarifa">
                                                 <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
 
 
                                                     <div align="right">
-                                                        <!--<div [style.fontSize.px]="12" align="left"> {{ row?.tarifa | number: '1.2-2'}} </div>-->
-                                                        <span title="Doble click para editar" (click)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
+                                                        <div [style.fontSize.px]="11">
+                                                            <!--<div [style.fontSize.px]="12" align="left"> {{ row?.tarifa | number: '1.2-2'}} </div>-->
+                                                            <span title="Doble click para editar" (click)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
                                                                 {{value | number: '1.2-2'}}
                                                                 </span>
-                                                        <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
+                                                            <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
+                                                        </div>
                                                     </div>
                                                 </ng-template>
                                             </ngx-datatable-column>
 
-                                            <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="130" prop="subTotal">
+                                            <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="120" prop="subTotal">
                                                 <ng-template let-row="row" ngx-datatable-cell-template>
-                                                    <div align="center" [style.fontSize.px]="12">
+                                                    <div align="center" [style.fontSize.px]="11">
                                                         {{ row?.subTotal | number: '1.2-2' }}
                                                     </div>
                                                 </ng-template>
@@ -471,27 +472,6 @@
                                         <div fxFlex="80px" align="left">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ sumSubTotalImporte() | number: '1.2-2'}} </mat-label>
                                         </div>
-
-
-                                        <!-- <tr>
-                                            <td fxFlex="100px">
-                                                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Items : </b>{{ rowsSelected.length }} </mat-label>
-                                            </td>
-                                            <td fxFlex="520px"></td>
-                                            <td fxFlex="100px">
-                                                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Cantidad : </b> </mat-label>
-                                            </td>
-                                            <td fxFlex="70px" align="center">
-                                                <mat-label style="color:rgba(0, 0, 0, 0.54);"> {{ sumTotalCantidad() | number: '1.2-2'}} </mat-label>
-                                            </td>
-                                            <td fxFlex="70px"></td>
-                                            <td fxFlex="70px">
-                                                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SubTotal : </b> </mat-label>
-                                            </td>
-                                            <td fxFlex="80px" align="left">
-                                                <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ sumSubTotalImporte() | number: '1.2-2'}} </mat-label>
-                                            </td>
-                                        </tr> -->
 
                                     </div>
 
@@ -544,19 +524,6 @@
                         <!-- <button mat-raised-button class="mat-primary" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Cancelar</button> -->
                     </div>
                 </form>
-
-
-                <!-- <form [formGroup]="secondFormGroup">
-                    <ng-template matStepLabel>Datos Complementarios</ng-template>
-                    <mat-form-field>
-                        <input matInput placeholder="Address" formControlName="secondCtrl" required>
-                    </mat-form-field>
-                    <div fxLayout="row">
-                        <button mat-raised-button color="accent" matStepperPrevious>Atrás</button>
-                        <span fxFlex="8px"></span>
-                        <button mat-raised-button color="primary" matStepperNext>Siguiente</button>
-                    </div>
-                </form> -->
             </mat-step>
         </mat-vertical-stepper>
 

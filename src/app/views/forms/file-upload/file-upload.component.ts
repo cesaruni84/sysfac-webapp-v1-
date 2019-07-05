@@ -74,18 +74,25 @@ export class FileUploadComponent implements OnInit {
     selectedMessage: 'seleccionados'
   };
 
-    // Manejo default de mensajes en grilla
-    messages2: any = {
-      // Message to show when array is presented
-      // but contains no values
-      emptyMessage: '-',
+  // Manejo default de mensajes en grilla
+  messages2: any = {
+    // Message to show when array is presented
+    // but contains no values
+    emptyMessage: '-',
 
-      // Footer total message
-      totalMessage: 'total',
+    // Footer total message
+    totalMessage: 'total',
 
-      // Footer selected message
-      selectedMessage: 'seleccionados'
-    };
+    // Footer selected message
+    selectedMessage: 'seleccionados'
+  };
+
+  // Manejo default de mensajes en grilla
+  sorts: any = {
+    prop: 'serie',
+    dir: 'desc'
+  };
+
 
   // Ng Model
   liquidacionModel: Liquidacion;
@@ -110,7 +117,7 @@ export class FileUploadComponent implements OnInit {
   rowsGuias = [];
   rowsSelected = [];
   rows = [];
-  columns = [];
+  // columns = [];
 
   // Variables Totales
   totalCantidadGuiasLiq_: number;
@@ -335,6 +342,7 @@ export class FileUploadComponent implements OnInit {
 
       // Guias asociadas
       this.rows = data_.guias;
+      console.log(this.rows);
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {

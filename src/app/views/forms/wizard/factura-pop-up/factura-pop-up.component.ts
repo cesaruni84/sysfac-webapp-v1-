@@ -140,6 +140,14 @@ export class FacturaPopUpComponent implements OnInit {
       }
   }
 
+  // Completar Zeros
+  completarZerosNroDoc(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    this.formFilter.patchValue({
+      nroSerieLiq: this.pad(valorDigitado, 12),
+    });
+  }
+
 
   buscarLiquidacionesPorFacturar() {
 
@@ -213,6 +221,8 @@ export class FacturaPopUpComponent implements OnInit {
     });
     this.dialogRef.close(this.listaItemsFactura);
   }
+
+
 
 
 }
