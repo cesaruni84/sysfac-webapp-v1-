@@ -1,25 +1,27 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
 import { Usuario } from '../../../../shared/models/usuario.model';
-import { Liquidacion } from '../../../../shared/models/liquidacion.model';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../../shared/models/error_response.model';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { TipoIGV, TipoItem } from '../../../../shared/models/tipos_facturacion';
+import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
+import { DocumentoItem } from '../../../../shared/models/facturacion.model';
+import { ErrorResponse, InfoResponse } from '../../../../shared/models/error_response.model';
 import { Factoria } from '../../../../shared/models/factoria.model';
-import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LiquidacionService } from '../../../../shared/services/liquidacion/liquidacion.service';
-import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
-import { MatSnackBar, MatDialog, MAT_DIALOG_DATA, MatDialogRef, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/unidad-medida.service';
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
-import { CustomValidators } from 'ng2-validation';
-import { HttpErrorResponse } from '@angular/common/http';
-import { formatDate } from '@angular/common';
-import { OrdenesServicioComponent } from '../../ordenes-servicio/ordenes-servicio.component';
-import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
+import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
 import { GuiaRemisionService } from '../../../../shared/services/guias/guia-remision.service';
+import { OrdenServicioService } from '../../../../shared/services/liquidacion/orden-servicio.service';
+import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
+import { formatDate } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
+import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
+import { throwError } from 'rxjs';
 
 @Component({
-  selector: 'app-buscar-guia-liq',
+  selector: 'app-factura-item-guias',
   templateUrl: './buscar-guia-liq.component.html',
   styleUrls: ['./buscar-guia-liq.component.scss'],
   providers: [
@@ -38,16 +40,18 @@ export class BuscarGuiaLiqComponent implements OnInit {
   selected = [];
   columns = [];
   usuarioSession: Usuario;
-  listadoGuiasSelected: GuiaRemision[];
-  listadoGuias: GuiaRemision[];
+  listaItemsSelected = [];
+  listaItems = [];
+
 
   // Ng Model
   formFilter: FormGroup;
-  public valorFechaIniTraslado_: Date;
-  public valorFechaFinTraslado_: Date;
+  public comboUnidades: UnidadMedida[]= [];
+  public comboFactorias: Factoria[] = [];
+  public comboFactoriasDestino: Factoria[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
-  
+
   // Manejo default de mensajes en grilla
   messages: any = {
     // Message to show when array is presented
@@ -58,47 +62,43 @@ export class BuscarGuiaLiqComponent implements OnInit {
     totalMessage: 'total',
 
     // Footer selected message
-    selectedMessage: 'seleccionados'
+    selectedMessage: 'seleccionado'
   };
 
   // Manejo de respuesta
   errorResponse_: ErrorResponse;
   infoResponse_: InfoResponse;
-  filtros: FiltrosGuiasLiq;
-
-  // Combos para filtros de búsqueda
-  comboFactorias: Factoria[];
-  comboFactoriasDestino: Factoria[];
-  facturacionCheck = false;
 
 
   constructor(
     @Inject(LOCALE_ID) private locale: string,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<BuscarGuiaLiqComponent>,
-    private factoriaService: FactoriaService,
     private fb: FormBuilder,
     private userService: UsuarioService,
+    private factoriaService: FactoriaService,
     private guiaRemisionService: GuiaRemisionService,
+    private unidadMedidaService: UnidadMedidaService,
     public snackBar: MatSnackBar,
     private loader: AppLoaderService) {
   }
 
   ngOnInit() {
-
+    const fechaActual_ = new Date();
+    const fechaIniTraslado_ = new Date();
+    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
 
     this.formFilter = this.fb.group({
-      fechaIniTraslado: ['', [Validators.required]],
-      fechaFinTraslado: ['', [Validators.required]],
-      origenSelected: ['', [Validators.required]],
-      destinoSelected: ['', [Validators.required]],
+      filtroOrigen: ['', ],
+      filtroDestino: ['', ],
+      filtroFechaIni: new FormControl(fechaIniTraslado_, ),
+      filtroFechaFin: new FormControl(fechaActual_, ),
     });
 
 
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
-    // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
     });
@@ -107,10 +107,9 @@ export class BuscarGuiaLiqComponent implements OnInit {
       this.comboFactoriasDestino = data3;
     });
 
-    this.valorFechaIniTraslado_ = this.data.payload.fechaIni;
-    this.valorFechaFinTraslado_ = this.data.payload.fechaFin;
-    this.valorOrigenSelected_ = this.data.payload.origen;
-    this.valorDestinoSelected_ = this.data.payload.destino;
+    this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
+      this.comboUnidades = data3;
+    });
 
   }
 
@@ -135,44 +134,70 @@ export class BuscarGuiaLiqComponent implements OnInit {
       }
   }
 
-
-  buscarGuiasXLiquidar() {
-    
+  buscarGuiasPorFacturar() {
+    this.listaItemsSelected = [];
     this.selected = [];
     this.loader.open();
+    const origen = this.formFilter.controls['filtroOrigen'].value || 0;
+    const destino = this.formFilter.controls['filtroDestino'].value || 0;
+    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
 
-    const fechaIni = formatDate(this.valorFechaIniTraslado_, 'yyyy-MM-dd', this.locale);
-    const fechaFin = formatDate(this.valorFechaFinTraslado_, 'yyyy-MM-dd', this.locale);
-
-    this.guiaRemisionService.listarGuiasRemisionPorLiquidar(this.usuarioSession.empresa.id,
-                                this.valorOrigenSelected_.id,
-                                this.valorDestinoSelected_.id,
+    this.guiaRemisionService.listarGuiasRemisionPorFacturar(this.usuarioSession.empresa.id,
+                                origen,
+                                destino,
                                 fechaIni,
                                 fechaFin).subscribe(data_ => {
-      this.listadoGuias = data_;
       this.rows = data_;
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
+      this.handleError(error);
     });
 
   }
 
+
   compareObjects(o1: any, o2: any): boolean {
-    return o1.name === o2.name && o1.id === o2.id;
+    return o1.codigo === o2.codigo && o1.id === o2.id;
   }
 
   onSelect({ selected }) {
-    this.listadoGuiasSelected = selected;
+    this.listaItemsSelected = selected;
     this.selected.splice(0, this.selected.length);
     this.selected.push(...selected);
   }
 
   submit() {
-    this.dialogRef.close(this.listadoGuiasSelected);
+    this.dialogRef.close(this.listaItemsSelected);
   }
+
+  private handleError(error: HttpErrorResponse) {
+
+    this.loader.close();
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
 
 }

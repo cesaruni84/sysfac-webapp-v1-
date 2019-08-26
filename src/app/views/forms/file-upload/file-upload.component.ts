@@ -23,9 +23,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
-import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
 import { BasicFormComponent } from '../basic-form/basic-form.component';
 import { map, filter } from 'rxjs/operators';
+import { FacturaItemGuiasComponent } from '../wizard/factura-item-guias/factura-item-guias.component';
+import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
 
 @Component({
   selector: 'app-file-upload',
@@ -201,13 +202,13 @@ export class FileUploadComponent implements OnInit {
       origen: new FormControl({value: '', disabled: false}, Validators.required),
       destino: new FormControl({value: '', disabled: false}, Validators.required ),
       motivoTraslado: new FormControl({value: '', disabled: true}, ),
-      fechaIniTraslado: new FormControl({value: '', disabled: true}, [
+      fechaIniTraslado: new FormControl({value: '', disabled: false}, [
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.required,
         CustomValidators.date
       ]),
-      fechaFinTraslado: new FormControl({value: '', disabled: true}, [
+      fechaFinTraslado: new FormControl({value: '', disabled: false}, [
         Validators.minLength(10),
         Validators.maxLength(10),
         Validators.required,
@@ -251,33 +252,49 @@ export class FileUploadComponent implements OnInit {
 
   agregarGuias() {
       this.rowsSelected.forEach(element => {
-        let repetido: boolean = false;
+        let registroRepetido: boolean = false;
         if (this.rows.length > 0) {
           this.rows.forEach(element2 => {
               if (element.id == element2.id){
-                repetido = true;
+                registroRepetido = true;
               }
           });
         }
-        if (!repetido){
+        if (!registroRepetido) {
           let rowData = { ...element};
           this.rows.splice(this.rows.length, 0, rowData);
           this.rows = [...this.rows];
+
+          console.log(rowData);
+
+          let rowDataorigen = { ...rowData.remitente};
+          this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
+          this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
+    
+          let rowDataDestino = { ...rowData.destinatario};
+          this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
+          this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
+
         }
       });
 
-      let rowDataorigen = { ...this.filtroOrigen_};
-      this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
-      this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
+
+      // Elimina duplicados
+      this.valorOrigenSelected_ = this.valorOrigenSelected_.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+             findTest.id === test.id
+          )
+      );
+
+      this.valorDestinoSelected_ = this.valorDestinoSelected_.filter((test, index, array) =>
+          index === array.findIndex((findTest) =>
+             findTest.id === test.id
+          )
+      );
+
       this.formLiquidacion.patchValue({
          origen: this.valorOrigenSelected_[0],
-       });
-
-      let rowDataDestino = { ...this.filtroDestino_};
-      this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
-      this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
-      this.formLiquidacion.patchValue({
-        destino: this.valorDestinoSelected_[0],
+         destino: this.valorDestinoSelected_[0],
       });
 
       this.valorFechaIniTraslado_ = this.filtroFechaIni_;
@@ -414,6 +431,45 @@ export class FileUploadComponent implements OnInit {
     });
 
   }
+
+
+ /**
+   * Abre Pop-up para Añadir Guia de Remisión
+   */
+  mostrarPopUpGuias (data3: any = {}, isNew?) {
+    this.rowsSelected = [];
+    let title2 = isNew ? 'Seleccionar Guia de Remisión' : 'Actualizar Item';
+    let dialogRef2: MatDialogRef<any> = this.dialog.open(BuscarGuiaLiqComponent, {
+        width: '1280px',
+       // height: '580px',
+        disableClose: true,
+        data: { title: title2, payload: data3 }
+      });
+
+    dialogRef2.afterClosed()
+      .subscribe(item => {
+        if (!item) {
+          // If user press cancel
+          return;
+        }
+
+        if (isNew) {
+          item.forEach(element => {
+            let rowData = { ...element};
+            this.rowsSelected.splice(this.rowsSelected.length, 0, rowData);
+            this.rowsSelected = [...this.rowsSelected];
+          });
+
+          this.agregarGuias();
+          this.recalcularTotales();
+          this.snackBar.open(item.length + ' Guia(s) añadido(s)!!', 'OK', { duration: 1000 });
+          // this.subTipoFactura = '3';
+        } else {
+          return;
+        }
+      });
+  }
+
 
   consultarGuia(row) {
     // Envia a Página de Edición de Guia
