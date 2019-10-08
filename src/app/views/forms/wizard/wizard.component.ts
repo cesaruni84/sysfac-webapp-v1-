@@ -25,6 +25,7 @@ import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { Observable } from 'rxjs';
+import { constructDependencies } from '@angular/core/src/di/reflective_provider';
 
 @Component({
   selector: 'app-wizard',
@@ -553,8 +554,13 @@ export class WizardComponent implements OnInit {
        this.facturaDocumento.tipoDocumento = this.facturaForm.controls['tipoDocumento'].value.id;
        this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
        this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
-       this.facturaDocumento.fechaEmision = this.facturaForm.controls['fechaEmision'].value;
-       this.facturaDocumento.fechaVencimiento = this.facturaForm.controls['fechaVencimiento'].value;
+
+       const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
+       this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
+
+       const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
+       this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
+
        this.facturaDocumento.nroOrden = this.facturaForm.controls['ordenServicio'].value;
        this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
        this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
@@ -676,6 +682,13 @@ export class WizardComponent implements OnInit {
     /************
    * UTILITARIOS
    *************/
+
+  calcularFechaHora(fecha: Date): Date {
+    const offset = (fecha.getTimezoneOffset() / 60) * -1.00;
+    const utc = fecha.getTime() + (fecha.getTimezoneOffset() * 60000);
+    console.log('offset: ' + offset);
+    return new Date(utc + (3600000 * offset));
+   }
 
   // Validar Digitos
   validaDigitos(event) {

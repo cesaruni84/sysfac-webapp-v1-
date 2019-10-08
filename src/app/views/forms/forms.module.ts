@@ -125,7 +125,8 @@ import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-i
                       MaestroFactoriaPopupComponent,
                       MaestroVehiculosPopupComponent,
                       MaestroChoferesPopupComponent,
-                      MaestroTarifasPopupComponent]
+                      MaestroTarifasPopupComponent,
+                      InlineEditComponent]
 })
 export class AppFormsModule {
 

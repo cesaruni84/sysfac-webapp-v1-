@@ -18,6 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
+import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
 
 @Component({
   selector: 'app-factura-item-guias',
@@ -54,6 +55,7 @@ export class FacturaItemGuiasComponent implements OnInit {
   public listaItemsFactura: DocumentoItem[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
+
 
   // Manejo default de mensajes en grilla
   messages: any = {
@@ -94,6 +96,8 @@ export class FacturaItemGuiasComponent implements OnInit {
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
 
     this.formFilter = this.fb.group({
+      serie_: ['', ],
+      secuencia_: ['', ],
       filtroOrigen: ['', ],
       filtroDestino: ['', ],
       filtroFechaIni: new FormControl(fechaIniTraslado_, ),
@@ -139,9 +143,55 @@ export class FacturaItemGuiasComponent implements OnInit {
       }
   }
 
-  buscarGuiasPorFacturar() {
+  // Completar Zeros
+  completarZerosNroSerie(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        serie_: this.pad(valorDigitado, 5),
+      });
+    };
+  }
 
+  // Completar Zeros
+  completarZerosNroSecuencia(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        secuencia_: this.pad(valorDigitado, 8),
+      });
+    };
+  }
+
+  buscarGuiasPorFacturar() {
     this.loader.open();
+    const serie_ = this.formFilter.controls['serie_'].value;
+    const secuencia_ = this.formFilter.controls['secuencia_'].value;
+
+    if (serie_ && secuencia_) {
+      this.guiaRemisionService.obtenerGuiaRemisionxNroGuia(this.usuarioSession.empresa.id, 
+                                                            serie_,
+                                                            secuencia_).subscribe(data_ => {
+
+          const result: GuiaRemision[] = [];
+          result.push(data_);
+          this.rows = result;
+          this.loader.close();
+        },
+          (error: HttpErrorResponse) => {
+            this.loader.close();
+            this.errorResponse_ = error.error;
+            this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
+          });
+    } else {
+      this.buscarGuiasPorFiltros();
+
+    }
+  }
+
+
+
+  buscarGuiasPorFiltros() {
     const origen = this.formFilter.controls['filtroOrigen'].value || 0;
     const destino = this.formFilter.controls['filtroDestino'].value || 0;
     const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);

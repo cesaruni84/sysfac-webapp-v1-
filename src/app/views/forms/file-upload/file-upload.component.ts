@@ -2,8 +2,8 @@ import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.a
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
-import { Component, OnInit, Inject, LOCALE_ID, ViewChild, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder, FormArray } from '@angular/forms';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } from '@angular/material';
@@ -17,16 +17,17 @@ import { MatSnackBar } from '@angular/material';
 import { formatDate } from '@angular/common';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorResponse, InfoResponse, FiltrosGuiasLiq } from '../../../shared/models/error_response.model';
+import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { ImpuestoService } from '../../../shared/services/liquidacion/impuesto.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import { BasicFormComponent } from '../basic-form/basic-form.component';
-import { map, filter } from 'rxjs/operators';
-import { FacturaItemGuiasComponent } from '../wizard/factura-item-guias/factura-item-guias.component';
 import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
+import { InlineEditComponent } from './inline-edit/inline-edit.component';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
+
 
 @Component({
   selector: 'app-file-upload',
@@ -39,9 +40,13 @@ import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.compon
     {
         provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
     }
-    ]
+    ],
+
+
 })
 export class FileUploadComponent implements OnInit {
+  // @ViewChild('myTable') table: any;
+  @ViewChild(DatatableComponent) table: DatatableComponent;
 
   console = console;
   filtros: any = {};
@@ -732,15 +737,71 @@ export class FileUploadComponent implements OnInit {
     return str;
   }
 
-  updateTarifa(event, cell, rowIndex) {
-    console.log('inline editing rowIndex', rowIndex);
-    this.editing[rowIndex + '-' + cell] = false;
-    this.rows[rowIndex][cell] = event.target.value;
-    this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
+ 
 
+  // Pop -up para Actualizar Tarifa
+  openDialog(value, row) {
+    const dialogRef = this.dialog.open(InlineEditComponent, {
+     width: '250px',
+     data: {tarifa: value },
+     position: {top: '30%', right: '20%'}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const index = this.getRowIndex(row);
+        this.updateTarifa(result, 'tarifa', index);
+      }
+    });
+
+  }
+  updateTarifa(value, cell, rowIndex) {
+    this.editing[rowIndex + '-' + cell] = false;
+    this.rows[rowIndex][cell] = value;
+    this.rows = [...this.rows];
     this.updateSubTotalRow('subTotal', rowIndex);
     this.recalcularTotales();
+  }
+
+  onDetailToggle(event) {
+    console.log('Detail Toggled', event);
+  }
+
+  toggleExpandGroup(group) {
+    this.table.groupHeader.toggleExpandGroup(group);
+  };
+
+
+  toggleExpandRow(row) {
+    this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  sumTotalGrupoCantidad(groupValue: any, column: string) {
+    let rowsTemp = [];
+    rowsTemp = groupValue.value;
+    return rowsTemp.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+  };
+
+  sumTotalGrupoImporte(groupValue: any, column: string) {
+    let rowsTemp = [];
+    rowsTemp = groupValue.value;
+    return rowsTemp.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+  };
+
+   getRowIndex(row: any): number {
+    const index = this.rows.findIndex(item => item.id === row.id);
+    return index;
+  }
+
+  getGroupRowHeight(group, rowHeight) {
+    let style = {};
+
+    style = {
+      height: (group.length * 40) + 'px',
+      width: '100%'
+    };
+
+    return style;
   }
 
 
@@ -751,7 +812,7 @@ export class FileUploadComponent implements OnInit {
     this.rows = [...this.rows];
     console.log('UPDATED!', this.rows[rowIndex][cell]);
     this.recalcularTotales();
-  }
+  };
 
   validarGuias() {
     let resultado = true;

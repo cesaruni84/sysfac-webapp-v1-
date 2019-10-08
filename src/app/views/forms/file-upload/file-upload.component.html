@@ -130,20 +130,59 @@
                                 <mat-divider></mat-divider>
                                 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                <ngx-datatable id="idTabla" class="material" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [limit]="100" [rowHeight]="50" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'asc'}, {prop: 'secuenciaCliente', dir: 'asc'}]">
+                                <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expandable" [columnMode]="'force'" [scrollbarH]="'false'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'asc'}, {prop: 'secuenciaCliente', dir: 'asc'}]"
+                                    [groupRowsBy]="'idDestino'" [groupExpansionDefault]="true">
+                                    <!-- Group Header Template -->
+                                    <ngx-datatable-group-header [rowHeight]="60" #myGroupHeader (toggle)="onDetailToggle($event)">
+                                        <ng-template let-group="group" let-expanded="expanded" ngx-datatable-group-header-template>
+                                            <div style="padding-left:5px;color:rgba(0, 0, 0, 0.54);" [style.fontSize.px]="12" class="full-width">
+                                                <a href="javascript:void(0)" [class.datatable-icon-right]="!expanded" [class.datatable-icon-down]="expanded" title="Expand/Collapse Group" (click)="toggleExpandGroup(group)">
+                                                    <b> RUTA: {{group.value[0].remitente.refLarga2 + '  ➜  '+ group.value[0].destinatario.refLarga2}}</b>
+                                                </a>
+                                                <br><br>
+                                            </div>
+                                        </ng-template>
+                                    </ngx-datatable-group-header>
+                                    <!-- Row Detail Template -->
+                                    <ngx-datatable-row-detail [rowHeight]="40" #myDetailRow (toggle)="onDetailToggle($event)">
+                                        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                                            <div style="padding-left:35px;">
+                                                <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="12" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left" class="p-05">
+                                                    <div fxFlex="50"></div>
+                                                    <div fxFlex="10">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Cantidad : </b> </mat-label>
+                                                    </div>
+                                                    <div fxFlex="10">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> {{ sumTotalGrupoCantidad(row, 'totalCantidad') | number: '1.2-2'}} </mat-label>
+                                                    </div>
+                                                    <div fxFlex="10">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SubTotal : </b> </mat-label>
+                                                    </div>
+                                                    <div fxFlex="10">
+                                                        <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ sumTotalGrupoImporte(row, 'subTotal') | number: '1.2-2'}} </mat-label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </ngx-datatable-row-detail>
+                                    <!-- Row Column Template -->
+
+
                                     <ngx-datatable-column name="" [flexGrow]="1" [width]="30">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <span>
-                                                        <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
-                                                    </span>
+                                                <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
+                                            </span>
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Item" [flexGrow]="1" [width]="40" prop="id">
+                                    <!-- <ngx-datatable-column name="Item" [flexGrow]="1" [width]="40" prop="id">
                                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                            <div [style.fontSize.px]="11"> {{ rowIndex + 1 }} </div>
+                                            <div [style.fontSize.px]="11"> {{ getRowIndex(row) + 1}} </div>
                                         </ng-template>
-                                    </ngx-datatable-column>
+                                    </ngx-datatable-column> -->
+
+
                                     <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="70" prop="fechaTraslado">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <div [style.fontSize.px]="11">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
@@ -167,7 +206,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="150" prop="destino" sorteable="true">
+                                    <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="150" prop="destinatario">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <div [style.fontSize.px]="11" align="left">{{ row?.destinatario.nombre }} </div>
                                         </ng-template>
@@ -188,18 +227,12 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="P. Unit" [flexGrow]="1" [width]="50" prop="tarifa">
+                                    <ngx-datatable-column name="Tarifa" [flexGrow]="1" [width]="50" prop="tarifa">
                                         <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
-
-
-                                            <div align="right">
-                                                <div [style.fontSize.px]="11">
-                                                    <!--<div [style.fontSize.px]="12" align="left"> {{ row?.tarifa | number: '1.2-2'}} </div>-->
-                                                    <span title="Doble click para editar" (click)="editing[rowIndex + '-tarifa'] = true" *ngIf="!editing[rowIndex + '-tarifa']">
-                                                                {{value | number: '1.2-2'}}
-                                                                </span>
-                                                    <input autofocus (blur)="updateTarifa($event, 'tarifa', rowIndex)" *ngIf="editing[rowIndex+ '-tarifa']" type="text" [value]="value" />
-                                                </div>
+                                            <div [style.fontSize.px]="11">
+                                                <a href="javascript:void(0)" (click)="openDialog(value, row)">
+                                                    {{value | number: '1.2-2'}}
+                                                </a>
                                             </div>
                                         </ng-template>
                                     </ngx-datatable-column>

@@ -129,6 +129,7 @@
 
 .ngx-datatable.material .datatable-header {
     border-bottom: 1px solid rgba(129, 40, 40, 0.12);
+    width: 60px;
 }
 
 .ngx-datatable.material .datatable-header .datatable-header-cell {
@@ -138,7 +139,6 @@
     color: rgba(255, 0, 106, 0.815);
     vertical-align: bottom;
     font-size: 12px;
-    font-weight: 500;
 }
 
 .ngx-datatable.material .datatable-header .datatable-header-cell .datatable-header-cell-wrapper {

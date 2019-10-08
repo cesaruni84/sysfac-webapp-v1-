@@ -101,8 +101,8 @@
                 <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <span title="Consultar Documento {{ row?.serie + '-' + row?.secuencia}}">
-                            <button mat-icon-button mat-sm-button color="primary"  class="mr-1"  (click)="consultarDocumento(row)"><mat-icon align ="center top">payment</mat-icon></button>
-                            <button mat-icon-button mat-sm-button color="primary"  (click)="consultarDocumento(row)"><mat-icon align ="center top">cloud_upload</mat-icon></button>
+                            <button mat-icon-button mat-sm-button color="primary"  class="mr-1"  (click)="consultarDocumento(row)"><mat-icon align ="center top">search</mat-icon></button>
+                            <!--<button mat-icon-button mat-sm-button color="primary"  (click)="consultarDocumento(row)"><mat-icon align ="center top">cloud_upload</mat-icon></button>-->
 
                             <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
                         </span>

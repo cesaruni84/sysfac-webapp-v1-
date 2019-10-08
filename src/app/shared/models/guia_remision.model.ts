@@ -33,6 +33,8 @@ export class GuiaRemision {
     liquidacion: any;
     empresa: Empresa;
     chofer: Chofer;
+    idOrigen: string;
+    idDestino: string;
 
     constructor () {
 

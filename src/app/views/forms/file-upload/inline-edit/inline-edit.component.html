@@ -1,13 +1,10 @@
-<form (ngSubmit)="onSubmit()">
-    <div class="mat-subheading-2">Tarifa :</div>
-
+<div mat-dialog-content>
+    <p>Actualizar tarifa:</p>
     <mat-form-field>
-        <input matInput type="number" maxLength="140" name="comment" [(ngModel)]="comment">
-        <mat-hint align="end">{{comment?.length || 0}}/140</mat-hint>
+        <input matInput type="number" [(ngModel)]="value">
     </mat-form-field>
-
-    <div class="actions">
-        <button mat-button type="button" color="primary" (click)="onCancel()">Cancelar</button>
-        <button mat-button type="submit" color="primary">Guardar</button>
-    </div>
-</form>
+</div>
+<div mat-dialog-actions>
+    <button mat-button color="primary" (click)="onCancel()">Cancelar</button>
+    <button mat-button color="primary" (click)="onSubmit()" cdkFocusInitial>Ok</button>
+</div>

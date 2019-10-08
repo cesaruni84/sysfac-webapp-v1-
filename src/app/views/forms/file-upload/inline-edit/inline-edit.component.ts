@@ -1,44 +1,31 @@
-import { Component, Input, Optional, Host } from '@angular/core';
+import { Component, Input, Optional, Host, Inject } from '@angular/core';
 import { SatPopover } from '@ncstate/sat-popover';
 import { filter } from 'rxjs/operators/filter';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
-  selector: 'inline-edit',
+  selector: 'app-inline-edit',
   styleUrls: ['inline-edit.component.scss'],
   templateUrl: './inline-edit.component.html',
 })
 export class InlineEditComponent {
 
-  /** Overrides the comment and provides a reset value when changes are cancelled. */
-  @Input()
-  get value(): string { return this._value; }
-  set value(x: string) {
-    this.comment = this._value = x;
-  }
-  private _value = '';
+  value = '';
 
-  /** Form model for the input. */
-  comment = '';
-
-  constructor(@Optional() @Host() public popover: SatPopover) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any,
+             public dialogRef: MatDialogRef<InlineEditComponent>) { }
 
   ngOnInit() {
-    // subscribe to cancellations and reset form value
-    if (this.popover) {
-      this.popover.closed.pipe(filter(val => val == null))
-        .subscribe(() => this.comment = this.value || '');
-    }
+    this.value = this.data.tarifa;
+    console.log();
   }
 
   onSubmit() {
-    if (this.popover) {
-      this.popover.close(this.comment);
-    }
+    this.dialogRef.close(this.value);
   }
 
-  onCancel() {
-    if (this.popover) {
-      this.popover.close();
-    }
+  onCancel(): void {
+    this.dialogRef.close();
   }
+
 }

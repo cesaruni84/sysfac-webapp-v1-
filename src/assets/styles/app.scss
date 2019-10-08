@@ -5,6 +5,32 @@
  *
 */
 
+.ngx-datatable.material .datatable-body .datatable-group-header {
+    background: #f5f5f5;
+    border-bottom: solid 1px #D9D8D9;
+    border-top: solid 1px #D9D8D9;
+    width: 1120px;
+}
+
+.ngx-datatable.material .datatable-body .datatable-row-detail {
+    background: white;
+    width: 1120px;
+}
+
+.ngx-datatable.material .datatable-header {
+    background: white;
+}
+
+.ngx-datatable.material .datatable-header .datatable-header-cell {
+    text-align: left;
+    padding: .9rem 1.2rem;
+    font-weight: 400;
+    color: rgba(0, 47, 255, 0.815);
+    vertical-align: bottom;
+    font-size: 12px;
+    font-weight: 500;
+}
+
 .mat-option-text {
     font-size: 13px;
 }
