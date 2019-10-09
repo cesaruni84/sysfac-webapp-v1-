@@ -14,11 +14,13 @@ import { FullscreenTableComponent } from './fullscreen-table/fullscreen-table.co
 import { PagingTableComponent } from './paging-table/paging-table.component';
 
 import { TablesRoutes } from './tables.routing';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   imports: [
     CommonModule,
     MatDatepickerModule,
+    MatTabsModule,
     MatInputModule,
     NgxDatatableModule,
     MatButtonModule,
