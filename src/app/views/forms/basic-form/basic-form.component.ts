@@ -339,8 +339,8 @@ export class BasicFormComponent implements OnInit {
       this.valorSecuenciaCli_ = this.pad(this.valorSecuenciaCli_, 8) ;
 
       // Efectos del cursor.
-      this.submitButton.disabled = true;
-      this.basicForm.disable();
+      // this.submitButton.disabled = true;
+      // this.basicForm.disable();
       this.progressBar.mode = 'indeterminate';
 
       // Prepara objeto a grabar en BD
