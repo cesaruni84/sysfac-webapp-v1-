@@ -293,6 +293,7 @@ export class WizardComponent implements OnInit {
 
         // Completa items
         this.rows = documento.documentoitemSet;
+        console.log(this.rows);
 
          // Completa totales
          this.totalSum = documento.subTotalVentas;
