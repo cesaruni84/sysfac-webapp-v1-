@@ -19,6 +19,7 @@ import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { throwError } from 'rxjs';
+import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
 
 @Component({
   selector: 'app-factura-item-guias',
@@ -89,6 +90,8 @@ export class BuscarGuiaLiqComponent implements OnInit {
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
 
     this.formFilter = this.fb.group({
+      serie_: ['', ],
+      secuencia_: ['', ],
       filtroOrigen: ['', ],
       filtroDestino: ['', ],
       filtroFechaIni: new FormControl(fechaIniTraslado_, ),
@@ -122,22 +125,34 @@ export class BuscarGuiaLiqComponent implements OnInit {
     return str;
   }
 
-  // Validar Digitos
-  validaDigitos(event) {
-    const key = window.event ? event.keyCode : event.which;
-      if (event.keyCode === 8 || event.keyCode === 46) {
-          return true;
-      } else if ( key < 48 || key > 57 ) {
-        return false;
-      } else {
-          return true;
-      }
+
+  buscar() {
+    this.loader.open();
+    const serie_ = this.formFilter.controls['serie_'].value;
+    const secuencia_ = this.formFilter.controls['secuencia_'].value;
+
+    if (serie_ && secuencia_) {
+      this.guiaRemisionService.obtenerGuiaRemisionxNroGuia(this.usuarioSession.empresa.id,
+                                                            serie_,
+                                                            secuencia_).subscribe(data_ => {
+
+          const result: GuiaRemision[] = [];
+          result.push(data_);
+          this.rows = result;
+          this.loader.close();
+        },
+          (error: HttpErrorResponse) => {
+            this.handleError(error);
+          });
+    } else {
+      this.buscarGuiasPorFacturar();
+
+    }
   }
 
   buscarGuiasPorFacturar() {
     this.listaItemsSelected = [];
     this.selected = [];
-    this.loader.open();
     const origen = this.formFilter.controls['filtroOrigen'].value || 0;
     const destino = this.formFilter.controls['filtroDestino'].value || 0;
     const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
@@ -156,6 +171,38 @@ export class BuscarGuiaLiqComponent implements OnInit {
     });
 
   }
+
+    // Validar Digitos
+    validaDigitos(event) {
+      const key = window.event ? event.keyCode : event.which;
+        if (event.keyCode === 8 || event.keyCode === 46) {
+            return true;
+        } else if ( key < 48 || key > 57 ) {
+          return false;
+        } else {
+            return true;
+        }
+    }
+
+    // Completar Zeros
+    completarZerosNroSerie(event) {
+      const valorDigitado = event.target.value.toLowerCase();
+      if (!(valorDigitado === '')) {
+        this.formFilter.patchValue({
+          serie_: this.pad(valorDigitado, 5),
+        });
+      };
+    }
+
+    // Completar Zeros
+    completarZerosNroSecuencia(event) {
+      const valorDigitado = event.target.value.toLowerCase();
+      if (!(valorDigitado === '')) {
+        this.formFilter.patchValue({
+          secuencia_: this.pad(valorDigitado, 8),
+        });
+      };
+    }
 
 
   compareObjects(o1: any, o2: any): boolean {

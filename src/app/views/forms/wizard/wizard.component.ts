@@ -684,11 +684,17 @@ export class WizardComponent implements OnInit {
    *************/
 
   calcularFechaHora(fecha: Date): Date {
+    const fechaLocal = fecha.toLocaleDateString();  // fecha local
+    const fechFormt = fechaLocal.split('/').reverse().join('-');  // fecha en formato YYYY-mm-DDD
+    return new Date(fechFormt);
+  }
+
+  calcularFechaHora2(fecha: Date): Date {
     const offset = (fecha.getTimezoneOffset() / 60) * -1.00;
     const utc = fecha.getTime() + (fecha.getTimezoneOffset() * 60000);
     console.log('offset: ' + offset);
     return new Date(utc + (3600000 * offset));
-   }
+  }
 
   // Validar Digitos
   validaDigitos(event) {

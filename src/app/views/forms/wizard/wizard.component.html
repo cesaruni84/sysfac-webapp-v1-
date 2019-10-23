@@ -291,9 +291,9 @@
                                     <br> <br>
                                     <div align="left">
                                         <button mat-raised-button type="submit" matTooltip="Graba factura en el sistema" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar Factura</button>
-                                        <button mat-raised-button type="button" [disabled]="true" matTooltip="Envia Documento a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button>
+                                        <!-- <button mat-raised-button type="button" [disabled]="true" matTooltip="Envia Documento a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button> -->
                                         <button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Imprime documento electrónico" color="warn" class="mr-1"><mat-icon>print</mat-icon> Imprimir Factura</button>
-                                        <button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Nuevo documento electrónico" color="primary" (click)="nuevoDocumento()"><mat-icon>note_add</mat-icon> Nueva Factura</button>
+                                        <button mat-raised-button type="button" matTooltip="Nuevo documento electrónico" color="primary" (click)="nuevoDocumento()"><mat-icon>note_add</mat-icon> Nueva Factura</button>
 
                                     </div>
                                     <br>

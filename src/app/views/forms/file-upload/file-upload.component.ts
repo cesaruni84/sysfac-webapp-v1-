@@ -2,7 +2,7 @@ import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.a
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
 import { GuiaRemision, GuiasRemisionPDF } from '../../../shared/models/guia_remision.model';
-import { Component, OnInit, Inject, LOCALE_ID, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild, PipeTransform } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { Usuario } from '../../../shared/models/usuario.model';
@@ -14,19 +14,21 @@ import { MotivoTrasladoService } from '../../../shared/services/motivos-traslado
 import { MotivoTraslado } from '../../../shared/models/motivo_traslado.model';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { MatSnackBar } from '@angular/material';
-import { formatDate } from '@angular/common';
+import { formatDate, DatePipe } from '@angular/common';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { ImpuestoService } from '../../../shared/services/liquidacion/impuesto.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
+import '@progress/kendo-date-math/tz/America/Lima';
 import * as jspdf from 'jspdf';
 import 'jspdf-autotable';
 import { BasicFormComponent } from '../basic-form/basic-form.component';
 import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.component';
 import { InlineEditComponent } from './inline-edit/inline-edit.component';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { throwError } from 'rxjs';
 
 
 @Component({
@@ -41,7 +43,6 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
         provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
     }
     ],
-
 
 })
 export class FileUploadComponent implements OnInit {
@@ -164,6 +165,22 @@ export class FileUploadComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    const d1 = new Date();
+    console.log(d1.toISOString());
+    console.log(d1.toLocaleTimeString());
+    console.log(d1.toLocaleDateString());
+
+    const date2 = d1.toLocaleDateString();
+    const string = date2.split('/').reverse().join('-');
+    const d2 = new Date(string);
+    console.log(d2.toISOString());
+
+    const d3 = new Date('2019-10-22');
+    console.log(d3.toISOString());
+
+
+
     // Recupera datos de usuario de session
     this.validarGrabarActualizar();
     this.usuarioSession = this.userService.getUserLoggedIn();
@@ -375,9 +392,7 @@ export class FileUploadComponent implements OnInit {
 
 
     }, (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
+      this.handleError(error);
     });
   }
 
@@ -430,9 +445,7 @@ export class FileUploadComponent implements OnInit {
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000,  panelClass: ['blue-snackbar'] });
+      this.handleError(error);
     });
 
   }
@@ -583,20 +596,20 @@ export class FileUploadComponent implements OnInit {
             this.liquidacionModel.nrodoc = this.pad(this.nroDocumentoLiq.value, 12);
 
             const fr = new Date(this.formLiquidacion.get('fechaRegistro').value);
-            fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
-            this.liquidacionModel.fechaEmision = fr;
+            // fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fechaEmision = this.calcularFechaHora(fr);
 
             this.liquidacionModel.estado = this.formLiquidacion.get('estado').value;
             this.liquidacionModel.situacion = this.formLiquidacion.get('situacion').value;
 
 
             const fini = new Date(this.formLiquidacion.get('fechaIniTraslado').value);
-            fini.setTime(fini.getTime() + fini.getTimezoneOffset() * 60 * 1000);
-            this.liquidacionModel.fecIniTraslado =  fini;
+            // fini.setTime(fini.getTime() + fini.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fecIniTraslado =  this.calcularFechaHora(fini);
 
             const ffin = new Date(this.formLiquidacion.get('fechaFinTraslado').value);
-            ffin.setTime(ffin.getTime() + ffin.getTimezoneOffset() * 60 * 1000);
-            this.liquidacionModel.fecFinTraslado =  ffin;
+            // ffin.setTime(ffin.getTime() + ffin.getTimezoneOffset() * 60 * 1000);
+            this.liquidacionModel.fecFinTraslado =  this.calcularFechaHora(ffin);
 
 
             this.liquidacionModel.glosa = this.formLiquidacion.get('glosa').value;
@@ -665,9 +678,7 @@ export class FileUploadComponent implements OnInit {
       });
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      this.handleError(error);
     });
   }
 
@@ -683,10 +694,26 @@ export class FileUploadComponent implements OnInit {
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 10000 });
     },
     (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 10000 });
+        this.handleError(error);
     });
+  }
+
+  calcularFechaHora(fecha: Date): Date {
+    const fechaLocal = fecha.toLocaleDateString();  // fecha local
+    const fechFormt = fechaLocal.split('/').reverse().join('-');  // fecha en formato YYYY-mm-DDD
+    return new Date(fechFormt);
+  }
+
+  calcularFechaHora2(fecha: Date): Date {
+    const offset = (fecha.getTimezoneOffset() / 60) * -1.00;
+    const utc = fecha.getTime() + (fecha.getTimezoneOffset() * 60000);
+    console.log('offset: ' + offset);
+    return new Date(utc + (3600000 * offset));
+  }
+
+
+  nuevaLiquidacion() {
+    this.redirectTo('/forms/liquidacion');
   }
 
   cancelarLiquidacion() {
@@ -846,6 +873,35 @@ export class FileUploadComponent implements OnInit {
   get origen_ (): FormControl {
     return this.formLiquidacion.get('origen') as FormControl;
   }
+
+
+  private handleError(error: HttpErrorResponse) {
+
+    this.loader.close();
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
 
   captureScreen() {
     const doc = new jspdf('l');

@@ -13,25 +13,18 @@
 
 
         <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
-            <mat-form-field fxFlex="35%" class="full-width" appearance="">
-                <mat-label><b>ORIGEN</b></mat-label>
-                <mat-select [compareWith]="compareObjects" name="filtroOrigen" [formControl]="formFilter.controls['filtroOrigen']">
-                    <mat-option value="0">Todos</mat-option>
-                    <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
-                        {{factoria.refLarga2}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
 
-            <mat-form-field fxFlex="35%" class="full-width" appearance="">
-                <mat-label><b>DESTINO</b></mat-label>
-                <mat-select [compareWith]="compareObjects" name="filtroDestino" [formControl]="formFilter.controls['filtroDestino']">
-                    <mat-option value="0">Todos</mat-option>
-                    <mat-option *ngFor="let factoria2 of comboFactoriasDestino" [value]="factoria2.id">
-                        {{factoria2.refLarga2}}
-                    </mat-option>
-                </mat-select>
+            <mat-form-field fxFlex="15%">
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
+                <input matInput name="serie_" [formControl]="formFilter.controls['serie_']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerie($event)'>
+                <mat-icon matSuffix inline="true">edit</mat-icon>
             </mat-form-field>
+            <mat-form-field fxFlex="15%">
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SECUENCIA</b></mat-label>
+                <input matInput name="secuencia_" [formControl]="formFilter.controls['secuencia_']" maxlength="8" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSecuencia($event)'>
+                <mat-icon matSuffix inline="true">edit</mat-icon>
+            </mat-form-field>
+            <mat-label fxFlex="20%"></mat-label>
 
             <mat-form-field fxFlex="15%" appearance="">
                 <mat-label><b>F. INI TRASLADO</b></mat-label>
@@ -47,8 +40,30 @@
             </mat-form-field>
 
             <div align="center" fxFlex="10%" data-html2canvas-ignore="true">
-                <button mat-raised-button type="button" color="primary" (click)="buscarGuiasPorFacturar()"><mat-icon>search</mat-icon> Buscar </button>
+                <button mat-raised-button type="button" color="primary" (click)="buscar()"><mat-icon>search</mat-icon> Buscar </button>
             </div>
+        </div>
+
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
+            <mat-form-field fxFlex="35%" class="full-width" appearance="">
+                <mat-label><b>ORIGEN</b></mat-label>
+                <mat-select [compareWith]="compareObjects" name="filtroOrigen" [formControl]="formFilter.controls['filtroOrigen']">
+                    <mat-option value="0">Todos</mat-option>
+                    <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                        {{factoria.refLarga2}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field fxFlex="35%" class="full-width" appearance="">
+                <mat-label><b>DESTINO</b></mat-label>
+                <mat-select [compareWith]="compareObjects" name="filtroDestino" [formControl]="formFilter.controls['filtroDestino']">
+                    <mat-option value="0">Todos</mat-option>
+                    <mat-option *ngFor="let factoria2 of comboFactoriasDestino" [value]="factoria2.id">
+                        {{factoria2.refLarga2}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
         </div>
         <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" fxLayoutAlign="left" [style.fontSize.px]="15">
             <mat-label fxFlex="28%"></mat-label>

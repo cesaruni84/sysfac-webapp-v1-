@@ -115,9 +115,15 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Nro. Documento" [flexGrow]="1" [width]="130" prop="nrodoc">
+                <ngx-datatable-column name="Doc. Serie" [flexGrow]="1" [width]="80" prop="serie">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.serie + '-' + row?.secuencia }} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.serie }} </div>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Doc. Correlativo" [flexGrow]="1" [width]="130" prop="secuencia">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <div [style.fontSize.px]="12"> {{ row?.secuencia }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 

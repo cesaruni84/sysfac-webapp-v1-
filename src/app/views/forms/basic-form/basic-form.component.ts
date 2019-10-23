@@ -490,6 +490,14 @@ export class BasicFormComponent implements OnInit {
   }
 
 
+  calcularFechaHora(fecha: Date): Date {
+    const fechaLocal = fecha.toLocaleDateString();  // fecha local
+    const fechFormt = fechaLocal.split('/').reverse().join('-');  // fecha en formato YYYY-mm-DDD
+    return new Date(fechFormt);
+}
+
+
+
   pad(number: string, length: number): string {
     let str = '' + number;
     while (str.length < length) {

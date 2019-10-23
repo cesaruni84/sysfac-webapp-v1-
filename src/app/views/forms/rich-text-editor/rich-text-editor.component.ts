@@ -127,9 +127,11 @@ export class RichTextEditorComponent implements OnInit {
   // Completar Zeros
   completarZerosNroSerieLiq(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroSerieLiq_ = this.pad(valorDigitado, 12);
-  }
+    if (!(valorDigitado === '')) {
+      this.valorNroSerieLiq_ = this.pad(valorDigitado, 12);
+    };
 
+  }
 
   pad(number: string, length: number): string {
     let str = '' + number;
@@ -157,6 +159,7 @@ export class RichTextEditorComponent implements OnInit {
 
     // Obtiene valores de parametros para la búsqueda
     let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
+    console.log(nroDocLiq);
     const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
     const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
     const origen = this.formFilter.controls['origenSelected'].value;

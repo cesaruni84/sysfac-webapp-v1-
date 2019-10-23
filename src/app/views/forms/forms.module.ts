@@ -1,7 +1,7 @@
 import { InlineEditComponent } from './file-upload/inline-edit/inline-edit.component';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {NgxMaskModule} from 'ngx-mask';
 import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS, MatTooltipModule } from '@angular/material';
 import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
@@ -61,6 +61,7 @@ import { MaestroTarifasPopupComponent } from './configuracion/maestro-tarifas/ma
 import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-item-guias.component';
 
 @NgModule({
+  providers:[DatePipe] ,
   imports: [
     CommonModule,
     FormsModule,
