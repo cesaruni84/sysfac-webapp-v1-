@@ -63,5 +63,5 @@ export class DocumentoItem {
     total: number;
     productos: Producto;
     unidadMedida: UnidadMedida;
-
+    guiasRemision: GuiaRemision[];
 }

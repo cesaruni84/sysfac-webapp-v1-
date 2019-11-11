@@ -13,7 +13,6 @@
 
 
         <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
-
             <mat-form-field fxFlex="15%">
                 <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
                 <input matInput name="serie_" [formControl]="formFilter.controls['serie_']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerie($event)'>

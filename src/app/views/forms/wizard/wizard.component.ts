@@ -1,5 +1,5 @@
 import { Documento } from './../../../shared/models/facturacion.model';
-import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV } from '../../../shared/models/tipos_facturacion';
@@ -12,7 +12,6 @@ import { AppLoaderService } from '../../../shared/services/app-loader/app-loader
 import { FacturaPopUpComponent } from './factura-pop-up/factura-pop-up.component';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import { FacturaItemComponent } from './factura-item/factura-item.component';
-import { OrdenServicioService } from '../../../shared/services/liquidacion/orden-servicio.service';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,8 +23,7 @@ import { ItemFacturaService } from '../../../shared/services/facturacion/item-fa
 import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
-import { Observable } from 'rxjs';
-import { constructDependencies } from '@angular/core/src/di/reflective_provider';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'app-wizard',
@@ -41,6 +39,7 @@ import { constructDependencies } from '@angular/core/src/di/reflective_provider'
     ],
 })
 export class WizardComponent implements OnInit {
+  @ViewChild(DatatableComponent) table: DatatableComponent;
 
   // Formulario
   facturaForm: FormGroup;
@@ -65,7 +64,7 @@ export class WizardComponent implements OnInit {
 
   edicion: boolean = true;
   conGuiaRemision_: boolean = false;
-  conOrdenServicio_: boolean = false;
+  conLiquidaciones_: boolean = false;
   idDocumento: number;
   subTipoFactura: string;
 
@@ -84,7 +83,7 @@ export class WizardComponent implements OnInit {
 
   liquidaciones_ = [];
   guias_remision = [];
-
+  message = 'mensaje para mi hijo';
 
   // Manejo default de mensajes en grilla
     messages: any = {
@@ -130,9 +129,9 @@ export class WizardComponent implements OnInit {
               private route: ActivatedRoute,
               private router: Router,
               private snack: MatSnackBar,
+              private cdRef: ChangeDetectorRef,
               private userService: UsuarioService,
-              private ordenServicioService: OrdenServicioService,
-              private clienteService: ClienteService) { 
+              private clienteService: ClienteService) {
 
     this.validarGrabarActualizar();
 
@@ -230,7 +229,9 @@ export class WizardComponent implements OnInit {
     return this.facturaForm.get('moneda') as FormControl;
   }
 
-
+  getHeight(row: any, index: number): number {
+    return row.someHeight;
+  }
 
     /**
    * Carga Todos los valores de los combos de la página
@@ -291,7 +292,25 @@ export class WizardComponent implements OnInit {
           ordenServicio: documento.nroOrden || ''
         });
 
-        // Completa items
+        // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+        this.subTipoFactura = documento.notas;
+        this.liquidaciones_ = documento.liquidaciones;
+        this.guias_remision = documento.guiasRemision;
+
+        if (this.liquidaciones_.length > 0) {
+          this.conLiquidaciones_  = true;
+          let i = 0;
+          documento.liquidaciones.forEach(element => {
+            documento.documentoitemSet[i].guiasRemision = element.guias;
+            i++;
+          });
+        }
+
+        if (this.guias_remision.length > 0) {
+          this.conGuiaRemision_  = true;
+        }
+
+        // Completa items: documento.liquidaciones.guias[0]
         this.rows = documento.documentoitemSet;
         console.log(this.rows);
 
@@ -307,18 +326,6 @@ export class WizardComponent implements OnInit {
          this.otrosTributos = documento.otrosTributos;
          this.importeTotal = documento.totalDocumento;
 
-         // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
-         this.subTipoFactura = documento.notas;
-         this.liquidaciones_ = documento.liquidaciones;
-         this.guias_remision = documento.guiasRemision;
-
-        if (this.liquidaciones_.length > 0) {
-          this.conOrdenServicio_  = true;
-        }
-
-        if (this.guias_remision.length > 0) {
-          this.conGuiaRemision_  = true;
-        }
 
          this.loader.close();
 
@@ -367,7 +374,7 @@ export class WizardComponent implements OnInit {
    * Abre Pop-up para Añadir/Actualiza item
    */
   buscarItem(data: any = {}, isNew?) {
-    if (this.conOrdenServicio_) {
+    if (this.conLiquidaciones_) {
       this.buscarLiquidacionItem(data, isNew);
     } else {
       if (this.conGuiaRemision_) {
@@ -538,6 +545,14 @@ export class WizardComponent implements OnInit {
           this.snack.open('Item eliminado!', 'OK', { duration: 1000 });
         }
       });
+  }
+
+  onDetailToggle(event) {
+    console.log('Detail Toggled', event);
+  }
+
+  toggleExpandRow(row) {
+    this.table.rowDetail.toggleExpandRow(row);
   }
 
 

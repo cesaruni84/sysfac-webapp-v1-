@@ -167,10 +167,10 @@
 
 
                                         <section class="pl-1 ml-05">
-                                            <mat-checkbox name="conOrdenServicio" [(ngModel)]="conOrdenServicio_" [disabled]="conGuiaRemision_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conOrdenServicio']">Liquidación </mat-checkbox>
+                                            <mat-checkbox name="conOrdenServicio" [(ngModel)]="conLiquidaciones_" [disabled]="conGuiaRemision_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conOrdenServicio']">Liquidación </mat-checkbox>
                                         </section>
                                         <section class="pl-1 ml-05">
-                                            <mat-checkbox name="conGuiaRemision" [(ngModel)]="conGuiaRemision_" [disabled]="conOrdenServicio_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conGuiaRemision']">Guia de Remisión </mat-checkbox>
+                                            <mat-checkbox name="conGuiaRemision" [(ngModel)]="conGuiaRemision_" [disabled]="conLiquidaciones_" color="primary" [style.fontSize.px]="13" [formControl]="facturaForm.controls['conGuiaRemision']">Guia de Remisión </mat-checkbox>
                                         </section>
                                         <div align="right">
                                             <button mat-raised-button matTooltip="Buscar item de producto o servicio" type="button" color="primary" class="mr-1" (click)="buscarItem({}, true)"><mat-icon>add box</mat-icon> Añadir Item </button>
@@ -193,13 +193,26 @@
                                     <mat-divider></mat-divider>
                                 </mat-card-title> -->
                                 <div class="mat-box-shadow">
-                                    <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="10" [rows]="rows" [columns]="columns" [messages]="messages">
+                                    <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expanded" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="10" [rows]="rows" [columns]="columns" [messages]="messages">
 
-                                        <ngx-datatable-column name="ITEM" [flexGrow]="1" [width]="60" prop="id">
+                                        <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+                                            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                                                <app-table-detail [data]="row"></app-table-detail>
+                                            </ng-template>
+                                        </ngx-datatable-row-detail>
+
+                                        <ngx-datatable-column [width]="50" [resizeable]="false" [sortable]="false" [draggable]="false" [canAutoResize]="false">
+                                            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+                                                <a href="javascript:void(0)" [class.datatable-icon-right]="!expanded" [class.datatable-icon-down]="expanded" title="Detalle" (click)="toggleExpandRow(row)">
+                                                </a>
+                                            </ng-template>
+                                        </ngx-datatable-column>
+
+                                        <!-- <ngx-datatable-column name="ITEM" [flexGrow]="1" [width]="60" prop="id">
                                             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                                 <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
                                             </ng-template>
-                                        </ngx-datatable-column>
+                                        </ngx-datatable-column> -->
 
                                         <ngx-datatable-column name="CODIGO" [flexGrow]="1" [width]="130" prop="codigo" [cellClass]="'my-custom-cell'">
                                             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
@@ -249,7 +262,8 @@
                                         </ngx-datatable-column>
                                         <ngx-datatable-column name="" [flexGrow]="1" [width]="100">
                                             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Editar Item" (click)="buscarItem(row)"><mat-icon>edit</mat-icon></button>
+                                                <!--  <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Editar Item" (click)="buscarItem(row)"><mat-icon>edit</mat-icon></button> > -->
+                                                <!--  <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consulta Item" (click)="buscarItem(row)"><mat-icon>zoom_in</mat-icon></button>-->
                                                 <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Item" (click)="eliminarItem(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
                                             </ng-template>
                                         </ngx-datatable-column>
@@ -263,6 +277,8 @@
                         </mat-tab>
                     </mat-tab-group>
 
+                    <!-- SECCION DETALLE EN EL CASO EL ITEM ES UNA LIQUIDACION -->
+                    <!-- <app-table-detail *ngIf="conLiquidaciones_" [data]="message"></app-table-detail>-->
 
 
                     <!-- SECCION RESUMEN Y TOTALES -->

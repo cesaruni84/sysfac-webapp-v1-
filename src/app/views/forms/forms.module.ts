@@ -59,9 +59,9 @@ import { MaestroVehiculosPopupComponent } from './configuracion/maestro-vehiculo
 import { MaestroChoferesPopupComponent } from './configuracion/maestro-choferes/maestro-choferes-popup/maestro-choferes-popup.component';
 import { MaestroTarifasPopupComponent } from './configuracion/maestro-tarifas/maestro-tarifas-popup/maestro-tarifas-popup.component';
 import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-item-guias.component';
+import { TableDetailComponent } from './wizard/table-detail/table-detail.component';
 
 @NgModule({
-  providers:[DatePipe] ,
   imports: [
     CommonModule,
     FormsModule,
@@ -117,7 +117,8 @@ import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-i
                 MaestroVehiculosPopupComponent,
                 MaestroChoferesPopupComponent,
                 MaestroTarifasPopupComponent,
-                FacturaItemGuiasComponent],
+                FacturaItemGuiasComponent,
+                TableDetailComponent],
    entryComponents: [FacturaPopUpComponent,
                       FacturaItemComponent,
                       FacturaItemGuiasComponent,

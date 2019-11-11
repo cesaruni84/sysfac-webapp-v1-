@@ -1,0 +1,109 @@
+<div class="margin-333" *ngIf="this.data.guiasRemision">
+
+    <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expandable" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [rows]="rows" [sorts]="[{prop: 'destinatario.nombre', dir: 'asc'}, {prop: 'secuenciaCliente', dir: 'asc'}]"
+        [groupRowsBy]="'idDestino'" [groupExpansionDefault]="true">
+        <!-- Group Header Template -->
+        <ngx-datatable-group-header [rowHeight]="60" #myGroupHeader (toggle)="onDetailToggle($event)">
+            <ng-template let-group="group" let-expanded="expanded" ngx-datatable-group-header-template>
+                <div style="padding-left:5px;color:rgba(0, 0, 0, 0.54);" [style.fontSize.px]="12" class="full-width">
+                    <a href="javascript:void(0)" [class.datatable-icon-right]="!expanded" [class.datatable-icon-down]="expanded" title="Expand/Collapse Group" (click)="toggleExpandGroup(group)">
+                        <b> RUTA: {{group.value[0].remitente.refLarga2 + '  ➜  '+ group.value[0].destinatario.refLarga2}}</b>
+                    </a>
+                    <br><br>
+                </div>
+
+
+            </ng-template>
+        </ngx-datatable-group-header>
+        <!-- Row Detail Template -->
+        <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+                <div style="padding-left:35px;">
+                    <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="12" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left" class="p-05">
+                        <div fxFlex="50"></div>
+                        <div fxFlex="10">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>Total Cantidad : </b> </mat-label>
+                        </div>
+                        <div fxFlex="10">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"> {{ sumTotalGrupoCantidad(row, 'totalCantidad') | number: '1.2-2'}} </mat-label>
+                        </div>
+                        <div fxFlex="10">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SubTotal : </b> </mat-label>
+                        </div>
+                        <div fxFlex="10">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"> S/ {{ sumTotalGrupoImporte(row, 'subTotal') | number: '1.2-2'}} </mat-label>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ngx-datatable-row-detail>
+        <!-- Row Column Template -->
+
+        <ngx-datatable-column name="F.Traslado" [flexGrow]="1" [width]="70" prop="fechaTraslado">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11">{{ row?.fechaTraslado | date: 'dd/MM/yyyy' }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Guia Rem." [flexGrow]="1" [width]="100" prop="guiaRem">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11">{{ row?.serie + '-' + row?.secuencia }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Guia Rem. Cli" [flexGrow]="1" [width]="100" prop="guiaRemCli">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11"> {{ row?.serieCliente + '-' + row?.secuenciaCliente }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Insumo" [flexGrow]="1" [width]="130" prop="guiaDetalle">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11" align="left"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="150" prop="destinatario">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11" align="left">{{ row?.destinatario.nombre }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Cantidad" [flexGrow]="1" [width]="70" prop="totalCantidad">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div align="right">
+                    <div [style.fontSize.px]="11"> {{ row?.totalCantidad | number: '1.2-2' }} </div>
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+
+        <ngx-datatable-column name="UM" [flexGrow]="1" [width]="40" prop="unidadMedida">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Tarifa" [flexGrow]="1" [width]="50" prop="tarifa">
+            <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex" let-value="value">
+                <div [style.fontSize.px]="11">
+                    {{value | number: '1.2-2'}}
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Sub Total" [flexGrow]="1" [width]="120" prop="subTotal">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <div [style.fontSize.px]="11">
+                    {{ row?.subTotal | number: '1.2-2' }}
+                </div>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-footer>
+            <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize" let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+            </ng-template>
+        </ngx-datatable-footer>
+
+
+    </ngx-datatable>
+</div>

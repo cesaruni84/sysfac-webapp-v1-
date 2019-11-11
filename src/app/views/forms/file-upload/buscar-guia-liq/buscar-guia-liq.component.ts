@@ -184,25 +184,31 @@ export class BuscarGuiaLiqComponent implements OnInit {
         }
     }
 
-    // Completar Zeros
-    completarZerosNroSerie(event) {
-      const valorDigitado = event.target.value.toLowerCase();
-      if (!(valorDigitado === '')) {
-        this.formFilter.patchValue({
-          serie_: this.pad(valorDigitado, 5),
-        });
-      };
-    }
+  // Completar Zeros
+  completarZerosNroSerie(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        serie_: this.pad(valorDigitado, 5),
+      });
+    };
+  }
 
-    // Completar Zeros
-    completarZerosNroSecuencia(event) {
-      const valorDigitado = event.target.value.toLowerCase();
-      if (!(valorDigitado === '')) {
-        this.formFilter.patchValue({
-          secuencia_: this.pad(valorDigitado, 8),
-        });
-      };
-    }
+  // Completar Zeros
+  completarZerosNroSecuencia(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        secuencia_: this.pad(valorDigitado, 8),
+      });
+    };
+  }
+
+  calcularFechaHora(fecha: Date): Date {
+      const fechaLocal = fecha.toLocaleDateString();  // fecha local
+      const fechFormt = fechaLocal.split('/').reverse().join('-');  // fecha en formato YYYY-mm-DDD
+      return new Date(fechFormt);
+  }
 
 
   compareObjects(o1: any, o2: any): boolean {

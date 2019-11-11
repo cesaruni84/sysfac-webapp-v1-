@@ -166,21 +166,6 @@ export class FileUploadComponent implements OnInit {
 
   ngOnInit() {
 
-    const d1 = new Date();
-    console.log(d1.toISOString());
-    console.log(d1.toLocaleTimeString());
-    console.log(d1.toLocaleDateString());
-
-    const date2 = d1.toLocaleDateString();
-    const string = date2.split('/').reverse().join('-');
-    const d2 = new Date(string);
-    console.log(d2.toISOString());
-
-    const d3 = new Date('2019-10-22');
-    console.log(d3.toISOString());
-
-
-
     // Recupera datos de usuario de session
     this.validarGrabarActualizar();
     this.usuarioSession = this.userService.getUserLoggedIn();

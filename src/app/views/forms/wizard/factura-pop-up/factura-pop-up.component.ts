@@ -216,6 +216,7 @@ export class FacturaPopUpComponent implements OnInit {
      item.total = element.subTotalLiq;   // VALOR DE COMPRA PARA APLICAR DESCUENTO
      item.unidadMedida = this.comboUnidades[0]; // VALOR POR DEFECTO
      item.tarifa = element.subTotalLiq / element.totalCantidad ;
+     item.guiasRemision = element.guias;
      this.itemFactura = item;
      this.listaItemsFactura.push(this.itemFactura);
     });
