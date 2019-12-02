@@ -341,24 +341,6 @@ export class WizardComponent implements OnInit {
     return (<FormArray>frmGrp.controls[key]).controls;
   }
 
-    /**
-   * Create form unit
-   */
-  private obtenerFacturaDetalle() {
-    const numberPatern = '^[0-9.,]+$';
-    return this.formBuilder.group({
-      codigo: ['', [Validators.required, ]],
-      descripcion: ['', Validators.required],
-      cantidad: [1, [Validators.required, Validators.pattern(numberPatern)]],
-      unidadMedida: ['', Validators.required],
-      unitPrice: ['', [Validators.required, Validators.pattern(numberPatern)]],
-      tipoIGV: [ {value: '', disabled: false} , [Validators.required]],
-      valorIGV: ['', [Validators.required, Validators.pattern(numberPatern)]],
-      unitTotalPrice: [{value: 0.00, disabled: true}]
-    });
-  }
-
-
 
    /**
    * Completar Campo Dirección
