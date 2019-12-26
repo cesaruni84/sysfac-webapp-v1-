@@ -7,16 +7,14 @@ import { Balanza } from '../../../shared/models/balanza.model';
 import { UnidadMedida } from '../../../shared/models/unidad_medida.model';
 import { Producto } from '../../../shared/models/producto.model';
 import { Factoria } from '../../../shared/models/factoria.model';
-import { Component, OnInit, ViewChild, Optional, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, Optional, Inject, LOCALE_ID } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { Chofer } from '../../../shared/models/chofer.model';
 import { ProductoService } from '../../../shared/services/productos/producto.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs/internal/observable/throwError';
-import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MatDatepickerInputEvent, MatButton, MatProgressBar,
-       MAT_DIALOG_DATA } from '@angular/material';
-import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MatDatepickerInputEvent, MatButton, MatProgressBar, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
 import { GuiaRemision } from '../../../shared/models/guia_remision.model';
@@ -25,7 +23,11 @@ import { GuiaRemisionService } from '../../../shared/services/guias/guia-remisio
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { MatSnackBar } from '@angular/material';
 import { APP_DATE_FORMATS, AppDateAdapter } from '../../../shared/helpers/date.adapter';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+import localeFrExtra from '@angular/common/locales/extra/fr';
 
+registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
 @Component({
   selector: 'app-basic-form',
@@ -37,7 +39,10 @@ import { APP_DATE_FORMATS, AppDateAdapter } from '../../../shared/helpers/date.a
     },
     {
         provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
-    }
+    },
+    {
+        provide: LOCALE_ID, useValue: 'en-GB'
+    },
     ],
 })
 
@@ -154,10 +159,12 @@ export class BasicFormComponent implements OnInit {
       this.secuenciaQuery
     )
     .subscribe((data_) => {
-      // this.initForm(data_);
+      // console.log(data_);
       this.valorIdGuia_ = data_.id;
       this.estadoSelected_ = data_.estado.toString();
       this.valorFechaEmision_ = data_.fechaRemision;
+      // console.log(this.valorFechaEmision_);
+      // console.log(new Date());
       this.valorFechaIniTraslado_ = data_.fechaTraslado;
       this.valorNroSerie_ = data_.serie;
       this.valorNroSecuencia_ = data_.secuencia;
@@ -190,7 +197,9 @@ export class BasicFormComponent implements OnInit {
   }
 
   compareObjects(o1: any, o2: any): boolean {
-    return o1.name === o2.name && o1.id === o2.id;
+     if (o1 && o2) {
+      return o1.id === o2.id;
+     }
   }
 
 
@@ -391,7 +400,7 @@ export class BasicFormComponent implements OnInit {
       this.guiaRemision.chofer = this.basicForm.get('choferSelected').value;
 
       // console.log('objeto: ' + this.guiaRemision);
-      console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
+      // console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
 
       if (this.edicion) {
         this.actualizar();
@@ -406,19 +415,19 @@ export class BasicFormComponent implements OnInit {
     this.guiaRemisioService.registrarGuiaRemisionBD(this.guiaRemision).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.progressBar.mode = 'determinate';
-      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 , panelClass: ['green-snackbar'] });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 5000 , panelClass: ['green-snackbar'] });
 
       // Resetea Formulario
-      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        this.redirectTo('/forms/basic');
-      });
+      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        // this.redirectTo('/forms/basic');
+      // });
     },
     (error: HttpErrorResponse) => {
       this.progressBar.mode = 'determinate';
       this.submitButton.disabled = false;
       this.basicForm.enable();
       this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000 });
+      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
     });
   }
 
@@ -447,6 +456,10 @@ export class BasicFormComponent implements OnInit {
   redirectTo(uri: string) {
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
     this.router.navigate([uri]));
+  }
+
+  nuevaGuia() {
+    this.redirectTo('/forms/basic');
   }
 
   onChangeFechaEmision(type: string, event: MatDatepickerInputEvent<Date>) {
