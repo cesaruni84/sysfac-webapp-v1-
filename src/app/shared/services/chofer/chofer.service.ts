@@ -2,6 +2,7 @@ import { Chofer } from '../../models/chofer.model';
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Cacheable } from 'ngx-cacheable';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,22 @@ export class ChoferService {
 
   constructor(private http: HttpClient) { }
 
+
+  @Cacheable({
+    maxCacheCount: 10,
+    maxAge: 5 * 60000,
+  })
   listarComboChoferes(idEmpresa: number) {
-    return this.http.get<Chofer[]>(this.url + idEmpresa + '/choferes');
+    return this.http.get<Chofer[]>(this.url + idEmpresa + '/choferes').pipe();
 
   }
 
+  @Cacheable({
+    maxCacheCount: 10,
+    maxAge: 5 * 60000,
+  })
   listarTodosLosChoferes(idEmpresa: number) {
-    return this.http.get<Chofer[]>(this.url + idEmpresa + '/choferes');
+    return this.http.get<Chofer[]>(this.url + idEmpresa + '/choferes').pipe();
   }
 
 

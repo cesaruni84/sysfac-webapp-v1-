@@ -29,6 +29,7 @@ import { BuscarGuiaLiqComponent } from './buscar-guia-liq/buscar-guia-liq.compon
 import { InlineEditComponent } from './inline-edit/inline-edit.component';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { throwError } from 'rxjs';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
 
 
 @Component({
@@ -143,6 +144,8 @@ export class FileUploadComponent implements OnInit {
   filtroOrigen_: Factoria;
   filtroFechaIni_: Date;
   filtroFechaFin_: Date;
+  inserto: any;
+  actualiza: any;
 
   constructor(private userService: UsuarioService,
               private factoriaService: FactoriaService,
@@ -271,9 +274,6 @@ export class FileUploadComponent implements OnInit {
           let rowData = { ...element};
           this.rows.splice(this.rows.length, 0, rowData);
           this.rows = [...this.rows];
-
-          console.log(rowData);
-
           let rowDataorigen = { ...rowData.remitente};
           this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
           this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
@@ -366,7 +366,6 @@ export class FileUploadComponent implements OnInit {
 
       // Guias asociadas
       this.rows = data_.guias;
-      console.log(this.rows);
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -633,7 +632,7 @@ export class FileUploadComponent implements OnInit {
             });
 
             this.liquidacionModel.guias = this.guias_remision;
-            console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
+            // console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
 
             if (this.edicion) {
               this.actualizarLiquidacion();
@@ -655,12 +654,13 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 3000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+      this.inserto = true;
 
       // Resetea Formulario
-      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        this.redirectTo('/forms/liquidacion');
-      });
+       // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        //  this.redirectTo('/forms/liquidacion');
+       // });
     },
     (error: HttpErrorResponse) => {
       this.handleError(error);
@@ -676,7 +676,8 @@ export class FileUploadComponent implements OnInit {
     this.liquidacionService.actualizarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
-      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 10000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 5000 });
+      this.actualiza = true;
     },
     (error: HttpErrorResponse) => {
         this.handleError(error);
@@ -692,10 +693,18 @@ export class FileUploadComponent implements OnInit {
   calcularFechaHora2(fecha: Date): Date {
     const offset = (fecha.getTimezoneOffset() / 60) * -1.00;
     const utc = fecha.getTime() + (fecha.getTimezoneOffset() * 60000);
-    console.log('offset: ' + offset);
+    // console.log('offset: ' + offset);
     return new Date(utc + (3600000 * offset));
   }
 
+
+  regresar() {
+    if (this.inserto || this.actualiza) {
+      globalCacheBusterNotifier.next();
+    }
+    this.redirectTo('/forms/busquedaLiquidaciones');
+
+  }
 
   nuevaLiquidacion() {
     this.redirectTo('/forms/liquidacion');
@@ -776,7 +785,7 @@ export class FileUploadComponent implements OnInit {
   }
 
   onDetailToggle(event) {
-    console.log('Detail Toggled', event);
+    // console.log('Detail Toggled', event);
   }
 
   toggleExpandGroup(group) {
@@ -818,11 +827,11 @@ export class FileUploadComponent implements OnInit {
 
 
   updateSubTotalRow(cell, rowIndex) {
-    console.log('inline editing rowIndex', rowIndex);
+    // console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
     this.rows[rowIndex][cell] = this.rows[rowIndex]['tarifa'] * this.rows[rowIndex]['totalCantidad'] ;
     this.rows = [...this.rows];
-    console.log('UPDATED!', this.rows[rowIndex][cell]);
+    // console.log('UPDATED!', this.rows[rowIndex][cell]);
     this.recalcularTotales();
   };
 

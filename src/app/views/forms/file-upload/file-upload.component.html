@@ -328,9 +328,10 @@
             <br>
             <div align="center" data-html2canvas-ignore="true">
                 <!-- <button mat-raised-button class="mat-primary" (click)="uploader.uploadAll()" [disabled]="false">Confirmar</button> -->
+                <button mat-raised-button color="primary" class="mr-1" type="button" (click)="regresar()"><mat-icon>keyboard_backspace</mat-icon>Regresar</button>
                 <button mat-raised-button class="mat-primary" color="primary" class="mr-1" [disabled]="false"><mat-icon>save</mat-icon> Grabar</button>
                 <button mat-raised-button class="mat-primary" color="primary" type="button" class="mr-1" (click)="nuevaLiquidacion()"><mat-icon>note_add</mat-icon> Nuevo</button>
-                <button mat-raised-button class="mat-primary" color="primary" type="button" (click)="imprimirLiquidacion()" [disabled]="!edicion"><mat-icon>print</mat-icon> Imprimir</button>
+                <!--<button mat-raised-button class="mat-primary" color="primary" type="button" (click)="imprimirLiquidacion()" [disabled]="!edicion"><mat-icon>print</mat-icon> Imprimir</button>
                 <!-- <button mat-raised-button class="mat-primary" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">Cancelar</button> -->
             </div>
         </form>

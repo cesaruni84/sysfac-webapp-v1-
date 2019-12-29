@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { HOST } from '../../helpers/var.constant';
 import { Liquidacion } from '../../models/liquidacion.model';
+import { Cacheable } from 'ngx-cacheable';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,10 @@ export class LiquidacionService {
     return this.http.get<Liquidacion>(this.url + idEmpresa + '/liquidaciones/SRV1', {params: params});
   }
 
+  @Cacheable({
+    maxCacheCount: 10,
+    // maxAge: 60000,
+  })
   listarLiquidacionesPorEmpresa(idEmpresa: number){
     return this.http.get<Liquidacion[]>(this.url + idEmpresa + '/liquidaciones');
   }

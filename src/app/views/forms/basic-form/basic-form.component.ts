@@ -7,7 +7,7 @@ import { Balanza } from '../../../shared/models/balanza.model';
 import { UnidadMedida } from '../../../shared/models/unidad_medida.model';
 import { Producto } from '../../../shared/models/producto.model';
 import { Factoria } from '../../../shared/models/factoria.model';
-import { Component, OnInit, ViewChild, Optional, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, ViewChild, Optional, Inject, LOCALE_ID, AfterViewInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { Chofer } from '../../../shared/models/chofer.model';
@@ -26,6 +26,8 @@ import { APP_DATE_FORMATS, AppDateAdapter } from '../../../shared/helpers/date.a
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/extra/fr';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
+
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 
@@ -104,6 +106,8 @@ export class BasicFormComponent implements OnInit {
   serieQuery: string;
   secuenciaQuery: string;
   edicion: boolean = false;
+  inserto: boolean = false;
+  actualiza: boolean = false;
 
   // Objeto a grabar
   guiaRemision: GuiaRemision;
@@ -138,7 +142,7 @@ export class BasicFormComponent implements OnInit {
 
     // Si es edicion recuperar datos de BD
     if (this.edicion) {
-      this.recuperarDatosGuiaBD();
+      this.recuperarDatosGuiaBD(this.serieQuery, this.secuenciaQuery);
     }
 
   }
@@ -152,11 +156,11 @@ export class BasicFormComponent implements OnInit {
     );
   }
 
-  recuperarDatosGuiaBD() {
+  recuperarDatosGuiaBD(serie_: string, secuencia_: string) {
     this.guiaRemisioService.obtenerGuiaRemisionxNroGuia(
       this.usuarioSession.empresa.id,
-      this.serieQuery,
-      this.secuenciaQuery
+      serie_,
+      secuencia_
     )
     .subscribe((data_) => {
       // console.log(data_);
@@ -208,9 +212,10 @@ export class BasicFormComponent implements OnInit {
 
     this.basicForm = new FormGroup({
       // empresa_: new FormControl('', [Validators.required]),
-      empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true}, Validators.required),
+      empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial +
+                      ' - RUC ' + this.usuarioSession.empresa.ruc, disabled: true}, Validators.required),
       direccion_: new FormControl({value: this.usuarioSession.empresa.dirFiscal, disabled: true}, Validators.required),
-      rucEmpresa_: new FormControl({value: this.usuarioSession.empresa.ruc, disabled: true}, Validators.required),
+      // rucEmpresa_: new FormControl({value: this.usuarioSession.empresa.ruc, disabled: true}, Validators.required),
       estadoSelected: new FormControl({value: '0'}, Validators.required),
       fechaEmision: new FormControl( '', [
         Validators.minLength(10),
@@ -339,7 +344,7 @@ export class BasicFormComponent implements OnInit {
       console.log('hay errores aun');
    }else {
       // Actualiza valores formateados
-      if (!this.edicion){
+      if (!this.edicion) {
         this.valorNroSerie_ = this.pad(this.valorNroSerie_, 5) ;
         this.valorNroSecuencia_ = this.pad(this.valorNroSecuencia_, 8) ;
       }
@@ -416,11 +421,7 @@ export class BasicFormComponent implements OnInit {
       this.infoResponse_ = data_;
       this.progressBar.mode = 'determinate';
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 5000 , panelClass: ['green-snackbar'] });
-
-      // Resetea Formulario
-      // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        // this.redirectTo('/forms/basic');
-      // });
+      this.inserto = true;
     },
     (error: HttpErrorResponse) => {
       this.progressBar.mode = 'determinate';
@@ -438,7 +439,8 @@ export class BasicFormComponent implements OnInit {
     this.guiaRemisioService.actualizarGuiaRemisionBD(this.guiaRemision).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.progressBar.mode = 'determinate';
-      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 20000 });
+      this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 5000 });
+      this.actualiza = true;
     },
     (error: HttpErrorResponse) => {
       this.progressBar.mode = 'determinate';
@@ -449,15 +451,38 @@ export class BasicFormComponent implements OnInit {
     });
   }
 
-  cancelarGuiaRem() {
-    this.router.navigate(['/dashboard']);
+  /**
+   * Consulta de Guia de Pantalla de Registro
+   */
+  consultarGuia() {
+    this.valorNroSerie_ = this.pad(this.basicForm.get('nroSerie').value, 5) ;
+    this.valorNroSecuencia_ = this.pad(this.basicForm.get('nroSecuencia').value, 8) ;
+    this.recuperarDatosGuiaBD(this.valorNroSerie_, this.valorNroSecuencia_);
+    this.edicion = false;
   }
 
+
+
+  regresar() {
+    if (this.inserto || this.actualiza) {
+      globalCacheBusterNotifier.next();
+    }
+    this.redirectTo('/forms/paging');
+
+  }
+
+
+  /**
+   * Redirigir fake
+   */
   redirectTo(uri: string) {
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
     this.router.navigate([uri]));
   }
 
+  /**
+   * Nueva Pantalla de Registro
+   */
   nuevaGuia() {
     this.redirectTo('/forms/basic');
   }
@@ -521,18 +546,29 @@ export class BasicFormComponent implements OnInit {
 
 
   private handleError(error: HttpErrorResponse) {
+
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
       console.error('An error occurred:', error.error.message);
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
     }
     // return an observable with a user-facing error message
     return throwError(
-      'Something bad happened; please try again later.');
+      'Ocurrió un error inesperado, volver a intentar.');
   };
 }

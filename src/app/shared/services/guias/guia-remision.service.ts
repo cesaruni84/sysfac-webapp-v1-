@@ -4,6 +4,7 @@ import { HOST } from '../../helpers/var.constant';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { GrillaGuiaRemision } from '../../models/guia_remision.model';
+import { Cacheable, GlobalCacheConfig } from 'ngx-cacheable';
 
 
 @Injectable({
@@ -22,9 +23,13 @@ export class GuiaRemisionService {
 
   constructor(private http: HttpClient) { }
 
-
+  @Cacheable({
+    maxCacheCount: 10,
+    // maxAge: 2 * 60000,
+  })
   listarGrillaGuias(idEmpresa: number) {
-    return this.http.get<GrillaGuiaRemision[]>(this.url + idEmpresa + '/guias/SRV1');
+    return this.http.get<GrillaGuiaRemision[]>(this.url + idEmpresa + '/guias/SRV1').pipe(
+    );
   }
 
 

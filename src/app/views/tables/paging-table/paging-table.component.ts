@@ -7,21 +7,15 @@ import { Usuario } from '../../../shared/models/usuario.model';
 import { Factoria } from '../../../shared/models/factoria.model';
 import { Chofer } from '../../../shared/models/chofer.model';
 import { ChoferService } from '../../../shared/services/chofer/chofer.service';
-import { MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
-import { MomentDateAdapter, MAT_MOMENT_DATE_FORMATS } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { FormGroup, FormControl} from '@angular/forms';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
-import * as XLSX from 'xlsx/types';
 import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { DateFormatPipe } from '../../../shared/pipes/date-format.pipe';
-import { formatDate } from '@angular/common';
 import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
 import { ExcelService } from '../../../shared/services/util/excel.service';
-
-
 
 @Component({
   selector: 'app-paging-table',
@@ -132,8 +126,6 @@ export class PagingTableComponent implements OnInit {
       this.rows = this.temp = this.total_rows_bd = data;
       this.loader.close();
     });
-
-    
   }
 
 
@@ -174,22 +166,17 @@ export class PagingTableComponent implements OnInit {
 
   // Filtros para busqueda
   seleccionarFactoriaDestinatario(event) {
-    console.log(event);
-    //const val = event.target.value.toLowerCase();
     const val = event.value.toLowerCase();
-
-    console.log('val: ' + val);
-    var columns = Object.keys(this.temp[0]);
+    const columns = Object.keys(this.temp[0]);
     // Removes last "$$index" from "column"
     columns.splice(columns.length - 1);
-
-    console.log('columnas: '+ columns[0]);
-    if (!columns.length)
+    if (!columns.length) {
       return;
+    }
 
     const rows = this.temp.filter(function(d) {
       for (let i = 0; i <= columns.length; i++) {
-        let column = columns[i];
+        const column = columns[i];
         // console.log(d[column]);
         if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
           return true;
@@ -202,16 +189,9 @@ export class PagingTableComponent implements OnInit {
   }
 
   updateFilter(event) {
-    console.log(event);
-    // this.guiaRemision.serie = this.formFilter.get('nroSerie').value;
     const val = event.target.value.toLowerCase();
-    console.log(val);
     const rows = this.temp.filter(function(d) {
-
-      // console.log(d);
-      // console.log('eval estado: ' +  (d.estado.toLowerCase().indexOf(val) !== -1));
-      // console.log('val ' +  (val));
-      return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
+    return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
     });
     this.rows = rows;
     this.table.offset = 0;
@@ -219,11 +199,7 @@ export class PagingTableComponent implements OnInit {
 
 
   filtrarGuias() {
-
     this.temp =  this.total_rows_bd;
-
-    console.log(this.formFilter);
-
     const valorNroSerie_  =  this.formFilter.controls['nroSerie'].value;
     const valorNroSecuencia_  =  this.formFilter.controls['nroSecuencia'].value;
     const fechaIniTraslado_  =  new Date(this.formFilter.controls['fechaIniTraslado'].value);
@@ -232,62 +208,17 @@ export class PagingTableComponent implements OnInit {
     const choferSelected_  =  this.formFilter.controls['choferSelected'].value;
     const destinatarioSelected_  =  this.formFilter.controls['destinatarioSelected'].value;
     const mostrarGuiasFacturadas  =  this.formFilter.controls['esFacturado'].value;
-
-    console.log(valorNroSerie_);
-    console.log(valorNroSecuencia_);
-    console.log(fechaIniTraslado_);
-    console.log(fechaFinTraslado_);
-    console.log(estadoSelected_);
-    console.log(choferSelected_);
-    console.log(destinatarioSelected_);
-    console.log(mostrarGuiasFacturadas);
-
-    // this.guiaRemision.serie = this.formFilter.get('nroSerie').value;
-    // const columns = Object.keys(this.temp[0]);
-    // // Removes last "$$index" from "column"
-    // columns.splice(columns.length - 1);
-
-    // if (!columns.length) {
-    //   return;
-    // }
-
     const rows2 = this.temp.filter(function(d) {
-
-      console.log(d);
-
-      const mostrarSerie = (d.nroguia.toLowerCase().indexOf(valorNroSerie_) !== -1) || !valorNroSerie_;
-      console.log('eval serie: ' + mostrarSerie) ;
-
-      const mostrarSecuencia = (d.nroSecuencia.toLowerCase().indexOf(valorNroSecuencia_) !== -1) || !valorNroSecuencia_ ;
-      console.log('eval secuencia: ' +  mostrarSecuencia);
-
-      const fechaEmisionRow = new Date(d.fechaEmision);
-      fechaEmisionRow.setTime(fechaEmisionRow.getTime() + fechaEmisionRow.getTimezoneOffset() * 60 * 1000);
-
-      console.log('fechaEmisionRow: ' + fechaEmisionRow);
-      console.log('fechaIniTraslado_: ' + fechaIniTraslado_);
-      console.log('fechaFinTraslado_: ' + fechaFinTraslado_);
-      const mostrarFechaRow = ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) ;
-      // if ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) {
-      //   mostrarFechaRow = true;
-      // }
-      console.log('eval Fecha Emision: ' + mostrarFechaRow);
-
-      const mostrarEstado = (d.estado.indexOf(estadoSelected_) !== -1) ;
-      console.log('eval estado: ' +  mostrarEstado);
-
-      const mostrarChofer = (d.chofer.indexOf(choferSelected_) !== -1);
-      console.log('eval chofer: ' +  mostrarChofer);
-
-      const mostrarDestinatario = (d.destinatario.indexOf(destinatarioSelected_) !== -1) ;
-      console.log('eval destinatario: ' + mostrarDestinatario );
-
-      const guiaFacturada = d.ordenServicio.toLowerCase() !== '---------' ;
-      const guiaNoFacturada = d.ordenServicio.toLowerCase() === '---------' ;
-
-      // console.log('filtro facturada: ' + mostrarGuiasFacturadas);
-      // console.log('guiaFacturada: ' + guiaFacturada);
-      // console.log('guiaNoFacturada: ' + guiaNoFacturada);
+    const mostrarSerie = (d.nroguia.toLowerCase().indexOf(valorNroSerie_) !== -1) || !valorNroSerie_;
+    const mostrarSecuencia = (d.nroSecuencia.toLowerCase().indexOf(valorNroSecuencia_) !== -1) || !valorNroSecuencia_ ;
+    const fechaEmisionRow = new Date(d.fechaEmision);
+    fechaEmisionRow.setTime(fechaEmisionRow.getTime() + fechaEmisionRow.getTimezoneOffset() * 60 * 1000);
+    const mostrarFechaRow = ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) ;
+    const mostrarEstado = (d.estado.indexOf(estadoSelected_) !== -1) ;
+    const mostrarChofer = (d.chofer.indexOf(choferSelected_) !== -1);
+    const mostrarDestinatario = (d.destinatario.indexOf(destinatarioSelected_) !== -1) ;
+    const guiaFacturada = d.ordenServicio.toLowerCase() !== '---------' ;
+    const guiaNoFacturada = d.ordenServicio.toLowerCase() === '---------' ;
 
       let mostrarRegistro = false;
       if (!mostrarGuiasFacturadas) {
@@ -300,7 +231,6 @@ export class PagingTableComponent implements OnInit {
         }
       }
 
-      console.log('eval facturado?: ' +  (mostrarRegistro));
 
       // return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
       // return true;
@@ -335,18 +265,7 @@ export class PagingTableComponent implements OnInit {
     // XLSX.writeFile(wb, 'ReporteGuias_' +  new Date().toISOString() + '_.xlsx', { cellStyles: true });
   }
 
-  onSelect({ selected }) {
-    console.log('Select Event', selected, );
 
-  }
-
-  onActivate($event) {
-     if ($event.type === 'dblclick'){
-       console.log('doble click');
-     }
-
-
-  }
 
   consultarGuia(row) {
     // const array = row.nroguia.split('-');

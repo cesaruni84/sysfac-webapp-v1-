@@ -8,7 +8,7 @@
             <div fxLayout="row wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
-                        <div fxFlex="100" fxFlex.gt-xs="75">
+                        <div fxFlex="100" fxFlex.gt-xs="100">
                             <mat-card class="p-0 m-05">
                                 <!-- <mat-card-title class="m-0" [style.backgroundColor]="'rgb(235, 235, 235)'"> -->
                                 <mat-card-title class="mat-bg-primary m-0">
@@ -22,35 +22,77 @@
                                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="3.5%" fxLayoutAlign="left">
                                         <!-- Comapny name input field -->
                                         <mat-form-field fxFlex="50%" appearance="">
-                                            <mat-label [style.fontSize.px]="16"><b>EMPRESA :</b></mat-label>
-                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [style.fontSize.px]="13" style="color:#3f51b5">
+                                            <mat-label><b>EMPRESA :</b></mat-label>
+                                            <input matInput name="empresa_" [formControl]="basicForm.controls['empresa_']" [style.fontSize.px]="12" style="color:#3f51b5">
                                             <mat-icon matSuffix>store</mat-icon>
                                         </mat-form-field>
-                                        <mat-form-field fxFlex="45%" appearance="">
-                                            <mat-label [style.fontSize.px]="16" fxFlex="15%"><b>DIRECCION :</b></mat-label>
-                                            <textarea matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [style.fontSize.px]="13" style="color:#3f51b5"> 
-    
-                                                <mat-icon matSuffix>directions</mat-icon></textarea>
+                                        <mat-form-field fxFlex="50%" appearance="">
+                                            <mat-label fxFlex="15%"><b>DIRECCION :</b></mat-label>
+                                            <input matInput name="direccion_" [formControl]="basicForm.controls['direccion_']" [style.fontSize.px]="13" style="color:#3f51b5">
+                                            <mat-icon matSuffix>directions</mat-icon>
+
                                         </mat-form-field>
 
                                     </div>
 
                                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
-                                        <!-- Comapny name input field -->
-                                        <mat-form-field fxFlex="15%" appearance="">
-                                            <mat-label [style.fontSize.px]="16" fxFlex="15%"><b>R.U.C.</b></mat-label>
-                                            <input matInput name="rucEmpresa_" [formControl]="basicForm.controls['rucEmpresa_']" style="color:#3f51b5">
+
+                                        <mat-label fxFlex="10%" [style.fontSize.px]="12" style="color:rgba(0, 0, 0, 0.54);"><b>GUIA REMISION:</b> </mat-label>
+                                        <mat-form-field fxFlex="8%" appearance="">
+                                            <mat-label style="font-size: 14px"><b>SERIE </b></mat-label>
+                                            <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="5" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
+                                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                                            <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSerie'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
                                         </mat-form-field>
-                                        <mat-label fxFlex="3%"></mat-label>
-                                        <mat-form-field fxFlex="20%" class=" mr-05" appearance="">
+
+                                        <mat-form-field fxFlex="12%" appearance="">
+                                            <mat-label><b>SECUENCIA </b></mat-label>
+                                            <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="8" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                                            <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSecuencia'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <span fxFlex="12%"> 
+                                            <!-- <button mat-icon-button mat-sm-button type="button" color="primary" class="mr-1" (click)="consultarGuia()"><mat-icon>search</mat-icon></button> -->
+                                            <button mat-raised-button matTooltip="" type="button" color="primary" [disabled]="edicion" class="ml-1" (click)="consultarGuia()"><mat-icon>search</mat-icon> Buscar </button>
+                                        </span>
+
+                                        <mat-form-field fxFlex="20%" appearance="">
                                             <mat-label><b>ESTADO DE GUIA </b></mat-label>
                                             <mat-select [(ngModel)]="estadoSelected_" [formControl]="basicForm.controls['estadoSelected']" align="top">
                                                 <mat-option value="0">Registrado</mat-option>
                                                 <mat-option value="1">Anulado </mat-option>
                                             </mat-select>
                                         </mat-form-field>
-                                        <mat-label fxFlex="2%"></mat-label>
-                                        <mat-form-field fxFlex="24%" appearance="">
+
+
+                                    </div>
+                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
+
+
+                                        <mat-label fxFlex="10%" [style.fontSize.px]="12" style="color:rgba(0, 0, 0, 0.54);"><b>GUIA REMISION CLI:</b> </mat-label>
+                                        <mat-form-field fxFlex="8%" appearance="">
+                                            <mat-label style="font-size: 14px"><b>SERIE CLI </b></mat-label>
+                                            <input matInput [(ngModel)]="valorSerieCli_" name="nroSerieClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSerieClie']" value="" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                                            <mat-error *ngIf="basicForm.controls['nroSerieClie'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field fxFlex="12%" appearance="">
+                                            <mat-label><b>SECUENCIA CLI </b></mat-label>
+                                            <input matInput [(ngModel)]="valorSecuenciaCli_" name="nroSequenClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSequenClie']" value="" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                                            <mat-icon matSuffix inline="true">edit</mat-icon>
+                                            <mat-error *ngIf="basicForm.controls['nroSequenClie'].hasError('required')">
+                                                <strong>* REQUERIDO</strong>
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-label fxFlex="12%"></mat-label>
+                                        <mat-form-field fxFlex="20%" appearance="">
                                             <mat-label><b>FECHA EMISION</b></mat-label>
                                             <input matInput name="fechaEmision" [formControl]="basicForm.controls['fechaEmision']" [matDatepicker]="appDatepicker" maxlength="10" [(ngModel)]="valorFechaEmision_" (dateChange)="onChangeFechaEmision('change_fecha_emision', $event)" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="appDatepicker"></mat-datepicker-toggle>
@@ -60,7 +102,7 @@
                                             </mat-error>
                                         </mat-form-field>
 
-                                        <mat-form-field fxFlex="24%" appearance="">
+                                        <mat-form-field fxFlex="20%" appearance="">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INI TRASLADO</b></mat-label>
                                             <input matInput name="fechaIniTraslado" [formControl]="basicForm.controls['fechaIniTraslado']" [matDatepicker]="picker" valuemaxlength="10" [(ngModel)]="valorFechaIniTraslado_" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -69,69 +111,14 @@
                                                 <strong>* REQUERIDO</strong>
                                             </mat-error>
                                         </mat-form-field>
-                                    </div>
-                                </mat-card-content>
-                            </mat-card>
 
-                        </div>
+                                    </div>
 
-                        <div fxFlex="100" fxFlex.gt-xs="25">
-                            <mat-card class="p-0 mt-05">
-                                <mat-card-content>
-                                    <!-- <div class="card-title-text m-0 p-0" align="center" [style.fontSize.px]="14">
-                                        <mat-label fxFlex="30%"><b><br>R.U.C.  </b></mat-label>
-                                        <mat-form-field fxFlex="80%" appearance="fill">
-                                            <input matInput name="rucEmpresa_" [formControl]="basicForm.controls['rucEmpresa_']" [disabled]="true" style="color:#3f51b5">
-                                        </mat-form-field>
-                                    </div> 
-                                    <mat-divider></mat-divider>-->
-                                    <div class="card-title-text p-05 ml-0 mr-0" align="center" [style.fontSize.px]="13">
-                                        <mat-label class="full-width"><b>GUIA DE REMISION TRANSPORTISTA </b></mat-label>
-                                    </div>
-                                    <mat-divider></mat-divider>
-                                    <!-- <div fxLayout="row" fxLayoutWrap="wrap"> -->
-                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap" fxLayoutWrap fxLayoutGap="2.5%" class="mb-0 p-0" fxLayoutAlign="start center">
-                                        <mat-label fxFlex="25%" [style.fontSize.px]="12" class="pl-0 ml-0"><b>GUIA REM:</b> </mat-label>
-                                        <div fxFlex="100" fxLayout.xs="column" fxFlex.gt-xs="50">
-                                            <mat-form-field fxFlex="40%">
-                                                <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="5" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
-                                                <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSerie'].hasError('required')">
-                                                    <strong>* REQUERIDO</strong>
-                                                </mat-error>
-                                            </mat-form-field>
-                                            <mat-label fxFlex="10%"><b>&nbsp; &nbsp;- </b></mat-label>
-                                            <mat-form-field fxFlex="70%" class="pl-1">
-                                                <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="8" value="" [disabled]="edicion" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
-                                                <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSecuencia'].hasError('required')">
-                                                    <strong>* REQUERIDO</strong>
-                                                </mat-error>
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                    <mat-divider></mat-divider>
-                                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap" fxLayoutWrap fxLayoutGap="2.5%" class="mb-0 p-0" fxLayoutAlign="start center">
-                                        <!-- Comapny name input field -->
-                                        <mat-label fxFlex="25%" [style.fontSize.px]="12" class="pl-0 ml-0"><b>GUIA CLI :</b> </mat-label>
-                                        <div fxFlex="100" fxLayout.xs="column" fxFlex.gt-xs="50">
 
-                                            <mat-form-field fxFlex="40%">
-                                                <input matInput [(ngModel)]="valorSerieCli_" name="nroSerieClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSerieClie']" value="" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
-                                                <mat-error *ngIf="basicForm.controls['nroSerieClie'].hasError('required')">
-                                                    <strong>* REQUERIDO</strong>
-                                                </mat-error>
-                                            </mat-form-field>
-                                            <mat-label fxFlex="10%"><b>&nbsp; &nbsp;- </b></mat-label>
-                                            <mat-form-field fxFlex="70%" class="pl-1">
-                                                <input matInput [(ngModel)]="valorSecuenciaCli_" name="nroSequenClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSequenClie']" value="" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
-                                                <mat-error *ngIf="basicForm.controls['nroSequenClie'].hasError('required')">
-                                                    <strong>* REQUERIDO</strong>
-                                                </mat-error>
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
 
                                 </mat-card-content>
                             </mat-card>
+
                         </div>
                     </div>
 
@@ -414,6 +401,7 @@
             </div>
             <br>
             <div align="center">
+                <button mat-raised-button color="primary" class="mr-1" type="button" (click)="regresar()"><mat-icon>keyboard_backspace</mat-icon>Regresar</button>
                 <button mat-raised-button color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar</button>
                 <button mat-raised-button color="primary" class="mr-1" type="button" (click)="nuevaGuia()"><mat-icon>note_add</mat-icon> Nuevo</button>
 
