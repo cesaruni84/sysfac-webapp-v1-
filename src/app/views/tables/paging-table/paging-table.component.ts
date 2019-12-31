@@ -1,6 +1,6 @@
 import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, LOCALE_ID, Inject } from '@angular/core';
 import { TablesService } from '../tables.service';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { Usuario } from '../../../shared/models/usuario.model';
@@ -15,7 +15,12 @@ import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material';
 import { ExcelService } from '../../../shared/services/util/excel.service';
+import { formatDate } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorResponse } from '../../../shared/models/error_response.model';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-paging-table',
@@ -41,6 +46,8 @@ export class PagingTableComponent implements OnInit {
   usuarioSession: Usuario;
   listaGrillaGuias: GrillaGuiaRemision[];
   formFilter: FormGroup;
+  errorResponse_: ErrorResponse;
+
 
   // Ng Model
   public valorNroSerie_: string;
@@ -78,6 +85,8 @@ export class PagingTableComponent implements OnInit {
     private router: Router,
     private excelService: ExcelService,
     private userService: UsuarioService,
+    public snackBar: MatSnackBar,
+    @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
 
 
@@ -94,9 +103,9 @@ export class PagingTableComponent implements OnInit {
       nroSecuencia: new FormControl('', CustomValidators.digits),
       fechaIniTraslado: new FormControl(fechaIniTraslado_, ),
       fechaFinTraslado: new FormControl(fechaActual_, ),
-      estadoSelected: new FormControl('', ),
-      choferSelected: new FormControl('', ),
-      destinatarioSelected: new FormControl('', ),
+      estadoSelected: new FormControl('99', ),
+      choferSelected: new FormControl('0', ),
+      destinatarioSelected: new FormControl('0', ),
       esFacturado: new FormControl(this.facturado, ),
 
    });
@@ -108,7 +117,7 @@ export class PagingTableComponent implements OnInit {
     // this.rows = this.service.getAll();
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
-    this.loader.open();
+    // this.loader.open();
 
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('D').subscribe(data1 => {
@@ -121,11 +130,13 @@ export class PagingTableComponent implements OnInit {
     });
 
     // Carga de Grilla Principal
-    this.guiaRemisionService.listarGrillaGuias(this.usuarioSession.empresa.id).subscribe(data => {
-      this.listaGrillaGuias = data;
-      this.rows = this.temp = this.total_rows_bd = data;
-      this.loader.close();
-    });
+    this.busquedaInicial();
+
+    // this.guiaRemisionService.listarGrillaGuias(this.usuarioSession.empresa.id).subscribe(data => {
+    //   this.listaGrillaGuias = data;
+    //   this.rows = this.temp = this.total_rows_bd = data;
+    //   this.loader.close();
+    // });
   }
 
 
@@ -198,6 +209,70 @@ export class PagingTableComponent implements OnInit {
   }
 
 
+  busquedaInicial() {
+    this.loader.open();
+
+    // Obtiene valores de parametros para la búsqueda
+    const nroSerie  =  this.formFilter.controls['nroSerie'].value;
+    const nroSecuencia  =  this.formFilter.controls['nroSecuencia'].value;
+    const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
+    const chofer = this.formFilter.controls['choferSelected'].value;
+    const destino = this.formFilter.controls['destinatarioSelected'].value;
+    const estado  =  this.formFilter.controls['estadoSelected'].value;
+
+    this.guiaRemisionService.listarGuiasConFiltros2(this.usuarioSession.empresa.id,
+                                                        nroSerie || '',
+                                                        nroSecuencia || '',
+                                                        estado,
+                                                        chofer,
+                                                        destino ,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.handleError(error);
+    });
+
+  }
+
+
+  buscarGuiasConFiltro() {
+    this.loader.open();
+
+    // Obtiene valores de parametros para la búsqueda
+    const nroSerie  =  this.formFilter.controls['nroSerie'].value;
+    const nroSecuencia  =  this.formFilter.controls['nroSecuencia'].value;
+    const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
+    const chofer = this.formFilter.controls['choferSelected'].value;
+    const destino = this.formFilter.controls['destinatarioSelected'].value;
+    const estado  =  this.formFilter.controls['estadoSelected'].value;
+
+    this.guiaRemisionService.listarGuiasConFiltros(this.usuarioSession.empresa.id,
+                                                        nroSerie || '',
+                                                        nroSecuencia || '',
+                                                        estado,
+                                                        chofer,
+                                                        destino ,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.handleError(error);
+    });
+
+  }
+
+
+
+
   filtrarGuias() {
     this.temp =  this.total_rows_bd;
     const valorNroSerie_  =  this.formFilter.controls['nroSerie'].value;
@@ -247,6 +322,34 @@ export class PagingTableComponent implements OnInit {
     this.table.offset = 0;
 
   }
+
+
+  private handleError(error: HttpErrorResponse) {
+
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 10000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 10000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 10000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
 
   ExportTOExcel() {
 

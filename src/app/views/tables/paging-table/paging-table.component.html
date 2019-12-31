@@ -49,16 +49,16 @@
                 <mat-form-field class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
                     <mat-select name="estadoSelected" [formControl]="formFilter.controls['estadoSelected']">
-                        <mat-option value="">Todos</mat-option>
-                        <mat-option value="REGISTRADO">Registrado</mat-option>
-                        <mat-option value="ANULADO">Anulado</mat-option>
+                        <mat-option value="99">Todos</mat-option>
+                        <mat-option value="0">Registrado</mat-option>
+                        <mat-option value="1">Anulado</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="30%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>CHOFER</b></mat-label>
                     <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']">
-                        <mat-option value="">Todos</mat-option>
-                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.nombres + ' ' + chofer.apellidos">
+                        <mat-option value="0">Todos</mat-option>
+                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.id">
                             {{chofer.nombres + ' ' + chofer.apellidos}}
                         </mat-option>
                     </mat-select>
@@ -66,8 +66,8 @@
                 <mat-form-field class="pl-1" fxFlex="30%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>DESTINO</b></mat-label>
                     <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']">
-                        <mat-option value="">Todos</mat-option>
-                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.refLarga2">
+                        <mat-option value="0">Todos</mat-option>
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
                             {{factoria.refLarga2}}
                         </mat-option>
                     </mat-select>
@@ -77,7 +77,7 @@
                 </section>
             </div>
             <div class="p-1 full-width" align="right">
-                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrarGuias()"><mat-icon>search</mat-icon>Buscar</button>
+                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="buscarGuiasConFiltro()"><mat-icon>search</mat-icon>Buscar</button>
                 <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
             </div>
 

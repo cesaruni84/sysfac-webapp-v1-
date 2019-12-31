@@ -116,7 +116,6 @@ export class RichTextEditorComponent implements OnInit {
     this.loader.open();
     this.liquidacionService.listarLiquidacionesPorEmpresa(this.usuarioSession.empresa.id).subscribe(liquidaciones => {
       this.rows = liquidaciones;
-      console.log(this.rows);
       this.loader.close();
     });
 
@@ -159,7 +158,6 @@ export class RichTextEditorComponent implements OnInit {
 
     // Obtiene valores de parametros para la búsqueda
     let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
-    console.log(nroDocLiq);
     const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
     const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
     const origen = this.formFilter.controls['origenSelected'].value;
@@ -179,7 +177,6 @@ export class RichTextEditorComponent implements OnInit {
                                                         valorConFactura,
                                                         fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;
-      console.log(this.rows);
       this.loader.close();
     },
     (error: HttpErrorResponse) => {

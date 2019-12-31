@@ -1,10 +1,9 @@
 import { GuiaRemision } from '../../models/guia_remision.model';
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
-import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { GrillaGuiaRemision } from '../../models/guia_remision.model';
-import { Cacheable, GlobalCacheConfig } from 'ngx-cacheable';
+import { Cacheable } from 'ngx-cacheable';
 
 
 @Injectable({
@@ -31,6 +30,40 @@ export class GuiaRemisionService {
     return this.http.get<GrillaGuiaRemision[]>(this.url + idEmpresa + '/guias/SRV1').pipe(
     );
   }
+
+  listarGuiasConFiltros(idEmpresa: number,
+                        nroSerie: string , nroSecuencia: string,
+                        idEstado: number, idChofer: number, idDestino: number,
+                        fechaIni: string, fechaFin: string) {
+    const params = new HttpParams().set('nroSerie', nroSerie)
+                                    .set('nroSecuencia', nroSecuencia)
+                                    .set('chofer', idChofer.toString())
+                                    .set('destino', idDestino.toString())
+                                    .set('estado', idEstado.toString())
+                                    .set('fechaIni', fechaIni.toString())
+                                    .set('fechaFin', fechaFin.toString());
+
+    return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV2', { params: params });
+  }
+
+  @Cacheable({
+    maxCacheCount: 10,
+  })
+  listarGuiasConFiltros2(idEmpresa: number,
+    nroSerie: string , nroSecuencia: string,
+    idEstado: number, idChofer: number, idDestino: number,
+    fechaIni: string, fechaFin: string) {
+    const params = new HttpParams().set('nroSerie', nroSerie)
+                .set('nroSecuencia', nroSecuencia)
+                .set('chofer', idChofer.toString())
+                .set('destino', idDestino.toString())
+                .set('estado', idEstado.toString())
+                .set('fechaIni', fechaIni.toString())
+                .set('fechaFin', fechaFin.toString());
+
+    return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV2', { params: params }).pipe();
+  }
+
 
 
   obtenerGuiaRemision(idEmpresa: number) {
