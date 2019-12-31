@@ -170,8 +170,7 @@ export class PagingTableComponent implements OnInit {
         str = '0' + str;
     }
     return str;
-}
-
+  }
 
 
 
@@ -242,6 +241,8 @@ export class PagingTableComponent implements OnInit {
 
   buscarGuiasConFiltro() {
     this.loader.open();
+    this.formFilter.controls['nroSerie'].setValue(this.pad(this.formFilter.get('nroSerie').value, 5));
+    this.formFilter.controls['nroSecuencia'].setValue(this.pad(this.formFilter.get('nroSecuencia').value, 8));
 
     // Obtiene valores de parametros para la búsqueda
     const nroSerie  =  this.formFilter.controls['nroSerie'].value;
