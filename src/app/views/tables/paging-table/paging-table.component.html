@@ -21,7 +21,7 @@
 
     <mat-card-content class="mb-0 p-05">
         <form [formGroup]="formFilter" novalidate>
-            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="4.5%" class="mb-0 p-0" fxLayoutAlign="start left">
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" class="mb-0 p-0" fxLayoutAlign="start left">
                 <mat-form-field fxFlex="10%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
@@ -30,14 +30,22 @@
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SECUENCIA</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
                 </mat-form-field>
+                <mat-form-field fxFlex="10%" class="pl-1">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE CLI</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSerieCli_" name="nroSerieCli" [formControl]="formFilter.controls['nroSerieCli']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                </mat-form-field>
+                <mat-form-field fxFlex="15%" class="pl-1">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA CLI</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                </mat-form-field>
                 <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
-                <mat-form-field class="pl-1 ml-2" fxFlex="40%">
+                <mat-form-field class="pl-1 ml-2" fxFlex="35%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO (EMISION)</b></mat-label>
                     <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" maxlength="10">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                <mat-form-field class="pl-1" fxFlex="40%">
+                <mat-form-field class="pl-1" fxFlex="35%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN (EMISION)</b></mat-label>
                     <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" maxlength="10">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
@@ -77,7 +85,7 @@
                 </section>
             </div>
             <div class="p-1 full-width" align="right">
-                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="buscarGuiasConFiltro()"><mat-icon>search</mat-icon>Buscar</button>
+                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrar()"><mat-icon>search</mat-icon>Buscar</button>
                 <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
             </div>
 
@@ -134,9 +142,9 @@
                 <div [style.fontSize.px]="12"> {{ row?.nroLiq }} </div>
             </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Nro Ord. Servicio" [flexGrow]="1" prop="ordenServicio">
+        <ngx-datatable-column name="Factura" [flexGrow]="1" prop="factura">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.ordenServicio }} </div>
+                <div [style.fontSize.px]="12"> {{ row?.factura }} </div>
             </ng-template>
         </ngx-datatable-column>
 

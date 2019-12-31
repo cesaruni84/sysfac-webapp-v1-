@@ -52,6 +52,8 @@ export class PagingTableComponent implements OnInit {
   // Ng Model
   public valorNroSerie_: string;
   public valorNroSecuencia_: string;
+  public valorNroSerieCli_: string;
+  public valorNroSecuenciaCli_: string;
   public fechaIniTraslado_: Date;
   public fechaFinTraslado_: Date;
   public estadoSelected_: string;
@@ -101,6 +103,8 @@ export class PagingTableComponent implements OnInit {
     this.formFilter = new FormGroup({
       nroSerie: new FormControl('', CustomValidators.digits),
       nroSecuencia: new FormControl('', CustomValidators.digits),
+      nroSerieCli: new FormControl('', CustomValidators.digits),
+      nroSecuenciaCli: new FormControl('', CustomValidators.digits),
       fechaIniTraslado: new FormControl(fechaIniTraslado_, ),
       fechaFinTraslado: new FormControl(fechaActual_, ),
       estadoSelected: new FormControl('99', ),
@@ -110,7 +114,8 @@ export class PagingTableComponent implements OnInit {
 
    });
 
-
+    this.valorNroSerieCli_ = '';
+    this.valorNroSecuenciaCli_ = '';
 
 
    // this.columns = this.service.getDataConf();
@@ -128,6 +133,8 @@ export class PagingTableComponent implements OnInit {
     this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
       this.comboChoferes = data4;
     });
+
+
 
     // Carga de Grilla Principal
     this.busquedaInicial();
@@ -155,13 +162,33 @@ export class PagingTableComponent implements OnInit {
   // Completar Zeros
   completarZerosNroSerie(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroSerie_ = this.pad(valorDigitado, 5);
+    if (!(valorDigitado === '')) {
+      this.valorNroSerie_ = this.pad(valorDigitado, 5);
+    };
   }
 
   // Completar Zeros
  completarZerosNroSecuencia(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
+    if (!(valorDigitado === '')) {
+      this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
+    }
+  }
+
+  // Completar Zeros
+  completarZerosNroSerieCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.valorNroSerieCli_ = this.pad(valorDigitado, 5);
+    }
+  }
+
+  // Completar Zeros
+  completarZerosNroSecuenciaCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.valorNroSecuenciaCli_ = this.pad(valorDigitado, 8);
+    }
   }
 
   pad(number: string, length: number): string {
@@ -220,7 +247,7 @@ export class PagingTableComponent implements OnInit {
     const destino = this.formFilter.controls['destinatarioSelected'].value;
     const estado  =  this.formFilter.controls['estadoSelected'].value;
 
-    this.guiaRemisionService.listarGuiasConFiltros2(this.usuarioSession.empresa.id,
+    this.guiaRemisionService.listarGuiasConFiltrosCache(this.usuarioSession.empresa.id,
                                                         nroSerie || '',
                                                         nroSecuencia || '',
                                                         estado,
@@ -238,11 +265,25 @@ export class PagingTableComponent implements OnInit {
 
   }
 
+  filtrar() {
+    if (this.formFilter.controls['nroSerieCli'].value &&
+        ( !this.formFilter.controls['nroSerie'].value) ) {
+      this.buscarPorGuiaCliente();
+    } else {
+      this.buscarGuiasConFiltro();
+    }
+  }
 
   buscarGuiasConFiltro() {
     this.loader.open();
-    this.formFilter.controls['nroSerie'].setValue(this.pad(this.formFilter.get('nroSerie').value, 5));
-    this.formFilter.controls['nroSecuencia'].setValue(this.pad(this.formFilter.get('nroSecuencia').value, 8));
+
+    if (this.formFilter.get('nroSerie').value) {
+      this.formFilter.controls['nroSerie'].setValue(this.pad(this.formFilter.get('nroSerie').value, 5));
+    }
+
+    if (this.formFilter.get('nroSecuencia').value) {
+      this.formFilter.controls['nroSecuencia'].setValue(this.pad(this.formFilter.get('nroSecuencia').value, 8));
+    }
 
     // Obtiene valores de parametros para la búsqueda
     const nroSerie  =  this.formFilter.controls['nroSerie'].value;
@@ -259,6 +300,36 @@ export class PagingTableComponent implements OnInit {
                                                         estado,
                                                         chofer,
                                                         destino ,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.handleError(error);
+    });
+
+  }
+
+  buscarPorGuiaCliente() {
+    this.loader.open();
+    if (this.formFilter.get('nroSerieCli').value) {
+      this.formFilter.controls['nroSerieCli'].setValue(this.pad(this.formFilter.get('nroSerieCli').value, 5));
+    }
+    if (this.formFilter.get('nroSecuenciaCli').value) {
+      this.formFilter.controls['nroSecuenciaCli'].setValue(this.pad(this.formFilter.get('nroSecuenciaCli').value, 8));
+    }
+
+    // Obtiene valores de parametros para la búsqueda
+    const nroSerieCli  =  this.formFilter.controls['nroSerieCli'].value;
+    const nroSecuenciaCli  =  this.formFilter.controls['nroSecuenciaCli'].value;
+    const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
+
+    this.guiaRemisionService.listarGuiasPorGuiaCliente(this.usuarioSession.empresa.id,
+                                                        nroSerieCli || '',
+                                                        nroSecuenciaCli || '',
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();

@@ -156,48 +156,51 @@ export class BasicFormComponent implements OnInit {
     );
   }
 
-  recuperarDatosGuiaBD(serie_: string, secuencia_: string) {
-    this.guiaRemisioService.obtenerGuiaRemisionxNroGuia(
-      this.usuarioSession.empresa.id,
-      serie_,
-      secuencia_
-    )
+  recuperarDatosGuiaBD(serie_: string, secuencia_: string ) {
+    this.guiaRemisioService.obtenerGuiaRemisionxNroGuia( this.usuarioSession.empresa.id, serie_, secuencia_)
     .subscribe((data_) => {
-      // console.log(data_);
-      this.valorIdGuia_ = data_.id;
-      this.estadoSelected_ = data_.estado.toString();
-      this.valorFechaEmision_ = data_.fechaRemision;
-      // console.log(this.valorFechaEmision_);
-      // console.log(new Date());
-      this.valorFechaIniTraslado_ = data_.fechaTraslado;
-      this.valorNroSerie_ = data_.serie;
-      this.valorNroSecuencia_ = data_.secuencia;
-      this.valorRemitenteSelected_ = data_.remitente;
-      this.valorRucRemitente_ = data_.remitente.cliente.ruc;
-      this.valorDirRemitente_ = data_.remitente.cliente.direccion;
-      this.valorDestinatarioSelected_ = data_.destinatario;
-      this.valorRucDestinatario_ = data_.destinatario.cliente.ruc;
-      this.valorDirDestinatario_ = data_.destinatario.cliente.direccion;
-      this.valorIdGuiaDetalle_ = data_.guiaDetalle[0].id;
-      this.valorProductoSelected_ = data_.guiaDetalle[0].producto;
-      this.valorCantidad_ = data_.totalCantidad;
-      // this.valorPeso_ = data_.guiaDetalle[0].peso;
-      this.valorUMSelected_ = data_.guiaDetalle[0].unidadMedida;
-      this.valorChoferSelected_ = data_.chofer;
-      this.valorPlacaTracto_ = data_.placaTracto;
-      this.valorPlacaBombona_ = data_.placaBombona;
-      this.valorCertificado_ = data_.chofer.certificado;
-      this.valorLicencia_ = data_.chofer.licencia;
-      this.valorBalanzaSelected_ = data_.balanza;
-      this.valorTicketBalanza_ = data_.ticketBalanza;
-      this.valorFechaRecepcion_ = data_.fechaRecepcion;
-      this.valorSerieCli_ = data_.serieCliente;
-      this.valorSecuenciaCli_ = data_.secuenciaCliente;
-
+        this.parsearDatosGuiaRemision(data_);
     }, (error: HttpErrorResponse) => {
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 20000,  panelClass: ['red-snackbar'] });
+      this.handleError(error);
     });
+  }
+
+  recuperarDatosGuiaBDPorGuiaCliente(serieCli_: string, secuenciaCli_: string ) {
+    this.guiaRemisioService.obtenerGuiaRemisionxNroGuiaCliente( this.usuarioSession.empresa.id, serieCli_, secuenciaCli_)
+    .subscribe((data_) => {
+        this.parsearDatosGuiaRemision(data_);
+    }, (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
+  }
+
+  parsearDatosGuiaRemision(data_: GuiaRemision) {
+    this.valorIdGuia_ = data_.id;
+    this.estadoSelected_ = data_.estado.toString();
+    this.valorFechaEmision_ = data_.fechaRemision;
+    this.valorFechaIniTraslado_ = data_.fechaTraslado;
+    this.valorNroSerie_ = data_.serie;
+    this.valorNroSecuencia_ = data_.secuencia;
+    this.valorRemitenteSelected_ = data_.remitente;
+    this.valorRucRemitente_ = data_.remitente.cliente.ruc;
+    this.valorDirRemitente_ = data_.remitente.cliente.direccion;
+    this.valorDestinatarioSelected_ = data_.destinatario;
+    this.valorRucDestinatario_ = data_.destinatario.cliente.ruc;
+    this.valorDirDestinatario_ = data_.destinatario.cliente.direccion;
+    this.valorIdGuiaDetalle_ = data_.guiaDetalle[0].id;
+    this.valorProductoSelected_ = data_.guiaDetalle[0].producto;
+    this.valorCantidad_ = data_.totalCantidad;
+    this.valorUMSelected_ = data_.guiaDetalle[0].unidadMedida;
+    this.valorChoferSelected_ = data_.chofer;
+    this.valorPlacaTracto_ = data_.placaTracto;
+    this.valorPlacaBombona_ = data_.placaBombona;
+    this.valorCertificado_ = data_.chofer.certificado;
+    this.valorLicencia_ = data_.chofer.licencia;
+    this.valorBalanzaSelected_ = data_.balanza;
+    this.valorTicketBalanza_ = data_.ticketBalanza;
+    this.valorFechaRecepcion_ = data_.fechaRecepcion;
+    this.valorSerieCli_ = data_.serieCliente;
+    this.valorSecuenciaCli_ = data_.secuenciaCliente;
   }
 
   compareObjects(o1: any, o2: any): boolean {
@@ -455,10 +458,27 @@ export class BasicFormComponent implements OnInit {
    * Consulta de Guia de Pantalla de Registro
    */
   consultarGuia() {
-    this.valorNroSerie_ = this.pad(this.basicForm.get('nroSerie').value, 5) ;
-    this.valorNroSecuencia_ = this.pad(this.basicForm.get('nroSecuencia').value, 8) ;
-    this.recuperarDatosGuiaBD(this.valorNroSerie_, this.valorNroSecuencia_);
-    this.edicion = false;
+    if (this.basicForm.get('nroSerie').value && this.basicForm.get('nroSecuencia').value ) {
+      this.valorNroSerie_ = this.pad(this.basicForm.get('nroSerie').value, 5) ;
+      this.valorNroSecuencia_ = this.pad(this.basicForm.get('nroSecuencia').value, 8) ;
+      this.recuperarDatosGuiaBD(this.valorNroSerie_, this.valorNroSecuencia_);
+      this.edicion = true;
+    }
+
+  }
+
+
+    /**
+   * Consulta de Guia de Pantalla de Registro
+   */
+  consultarGuiaCliente() {
+    if (this.basicForm.get('nroSerieClie').value && this.basicForm.get('nroSequenClie').value ) {
+      this.valorSerieCli_ = this.pad(this.basicForm.get('nroSerieClie').value, 5) ;
+      this.valorSecuenciaCli_ = this.pad(this.basicForm.get('nroSequenClie').value, 8) ;
+      this.recuperarDatosGuiaBDPorGuiaCliente(this.valorSerieCli_, this.valorSecuenciaCli_);
+      this.edicion = true;
+    }
+
   }
 
 

@@ -46,10 +46,21 @@ export class GuiaRemisionService {
     return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV2', { params: params });
   }
 
+
+  listarGuiasPorGuiaCliente(idEmpresa: number, nroSerieCli: string , nroSecuenciaCli: string,
+                          fechaIni: string, fechaFin: string) {
+    const params = new HttpParams().set('nroSerieCli', nroSerieCli)
+                .set('nroSecuenciaCli', nroSecuenciaCli)
+                .set('fechaIni', fechaIni.toString())
+                .set('fechaFin', fechaFin.toString());
+
+    return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV6', { params: params });
+}
+
   @Cacheable({
     maxCacheCount: 10,
   })
-  listarGuiasConFiltros2(idEmpresa: number,
+  listarGuiasConFiltrosCache(idEmpresa: number,
     nroSerie: string , nroSecuencia: string,
     idEstado: number, idChofer: number, idDestino: number,
     fechaIni: string, fechaFin: string) {
@@ -87,6 +98,11 @@ export class GuiaRemisionService {
   obtenerGuiaRemisionxNroGuia(idEmpresa: number, nroSerie: string , nroSecuencia: string ) {
     const params = new HttpParams().set('nroSerie', nroSerie).set('nroSecuencia', nroSecuencia);
     return this.http.get<GuiaRemision>(this.url + idEmpresa + '/guias/SRV3', {params: params});
+  }
+
+  obtenerGuiaRemisionxNroGuiaCliente(idEmpresa: number, nroSerieCli: string , nroSecuenciaCli: string ) {
+    const params = new HttpParams().set('nroSerieCli', nroSerieCli).set('nroSecuenciaCli', nroSecuenciaCli);
+    return this.http.get<GuiaRemision>(this.url + idEmpresa + '/guia-cliente/SRV3', {params: params});
   }
 
 
