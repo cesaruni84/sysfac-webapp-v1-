@@ -45,3 +45,10 @@ export class TipoItem extends TipoGenerico {
     }
 }
 
+
+export class TipoDocPersona extends TipoGenerico {
+    constructor() {
+        super();
+    }
+}
+

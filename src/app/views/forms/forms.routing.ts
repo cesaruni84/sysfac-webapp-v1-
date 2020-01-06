@@ -10,6 +10,7 @@ import { MaestroFactoriaComponent } from './configuracion/maestro-factoria/maest
 import { MaestroVehiculosComponent } from './configuracion/maestro-vehiculos/maestro-vehiculos.component';
 import { MaestroChoferesComponent } from './configuracion/maestro-choferes/maestro-choferes.component';
 import { MaestroTarifasComponent } from './configuracion/maestro-tarifas/maestro-tarifas.component';
+import { MaestroClientesComponent } from './configuracion/maestro-clientes/maestro-clientes.component';
 
 export const FormsRoutes: Routes = [
   {
@@ -66,6 +67,12 @@ export const FormsRoutes: Routes = [
       path: 'configuracion/tarifas',
       component: MaestroTarifasComponent,
       data: { title: 'Tarifas', breadcrumb: 'CONSULTA DE TARIFAS' }
+    }
+  ,
+    {
+      path: 'configuracion/clientes',
+      component: MaestroClientesComponent,
+      data: { title: 'Clientes', breadcrumb: 'CONSULTA DE CLIENTES' }
     }
 
   ]

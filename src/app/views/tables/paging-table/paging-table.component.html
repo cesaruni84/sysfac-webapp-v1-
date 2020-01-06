@@ -38,14 +38,14 @@
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA CLI</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
                 </mat-form-field>
-                <mat-label class="pl-1 ml-2" fxFlex="60%"> </mat-label>
-                <mat-form-field class="pl-1 ml-2" fxFlex="35%">
+                <mat-label class="pl-1 ml-2" fxFlex="40%"> </mat-label>
+                <mat-form-field class="pl-1 ml-2" fxFlex="20%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO (EMISION)</b></mat-label>
                     <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" maxlength="10">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                <mat-form-field class="pl-1" fxFlex="35%">
+                <mat-form-field class="pl-1" fxFlex="20%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN (EMISION)</b></mat-label>
                     <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" maxlength="10">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>

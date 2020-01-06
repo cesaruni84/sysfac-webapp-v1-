@@ -266,8 +266,8 @@ export class PagingTableComponent implements OnInit {
   }
 
   filtrar() {
-    if (this.formFilter.controls['nroSerieCli'].value &&
-        ( !this.formFilter.controls['nroSerie'].value) ) {
+    if (this.formFilter.controls['nroSerieCli'].value ||
+        ( this.formFilter.controls['nroSecuenciaCli'].value) ) {
       this.buscarPorGuiaCliente();
     } else {
       this.buscarGuiasConFiltro();

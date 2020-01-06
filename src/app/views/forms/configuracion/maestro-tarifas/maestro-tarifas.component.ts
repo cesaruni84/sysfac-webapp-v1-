@@ -49,10 +49,10 @@ export class MaestroTarifasComponent implements OnInit {
       width: '940px',
       disableClose: true,
       data: { title: title, isNew: isNew, payload: data }
-    })
+    });
     dialogRef.afterClosed()
       .subscribe(res => {
-        if(!res) {
+        if (!res) {
           // If user press cancel
           return;
         }

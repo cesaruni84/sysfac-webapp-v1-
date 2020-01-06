@@ -1,3 +1,62 @@
-<p>
-  maestro-clientes works!
-</p>
+<div class="m-333">
+    <button mat-raised-button class="mb-05" color="primary" (click)="openPopUp({}, true)">Nuevo Registro</button>
+</div>
+<mat-card class="p-0">
+    <mat-card-content class="p-0">
+        <ngx-datatable class="material striped ml-0 mr-0" [scrollbarH]="'true'" [rows]="rows" [columnMode]="'standard'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="'auto'">
+            <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span title="Consultar ">
+                        <button mat-icon-button mat-sm-button color="primary" class="mr-1" (click)="openPopUp(row, true)"><mat-icon>search</mat-icon></button>
+                      </span>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Tipo Doc" [flexGrow]="0.5" [width]="100">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.id }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Nro. Documento" [flexGrow]="1" [width]="150">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.ruc }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Razón Social" [flexGrow]="1" [width]="300">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.razonSocial }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Dirección" [flexGrow]="1" [width]="350">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.direccion }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Distrito" [flexGrow]="1">
+                <ng-template let-row="row " ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.distrito }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Provincia" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.provincia }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Departamento" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.departamento }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+        </ngx-datatable>
+    </mat-card-content>
+</mat-card>
