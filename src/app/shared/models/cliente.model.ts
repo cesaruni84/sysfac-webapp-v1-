@@ -10,6 +10,7 @@ export class Cliente {
     provincia: string;
     departamento: string;
     fechaRegistro: string;
+    tipoDoc: number;
 
     constructor () {
 

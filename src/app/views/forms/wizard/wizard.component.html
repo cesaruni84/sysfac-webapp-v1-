@@ -262,8 +262,7 @@
                                         </ngx-datatable-column>
                                         <ngx-datatable-column name="" [flexGrow]="1" [width]="100">
                                             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                                <!--  <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Editar Item" (click)="buscarItem(row)"><mat-icon>edit</mat-icon></button> > -->
-                                                <!--  <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Consulta Item" (click)="buscarItem(row)"><mat-icon>zoom_in</mat-icon></button>-->
+                                                <button mat-icon-button mat-sm-button type="button" color="primary" matTooltip="Editar Item" [disabled]="conGuiaRemision_ || conLiquidaciones_" (click)="buscarItem(row)"><mat-icon>edit</mat-icon></button>
                                                 <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Item" (click)="eliminarItem(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
                                             </ng-template>
                                         </ngx-datatable-column>

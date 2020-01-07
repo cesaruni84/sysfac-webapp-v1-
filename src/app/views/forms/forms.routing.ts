@@ -11,6 +11,7 @@ import { MaestroVehiculosComponent } from './configuracion/maestro-vehiculos/mae
 import { MaestroChoferesComponent } from './configuracion/maestro-choferes/maestro-choferes.component';
 import { MaestroTarifasComponent } from './configuracion/maestro-tarifas/maestro-tarifas.component';
 import { MaestroClientesComponent } from './configuracion/maestro-clientes/maestro-clientes.component';
+import { MaestroProductosComponent } from './configuracion/maestro-productos/maestro-productos.component';
 
 export const FormsRoutes: Routes = [
   {
@@ -47,33 +48,39 @@ export const FormsRoutes: Routes = [
     {
       path: 'configuracion/factorias',
       component: MaestroFactoriaComponent,
-      data: { title: 'Plantas', breadcrumb: 'CONSULTA DE PLANTAS' }
+      data: { title: 'Plantas', breadcrumb: 'MANTENIMIENTO DE PLANTAS' }
     },
 
     {
       path: 'configuracion/vehiculos',
       component: MaestroVehiculosComponent,
-      data: { title: 'Vehículos', breadcrumb: 'CONSULTA DE VEHICULOS' }
+      data: { title: 'Vehículos', breadcrumb: 'MANTENIMIENTO DE VEHICULOS' }
     },
 
     {
       path: 'configuracion/choferes',
       component: MaestroChoferesComponent,
-      data: { title: 'Chofer', breadcrumb: 'CONSULTA DE CHOFERES' }
+      data: { title: 'Chofer', breadcrumb: 'MANTENIMIENTO DE CHOFERES' }
     }
     ,
 
     {
       path: 'configuracion/tarifas',
       component: MaestroTarifasComponent,
-      data: { title: 'Tarifas', breadcrumb: 'CONSULTA DE TARIFAS' }
+      data: { title: 'Tarifas', breadcrumb: 'MANTENIMIENTO DE TARIFAS' }
     }
   ,
     {
       path: 'configuracion/clientes',
       component: MaestroClientesComponent,
-      data: { title: 'Clientes', breadcrumb: 'CONSULTA DE CLIENTES' }
+      data: { title: 'Clientes', breadcrumb: 'MANTENIMIENTO DE CLIENTES' }
     }
+   ,
+   {
+    path: 'configuracion/productos',
+    component: MaestroProductosComponent,
+    data: { title: 'Productos', breadcrumb: 'MANTENIMIENTO DE PRODUCTOS' }
+  }
 
   ]
   }

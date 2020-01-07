@@ -1,3 +1,50 @@
-<p>
-  maestro-productos works!
-</p>
+<div class="m-333">
+    <!-- <span fxFlex></span> -->
+    <button mat-raised-button class="mb-05" color="primary" (click)="openPopUp({}, true)">Nuevo Registro</button>
+</div>
+<mat-card class="p-0">
+    <mat-card-content class="p-0">
+        <ngx-datatable class="material striped ml-0 mr-0" [rows]="rows" [columnMode]="'standard'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="'auto'">
+            <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <button mat-icon-button mat-sm-button matTooltip="Consultar" color="primary" class="mr-1" (click)="openPopUp(row)"><mat-icon>search</mat-icon></button>
+                    <!-- <button mat-icon-button mat-sm-button matTooltip="Eliminar registro" color="warn" (click)="deleteItem(row)"><mat-icon>delete</mat-icon></button> -->
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Item" [flexGrow]="1" [width]="60" prop="id">
+                <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Tipo" [flexGrow]="1" [width]="100">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ this.retornarGlosa(row?.categoria.id)}}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Nombre" [flexGrow]="1 " [width]="350">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.nombre }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Código" [flexGrow]="1">
+                <ng-template let-row="row " ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.codigo }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Stock" [flexGrow]="1" [width]="160">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.stock | number: '1.2-2' }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Fecha Registro" [flexGrow]="1">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <div [style.fontSize.px]="12"> {{ row?.fechaIngreso }}</div>
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </mat-card-content>
+</mat-card>

@@ -1,105 +1,126 @@
-<mat-tab-group class="p-05">
-    <mat-tab label="INFORMACION BASICA" align="center">
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>person</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
 
-        <div fxLayout="row wrap">
-            <form id="clienteForm_" [formGroup]="clienteForm" (ngSubmit)="submit()">
-                <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+<div fxLayout="row wrap">
+    <form id="itemFormPlanta" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
 
-                    <div fxFlex="30" class="pr-1 pt-1">
-                        <mat-form-field class="full-width">
-                            <mat-label><b>TIPO DOCUMENTO </b></mat-label>
-                            <mat-select name="tipoDocumento" [formControl]="clienteForm.controls['tipoDocumento']">
-                                <mat-option *ngFor="let tipoDocumento of comboTiposDocumento" [value]="tipoDocumento">
-                                    {{tipoDocumento.descripcion}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>TIPO DE DOCUMENTO</b></mat-label>
+                    <mat-select name="tipoDocumento" [formControl]="itemForm_.controls['tipoDocumento']">
+                        <mat-option *ngFor="let tipoDocumento of comboTiposDocumento" [value]="tipoDocumento.id">
+                            {{tipoDocumento.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['tipoDocumento'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="30" class="pr-1 pt-1">
-                        <mat-form-field class="full-width ">
-                            <mat-label><b>DOCUMENTO</b></mat-label>
-                            <input matInput name="documento" [formControl]="clienteForm.controls['documento']">
-                            <mat-icon matSuffix>edit</mat-icon>
-                            <mat-error *ngIf="clienteForm.controls['documento'].hasError('required')">
-                                <strong>* REQUERIDO</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>DOCUMENTO</b></mat-label>
+                    <input matInput name="ruc" [formControl]="itemForm_.controls['ruc']" (keypress)='validaDigitos($event)' maxlength="12">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['ruc'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="70" class="pr-1 pt-1">
-                        <mat-form-field class="full-width ">
-                            <mat-label><b>RAZON SOCIAL / NOMBRE</b></mat-label>
-                            <input matInput name="razonSocial" [formControl]="clienteForm.controls['razonSocial']">
-                            <mat-icon matSuffix>edit</mat-icon>
-                            <mat-error *ngIf="clienteForm.controls['razonSocial'].hasError('required')">
-                                <strong>* REQUERIDO</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
 
-                    <div fxFlex="30" class="pr-1 pt-1">
-                        <mat-form-field class="full-width ">
-                            <mat-label><b>TELEFONO</b></mat-label>
-                            <input matInput name="telefono" [formControl]="clienteForm.controls['telefono']">
-                            <mat-icon matSuffix>phone</mat-icon>
-                            <mat-error *ngIf="clienteForm.controls['telefono'].hasError('required')">
-                                <strong>* REQUERIDO</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
 
-                    <div fxFlex="30" class="pr-1 pt-1">
-                        <mat-form-field class="full-width ">
-                            <mat-label><b>EMAIL</b></mat-label>
-                            <input matInput name="email" [formControl]="clienteForm.controls['email']">
-                            <mat-icon matSuffix>email</mat-icon>
-                            <mat-error *ngIf="clienteForm.controls['email'].hasError('required')">
-                                <strong>* REQUERIDO</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="70" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>RAZON SOCIAL / NOMBRE</b></mat-label>
+                    <input matInput name="nombre" [formControl]="itemForm_.controls['nombre']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['nombre'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="100" class="pr-1 pt-1">
-                        <mat-form-field class="full-width">
-                            <mat-label><b>DIRECCION</b></mat-label>
-                            <input matInput name="direccion" [formControl]="clienteForm.controls['direccion']">
-                            <mat-icon matSuffix>directions</mat-icon>
-                            <mat-error *ngIf="clienteForm.controls['direccion'].hasError('required')">
-                                <strong>* REQUERIDO</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>TELEFONO</b></mat-label>
+                    <input matInput name="telefono" [formControl]="itemForm_.controls['telefono']">
+                    <mat-icon matSuffix>phone</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['telefono'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="50" class="pr-1 pt-1">
-                        <mat-form-field class="full-width">
-                            <mat-label><b>DEPARTAMENTO</b></mat-label>
-                            <input matInput name="departamento" [formControl]="clienteForm.controls['departamento']">
-                            <mat-icon matSuffix>directions</mat-icon>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>EMAIL</b></mat-label>
+                    <input matInput name="email" [formControl]="itemForm_.controls['email']">
+                    <mat-icon matSuffix>email</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['email']">
+                        <strong>* FORMATO INCORRECTO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="50" class="pr-1 pt-1">
-                        <mat-form-field class="full-width">
-                            <mat-label><b>PROVINCIA</b></mat-label>
-                            <input matInput name="provincia" [formControl]="clienteForm.controls['provincia']">
-                            <mat-icon matSuffix>edit</mat-icon>
-                        </mat-form-field>
-                    </div>
+            <div fxFlex="70" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DIRECCION</b></mat-label>
+                    <input matInput name="direccion" [formControl]="itemForm_.controls['direccion']">
+                    <mat-icon matSuffix>directions</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['direccion'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
 
-                    <div fxFlex="50" class="pr-1 pt-1">
-                        <mat-form-field class="full-width">
-                            <mat-label><b>DISTRITO</b></mat-label>
-                            <input matInput name="distrito" [formControl]="clienteForm.controls['distrito']">
-                            <mat-icon matSuffix>edit</mat-icon>
-                        </mat-form-field>
-                    </div>
 
-                    <div fxFlex="10" class="pr-1 pt-1"></div>
-                </div>
-                <br>
-            </form>
+            <div fxFlex="33" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DEPARTAMENTO</b></mat-label>
+                    <input matInput name="departamento" [formControl]="itemForm_.controls['departamento']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="33" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>PROVINCIA</b></mat-label>
+                    <input matInput name="provincia" [formControl]="itemForm_.controls['provincia']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="33" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>DISTRITO</b></mat-label>
+                    <input matInput name="distrito" [formControl]="itemForm_.controls['distrito']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                </mat-form-field>
+            </div>
+
+
+
+
+            <div fxFlex="50" class="pt-1 pr-1">
+            </div>
+
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+
         </div>
         <br>
-    </mat-tab>
-</mat-tab-group>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormPlanta"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>

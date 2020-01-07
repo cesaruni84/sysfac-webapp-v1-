@@ -61,6 +61,7 @@ import { MaestroTarifasPopupComponent } from './configuracion/maestro-tarifas/ma
 import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-item-guias.component';
 import { TableDetailComponent } from './wizard/table-detail/table-detail.component';
 import { ClientePopupComponent } from './configuracion/maestro-clientes/cliente-popup/cliente-popup.component';
+import { ProductosPopupComponent } from './configuracion/maestro-productos/productos-popup/productos-popup.component';
 
 @NgModule({
   imports: [
@@ -120,7 +121,8 @@ import { ClientePopupComponent } from './configuracion/maestro-clientes/cliente-
                 MaestroTarifasPopupComponent,
                 FacturaItemGuiasComponent,
                 TableDetailComponent,
-                ClientePopupComponent],
+                ClientePopupComponent,
+                ProductosPopupComponent],
    entryComponents: [FacturaPopUpComponent,
                       FacturaItemComponent,
                       FacturaItemGuiasComponent,
@@ -131,6 +133,7 @@ import { ClientePopupComponent } from './configuracion/maestro-clientes/cliente-
                       ClientePopupComponent,
                       MaestroChoferesPopupComponent,
                       MaestroTarifasPopupComponent,
+                      ProductosPopupComponent,
                       InlineEditComponent]
 })
 export class AppFormsModule {

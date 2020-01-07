@@ -7,6 +7,8 @@ import { UsuarioService } from '../../../../shared/services/auth/usuario.service
 import { Usuario } from '../../../../shared/models/usuario.model';
 import { Router } from '@angular/router';
 import { ClientePopupComponent } from './cliente-popup/cliente-popup.component';
+import { TipoDocPersona } from '../../../../shared/models/tipos_facturacion';
+import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
 
 @Component({
   selector: 'app-maestro-clientes',
@@ -16,6 +18,7 @@ import { ClientePopupComponent } from './cliente-popup/cliente-popup.component';
 export class MaestroClientesComponent implements OnInit {
 
   public rows: any[];
+  comboTiposDocumento: TipoDocPersona [];
   usuarioSession: Usuario;
 
   constructor(private dialog: MatDialog,
@@ -23,6 +26,7 @@ export class MaestroClientesComponent implements OnInit {
               private clienteService: ClienteService,
               private userService: UsuarioService,
               private router: Router,
+              private tiposGenService: TiposGenericosService,
               private confirmService: AppConfirmService,
     private loader: AppLoaderService
   ) { }
@@ -30,6 +34,7 @@ export class MaestroClientesComponent implements OnInit {
   ngOnInit() {
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
+    this.comboTiposDocumento = this.tiposGenService.retornarTiposDocPersona();
     this.obtenerClientesBD();
   }
 
@@ -40,8 +45,13 @@ export class MaestroClientesComponent implements OnInit {
     });
   }
 
-  consultarCliente2(row: any) {
 
+  retornarGlosa (value: any) {
+    if (value) {
+      return this.comboTiposDocumento.find(tipoDoc => tipoDoc.id === value ).descripcion;
+    } else {
+      return '';
+    }
   }
 
   nuevoRegistro() {
@@ -57,7 +67,7 @@ export class MaestroClientesComponent implements OnInit {
   openPopUp(data: any = {}, isNew?) {
     const title = isNew ? 'Nuevo Cliente' : 'Actualizar Cliente';
     const dialogRef: MatDialogRef<any> = this.dialog.open(ClientePopupComponent, {
-      width: '940px',
+      width: '840px',
       disableClose: true,
       data: { title: title, isNew: isNew, payload: data }
     });

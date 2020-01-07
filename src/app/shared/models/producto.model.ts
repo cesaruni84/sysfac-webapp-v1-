@@ -7,12 +7,16 @@ export class Producto {
     stock: number;
     fechaIngreso: string;
     fechaActualizacion: string;
-    categoria: {
-        id: number;
-        nombre: string;
-    };
+    categoria: Categoria;
+    codigo: string;
 
     constructor () {
 
     }
+}
+
+
+export class Categoria {
+    id: number;
+    nombre: string;
 }

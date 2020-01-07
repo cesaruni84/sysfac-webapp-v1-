@@ -63,8 +63,8 @@ public tiposItemFactura = [
   ];
 
 public tipoDocumentoPersona = [
-    { id: 1, codigo: '001' , descripcion: ' DNI' },
-    { id: 2, codigo: '002' , descripcion: ' RUC' },
+    { id: 1, codigo: '001' , descripcion: ' RUC' },
+    { id: 2, codigo: '002' , descripcion: ' DNI' },
     { id: 3, codigo: '003' , descripcion: ' OTRO' },
   ];
 

@@ -13,5 +13,8 @@ export class UbigeosService {
   cargarUbigeos(){
     return this.http.get<Ubigeo[]>('./assets/ubigeo-reniec.json');
   }
+}
+{
+
   
 }

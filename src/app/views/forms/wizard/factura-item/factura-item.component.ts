@@ -56,27 +56,9 @@ export class FacturaItemComponent implements OnInit {
   }
   buildItemForm(itemFactura: DocumentoItem) {
 
-    console.log(itemFactura);
-
-    // this.unidadMedida_ = itemFactura.unidadMedida;
-
-    // this.itemForm_ = this.fb.group({
-    //   tipo: [{value: itemFactura.tipo.id || 'Bien', disabled: true}],
-    //   codigo: [{value: itemFactura.codigo || '', disabled: false}],
-    //   descripcion: [{value: itemFactura.descripcion || '', disabled: false}],
-    //   cantidad: [{value: itemFactura.cantidad || '1.00', disabled: false}], // depende si es bien o servicio
-    //   unidadMedida: [{value: itemFactura.unidadMedida || '', disabled: false}],
-    //   tarifa: [{value: itemFactura.tarifa || 0.00, disabled: false}],
-    //   descuentos: [{value: itemFactura.descuentos || 0.00, disabled: false}],
-    //   tipoIGV: [{value: itemFactura.tipoIGV || 'Gravado', disabled: true}],
-    //   valorIGV: [{value: itemFactura.valorIGV || 0.00, disabled: true}],
-    //   total: [{value: itemFactura.total || 0.00, disabled: true}],
-    // });
-
-
     this.itemForm_ = this.fb.group({
       productos: [{value: itemFactura.productos || '', disabled: false}],
-      tipo: [{value: 1, disabled: false}],
+      tipo: [{value: itemFactura.tipo, disabled: false}],
       codigo: [{value: itemFactura.codigo || '', disabled: false}],
       descripcion: [{value: itemFactura.descripcion || '', disabled: false}],
       cantidad: [{value: '1.00', disabled: false}],
@@ -89,7 +71,6 @@ export class FacturaItemComponent implements OnInit {
       subTotal: [{value: '', disabled: true}],
       total: [{value: '', disabled: true}],
     });
-
   }
 
   cargaCombos() {

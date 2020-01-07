@@ -11,6 +11,9 @@ import { AppLoaderService } from '../../../../../shared/services/app-loader/app-
 import { MatSnackBar, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { UsuarioService } from '../../../../../shared/services/auth/usuario.service';
 import { TipoDocPersona } from '../../../../../shared/models/tipos_facturacion';
+import { MaestroFactoriaPopupComponent } from '../../maestro-factoria/maestro-factoria-popup/maestro-factoria-popup.component';
+import { FactoriaService } from '../../../../../shared/services/factorias/factoria.service';
+import { CustomValidators } from 'ng2-validation';
 
 @Component({
   selector: 'app-cliente-popup',
@@ -19,20 +22,21 @@ import { TipoDocPersona } from '../../../../../shared/models/tipos_facturacion';
 })
 export class ClientePopupComponent implements OnInit {
 
-  public clienteForm: FormGroup;
-  comboClientes: Cliente[];
-  comboTiposDocumento: TipoDocPersona[];
+  public itemForm_: FormGroup;
+  public itemCliente: Cliente;
+  public comboTiposDocumento: TipoDocPersona[];
+
   usuarioSession: Usuario;
   errorResponse_: ErrorResponse;
   infoResponse_: InfoResponse;
-  clienteData: Cliente;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<ClientePopupComponent>,
+    public dialogRef: MatDialogRef<MaestroFactoriaPopupComponent>,
     private fb: FormBuilder,
     private clienteService: ClienteService,
     private tiposGenService: TiposGenericosService,
+    private factoriaService: FactoriaService,
     private userService: UsuarioService,
     private loader: AppLoaderService,
     private snack: MatSnackBar,
@@ -41,129 +45,149 @@ export class ClientePopupComponent implements OnInit {
   ngOnInit() {
     this.usuarioSession = this.userService.getUserLoggedIn();
     this.cargaCombos();
+    this.buildItemForm(this.data.payload);
   }
 
-  buildItemForm(item: any) {
 
-    this.clienteForm = this.fb.group({
-      tipoDocumento: [{ }, Validators.required],
-      documento: [{ value: item.ruc || '', disabled: false }, Validators.required],
-      razonSocial: [{ value: item.razonSocial || '', disabled: false }, Validators.required],
+  buildItemForm(item: any) {
+    this.itemForm_ = this.fb.group({
+      tipoDocumento: [{value: item.cliente || 1 , disabled: false}, Validators.required],
+      ruc: [{value: item.ruc || '', disabled: false}, Validators.required],
+      nombre: [{value: item.razonSocial || '', disabled: false}, Validators.required],
+      direccion: [{value: item.direccion || '', disabled: false}],
       telefono: [{ value: item.telefono || '', disabled: false }],
-      email: [{ value: item.telefono || '', disabled: false }],
-      direccion: [{ value: item.direccion || '', disabled: false }],
-      distrito: [{ value: item.distrito || '', disabled: false }],
-      provincia: [{ value: item.provincia || '', disabled: false }],
-      departamento: [{ value: item.departamento || '', disabled: false }],
+      email: [{ value: item.email || '', disabled: false }, CustomValidators.email],
+      distrito: [{value: item.distrito || '', disabled: false}],
+      provincia: [{value: item.provincia || '', disabled: false}],
+      departamento: [{value: item.departamento || '', disabled: false}],
     });
 
   }
 
   cargaCombos() {
+    // Combo Tipo Doc.
     this.comboTiposDocumento = this.tiposGenService.retornarTiposDocPersona();
+
   }
 
   seleccionarCliente(event: any) {
-    this.clienteForm.patchValue({
+    this.itemForm_.patchValue({
       ruc: event.value.ruc,
-    });
+   });
   }
 
   compareObjects(o1: any, o2: any): boolean {
-    return o1.valor === o2.valor && o1.id === o2.id;
+    return  o1.id === o2.id;
   }
 
   compareObjects2(o1: any, o2: any): boolean {
     return o1.codigo === o2.codigo && o1.id === o2.id;
   }
 
-  /**
-* Getters de campos de formulario
-*/
-  get cliente_(): FormControl {
-    return this.clienteForm.get('cliente') as FormControl;
+    // Validar Digitos
+    validaDigitos(event) {
+      const key = window.event ? event.keyCode : event.which;
+        if (event.keyCode === 8 || event.keyCode === 46) {
+            return true;
+        } else if ( key < 48 || key > 57 ) {
+          return false;
+        } else {
+            return true;
+        }
+    }
+
+
+     /**
+   * Getters de campos de formulario
+   */
+  get tipoDocumento_ (): FormControl {
+    return this.itemForm_.get('tipoDocumento') as FormControl;
   }
 
-  get codigo_(): FormControl {
-    return this.clienteForm.get('codigo') as FormControl;
+  get ruc_ (): FormControl {
+    return this.itemForm_.get('ruc') as FormControl;
   }
 
-  get nombre_(): FormControl {
-    return this.clienteForm.get('nombre') as FormControl;
+  get nombre_ (): FormControl {
+    return this.itemForm_.get('nombre') as FormControl;
   }
 
-  get direccion_(): FormControl {
-    return this.clienteForm.get('direccion') as FormControl;
+  get telefono_ (): FormControl {
+    return this.itemForm_.get('telefono') as FormControl;
   }
 
-  get distrito_(): FormControl {
-    return this.clienteForm.get('distrito') as FormControl;
+  get email_ (): FormControl {
+    return this.itemForm_.get('email') as FormControl;
   }
 
-  get provincia_(): FormControl {
-    return this.clienteForm.get('provincia') as FormControl;
+  get direccion_ (): FormControl {
+    return this.itemForm_.get('direccion') as FormControl;
   }
 
-  get departamento_(): FormControl {
-    return this.clienteForm.get('departamento') as FormControl;
+  get distrito_ (): FormControl {
+    return this.itemForm_.get('distrito') as FormControl;
   }
 
+  get provincia_ (): FormControl {
+    return this.itemForm_.get('provincia') as FormControl;
+  }
+
+  get departamento_ (): FormControl {
+    return this.itemForm_.get('departamento') as FormControl;
+  }
 
 
   submit() {
-    if (!this.clienteForm.invalid) {
-      //this.clienteData = new Cliente();
-      // this.clienteData.codigo = this.codigo_.value;
-     // this.clienteData.ruc = this.cliente_.value.ruc;
-      //this.clienteData.razonSocial = this.nombre_.value;
-     // this.clienteData.direccion = this.direccion_.value;
-     // this.clienteData.distrito = this.distrito_.value;
-    //  this.clienteData.provincia = this.provincia_.value;
-    //  this.clienteData.departamento = this.departamento_.value;
+    if (!this.itemForm_.invalid) {
+      this.itemCliente = new Cliente();
+      this.itemCliente.tipoDoc = this.tipoDocumento_.value;
+      this.itemCliente.ruc = this.ruc_.value;
+      this.itemCliente.razonSocial = this.nombre_.value;
+      this.itemCliente.nombreComercial = '?';
+      this.itemCliente.telefono = this.telefono_.value;
+      this.itemCliente.email = this.email_.value;
+      this.itemCliente.direccion = this.direccion_.value;
+      this.itemCliente.distrito = this.distrito_.value;
+      this.itemCliente.provincia = this.provincia_.value;
+      this.itemCliente.departamento = this.departamento_.value;
+      if (this.data.isNew) {
+        this.registrar();
+      } else {
+        this.actualizar();
+      }
 
     }
   }
 
-  // registrar() {
-  //   this.loader.open();
-  //   this.factoriaService.registrarFactoria(this.itemFactoria).subscribe((data_) => {
-  //      this.infoResponse_ = data_;
-  //      // this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
-  //      this.loader.close();
-  //      this.dialogRef.close(this.itemForm_.getRawValue());
-  //   },
-  //   (error: HttpErrorResponse) => {
-  //     this.handleError(error);
-  //   });
-  // }
-
-  // actualizar() {
-  //   this.itemFactoria.id = this.data.payload.id;
-  //   this.loader.open();
-  //   this.factoriaService.actualizarFactoria(this.itemFactoria).subscribe((data_) => {
-  //      this.infoResponse_ = data_;
-  //      // this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
-  //      this.loader.close();
-  //      this.dialogRef.close(this.itemForm_.getRawValue());
-
-  //   },
-  //   (error: HttpErrorResponse) => {
-  //     this.handleError(error);
-  //   });
-  // }
-
-  nuevoDocumento() {
-    // this.router.navigate([]);
-    this.redirectTo('/forms/facturacion/registro');
+  registrar() {
+    this.loader.open();
+    this.clienteService.registrarCliente(this.itemCliente).subscribe((data_) => {
+       this.infoResponse_ = data_;
+       this.loader.close();
+       this.dialogRef.close(this.itemForm_.getRawValue());
+    },
+    (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
   }
 
-  redirectTo(uri: string) {
-  //  this.router.navigateByUrl('/', {skipLocationChange: true}).then(() =>
-  //  this.router.navigate([uri]));
+  actualizar() {
+    this.itemCliente.id = this.data.payload.id;
+    this.loader.open();
+    this.clienteService.actualizarCliente(this.itemCliente).subscribe((data_) => {
+       this.infoResponse_ = data_;
+       this.loader.close();
+       this.dialogRef.close(this.itemForm_.getRawValue());
+
+    },
+    (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
   }
 
 
   private handleError(error: HttpErrorResponse) {
+
     this.loader.close();
     if (error.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
@@ -173,7 +197,7 @@ export class ClientePopupComponent implements OnInit {
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
-      if (error.error.codeMessage != null) {
+      if (error.error.codeMessage != null ) {
         this.errorResponse_ = error.error;
         this.snack.open(this.errorResponse_.errorMessage, 'OK', { duration: 3000 });
       } else {
@@ -182,11 +206,11 @@ export class ClientePopupComponent implements OnInit {
           `Backend returned code ${error.status}, ` +
           `body was: ${error.error}`);
       }
+
     }
     // return an observable with a user-facing error message
     return throwError(
       'Ocurrió un error inesperado, volver a intentar.');
   };
-
 
 }

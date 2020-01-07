@@ -1,0 +1,94 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row [style.fontSize.px]="17">
+        <mat-icon>person</mat-icon>
+        <span class="ml-1">{{ data.title}}</span>
+        <span class="spacer"></span>
+        <mat-icon class="example-icon" (click)="dialogRef.close(false)">close</mat-icon>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<div fxLayout="row wrap">
+    <form id="itemFormPlanta" [formGroup]="itemForm_" (ngSubmit)="submit()">
+        <div fxLayout="row wrap" fxLayout.lt-sm="column" [style.fontSize.px]="13" style="color:#3f51b5" class="p-05" fxLayoutAlign="left ">
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width">
+                    <mat-label><b>TIPO DE PRODUCTO</b></mat-label>
+                    <mat-select name="tipoProducto" [formControl]="itemForm_.controls['tipoProducto']">
+                        <mat-option *ngFor="let tipoProducto of comboTipoProducto" [value]="tipoProducto.id">
+                            {{tipoProducto.descripcion}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="itemForm_.controls['tipoProducto'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>CODIGO</b></mat-label>
+                    <input matInput name="codigo" [formControl]="itemForm_.controls['codigo']" maxlength="25">
+                    <mat-icon matSuffix>calendar_view_day</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['codigo'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="100" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>NOMBRE</b></mat-label>
+                    <input matInput name="nombre" [formControl]="itemForm_.controls['nombre']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['nombre'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="100" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>DESCRIPCION</b></mat-label>
+                    <input matInput name="descripcion" [formControl]="itemForm_.controls['descripcion']">
+                    <mat-icon matSuffix>edit</mat-icon>
+                    <mat-error *ngIf="itemForm_.controls['descripcion'].hasError('required')">
+                        <strong>* REQUERIDO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>STOCK</b></mat-label>
+                    <input matInput name="stock" [formControl]="itemForm_.controls['stock']" type="number">
+                    <mat-error *ngIf="itemForm_.controls['stock']">
+                        <strong>* FORMATO INCORRECTO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="30" class="pr-1 pt-1">
+                <mat-form-field class="full-width ">
+                    <mat-label><b>PRECIO</b></mat-label>
+                    <input matInput name="precio" [formControl]="itemForm_.controls['precio']" type="number">
+                    <mat-error *ngIf="itemForm_.controls['precio']">
+                        <strong>* FORMATO INCORRECTO</strong>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div fxFlex="50" class="pt-1 pr-1">
+            </div>
+
+            <div fxFlex="10" class="pr-1 pt-1"></div>
+
+        </div>
+        <br>
+        <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%">
+            <button mat-button color="primary" type="submit" form="itemFormPlanta"><mat-icon>save</mat-icon> Grabar</button>
+            <span fxFlex></span>
+            <button mat-button color="warn" type="button" (click)="dialogRef.close(false)"><mat-icon>cancel</mat-icon> Cancelar</button>
+        </div>
+    </form>
+</div>
