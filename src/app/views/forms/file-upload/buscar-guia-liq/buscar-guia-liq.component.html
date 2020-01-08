@@ -14,16 +14,15 @@
 
         <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
             <mat-form-field fxFlex="15%">
-                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE</b></mat-label>
                 <input matInput name="serie_" [formControl]="formFilter.controls['serie_']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerie($event)'>
                 <mat-icon matSuffix inline="true">edit</mat-icon>
             </mat-form-field>
             <mat-form-field fxFlex="15%">
-                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SECUENCIA</b></mat-label>
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA</b></mat-label>
                 <input matInput name="secuencia_" [formControl]="formFilter.controls['secuencia_']" maxlength="8" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSecuencia($event)'>
                 <mat-icon matSuffix inline="true">edit</mat-icon>
             </mat-form-field>
-            <mat-label fxFlex="20%"></mat-label>
 
             <mat-form-field fxFlex="15%" appearance="">
                 <mat-label><b>F. INI TRASLADO</b></mat-label>
@@ -37,25 +36,39 @@
                 <mat-datepicker-toggle matSuffix [for]="picker_"></mat-datepicker-toggle>
                 <mat-datepicker touchUi #picker_ disabled="false"></mat-datepicker>
             </mat-form-field>
+            <mat-label fxFlex="5%"></mat-label>
+            <div align="center" fxFlex="30%" data-html2canvas-ignore="true">
+                <button mat-raised-button type="button" color="primary" class="mr-1" (click)="buscar()"><mat-icon>search</mat-icon> Buscar </button>
+                <button mat-raised-button type="button" color="primary" class="mr-1" (click)="initForm()"><mat-icon>clear_all</mat-icon> Limpiar </button>
 
-            <div align="center" fxFlex="10%" data-html2canvas-ignore="true">
-                <button mat-raised-button type="button" color="primary" (click)="buscar()"><mat-icon>search</mat-icon> Buscar </button>
             </div>
         </div>
 
         <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign="left">
-            <mat-form-field fxFlex="35%" class="full-width" appearance="">
+
+            <mat-form-field fxFlex="15%">
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE CLI </b></mat-label>
+                <input matInput name="serie_" [formControl]="formFilter.controls['serieCli_']" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerieCli($event)'>
+                <mat-icon matSuffix inline="true">edit</mat-icon>
+            </mat-form-field>
+            <mat-form-field fxFlex="15%">
+                <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA CLI</b></mat-label>
+                <input matInput name="secuenciaCli_" [formControl]="formFilter.controls['secuenciaCli_']" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (change)='completarZerosNroSecuenciaCli($event)'>
+                <mat-icon matSuffix inline="true">edit</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field fxFlex="30%" class="full-width" appearance="">
                 <mat-label><b>ORIGEN</b></mat-label>
-                <mat-select [compareWith]="compareObjects" name="filtroOrigen" [formControl]="formFilter.controls['filtroOrigen']">
+                <mat-select name="filtroOrigen" [formControl]="formFilter.controls['filtroOrigen']">
                     <mat-option value="0">Todos</mat-option>
                     <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
                         {{factoria.refLarga2}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-form-field fxFlex="35%" class="full-width" appearance="">
+            <mat-form-field fxFlex="30%" class="full-width" appearance="">
                 <mat-label><b>DESTINO</b></mat-label>
-                <mat-select [compareWith]="compareObjects" name="filtroDestino" [formControl]="formFilter.controls['filtroDestino']">
+                <mat-select name="filtroDestino" [formControl]="formFilter.controls['filtroDestino']">
                     <mat-option value="0">Todos</mat-option>
                     <mat-option *ngFor="let factoria2 of comboFactoriasDestino" [value]="factoria2.id">
                         {{factoria2.refLarga2}}
@@ -75,8 +88,8 @@
 <div class="p-0 m-0">
     <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
         <div class="margin-333">
-            <ngx-datatable class="material striped" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 1080px" [columnMode]="'force'" [limit]="5" [scrollbarH]="true" [headerHeight]="40" [footerHeight]="50" [rowHeight]="50"
-                [rows]="rows" [columns]="columns" [messages]="messages">
+            <ngx-datatable class="material striped" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 1080px" [columnMode]="'force'" [limit]="5" [scrollbarH]="true" [scrollbarV]="false" [headerHeight]="40" [footerHeight]="50"
+                [rowHeight]="50" [rows]="rows" [columns]="columns" [messages]="messages">
 
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="true" [headerCheckboxable]="true" [checkboxable]="true">
                 </ngx-datatable-column>

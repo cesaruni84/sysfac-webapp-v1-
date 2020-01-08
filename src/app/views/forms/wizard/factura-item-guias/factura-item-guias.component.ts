@@ -19,6 +19,7 @@ import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-factura-item-guias',
@@ -91,19 +92,9 @@ export class FacturaItemGuiasComponent implements OnInit {
   }
 
   ngOnInit() {
-    const fechaActual_ = new Date();
-    const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
 
-    this.formFilter = this.fb.group({
-      serie_: ['', ],
-      secuencia_: ['', ],
-      filtroOrigen: ['', ],
-      filtroDestino: ['', ],
-      filtroFechaIni: new FormControl(fechaIniTraslado_, ),
-      filtroFechaFin: new FormControl(fechaActual_, ),
-    });
-
+    // Inicializa Formulario
+    this.initForm();
 
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
@@ -122,6 +113,142 @@ export class FacturaItemGuiasComponent implements OnInit {
 
   }
 
+  initForm() {
+    const fechaActual_ = new Date();
+    const fechaIniTraslado_ = new Date();
+    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
+
+    this.formFilter = this.fb.group({
+      serie_: ['', ],
+      secuencia_: ['', ],
+      serieCli_: ['', ],
+      secuenciaCli_: ['', ],
+      filtroOrigen: ['0', ],
+      filtroDestino: ['0', ],
+      filtroFechaIni: new FormControl(fechaIniTraslado_, ),
+      filtroFechaFin: new FormControl(fechaActual_, ),
+    });
+  }
+
+  buscar() {
+    if (this.formFilter.controls['serie_'].value || this.formFilter.controls['secuencia_'].value) {
+        this.buscarGuiasConFiltros();
+    } else {
+        if ( this.formFilter.controls['serieCli_'].value || this.formFilter.controls['secuenciaCli_'].value ) {
+          this.buscarPorGuiaCliente();
+        } else {
+          this.buscarGuiasConFiltros();
+        }
+    }
+  }
+
+  buscarGuiasConFiltros() {
+    this.loader.open();
+
+    if (this.formFilter.get('serie_').value) {
+      this.formFilter.controls['serie_'].setValue(this.pad(this.formFilter.get('serie_').value, 5));
+    }
+
+    if (this.formFilter.get('secuencia_').value) {
+      this.formFilter.controls['secuencia_'].setValue(this.pad(this.formFilter.get('secuencia_').value, 8));
+    }
+
+    // Obtiene valores de parametros para la búsqueda
+    const nroSerie  =  this.formFilter.controls['serie_'].value;
+    const nroSecuencia  =  this.formFilter.controls['secuencia_'].value;
+    const estado =  99; // no aplica
+    const chofer = 0; // no aplica
+    const origen = this.formFilter.controls['filtroOrigen'].value;
+    const destino = this.formFilter.controls['filtroDestino'].value;
+    const formateo = false ; // sin formateo
+    const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
+    const soloFacturadas = false;   // no mostrar facturadas
+    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
+
+
+    this.guiaRemisionService.listarGuiasConFiltros(this.usuarioSession.empresa.id,
+                                                        nroSerie || '',
+                                                        nroSecuencia || '',
+                                                        estado, chofer,
+                                                        origen, destino ,
+                                                        formateo, guiasSinLiqFact, soloFacturadas,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.handleError(error);
+    });
+
+  }
+
+  buscarPorGuiaCliente() {
+    this.loader.open();
+    if (this.formFilter.get('serieCli_').value) {
+      this.formFilter.controls['serieCli_'].setValue(this.pad(this.formFilter.get('serieCli_').value, 5));
+    }
+    if (this.formFilter.get('secuenciaCli_').value) {
+      this.formFilter.controls['secuenciaCli_'].setValue(this.pad(this.formFilter.get('secuenciaCli_').value, 8));
+    }
+
+    // Obtiene valores de parametros para la búsqueda
+    const nroSerieCli  =  this.formFilter.controls['serieCli_'].value;
+    const nroSecuenciaCli  =  this.formFilter.controls['secuenciaCli_'].value;
+    const estado =  99; // no aplica
+    const chofer = 0; // no aplica
+    const origen = this.formFilter.controls['filtroOrigen'].value;
+    const destino = this.formFilter.controls['filtroDestino'].value;
+    const formateo = false ; // sin formateo
+    const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
+    const soloFacturadas = false;   // no mostrar facturadas
+    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
+
+    this.guiaRemisionService.listarGuiasPorGuiaCliente(this.usuarioSession.empresa.id,
+                                                        nroSerieCli || '',
+                                                        nroSecuenciaCli || '',
+                                                        estado,
+                                                        chofer,
+                                                        origen,
+                                                        destino,
+                                                        formateo,
+                                                        guiasSinLiqFact,
+                                                        soloFacturadas,
+                                                        fechaIni, fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.loader.close();
+      this.rows = [];
+      this.handleError(error);
+    });
+
+  }
+  buscarGuiasPorFacturar() {
+    this.listaItemsSelected = [];
+    this.selected = [];
+    const origen = this.formFilter.controls['filtroOrigen'].value || 0;
+    const destino = this.formFilter.controls['filtroDestino'].value || 0;
+    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
+    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
+
+    this.guiaRemisionService.listarGuiasRemisionPorFacturar(this.usuarioSession.empresa.id,
+                                origen,
+                                destino,
+                                fechaIni,
+                                fechaFin).subscribe(data_ => {
+      this.rows = data_;
+      this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
+
+  }
 
   pad(number: string, length: number): string {
     let str = '' + number;
@@ -163,54 +290,30 @@ export class FacturaItemGuiasComponent implements OnInit {
     };
   }
 
-  buscarGuiasPorFacturar() {
-    this.loader.open();
-    const serie_ = this.formFilter.controls['serie_'].value;
-    const secuencia_ = this.formFilter.controls['secuencia_'].value;
-
-    if (serie_ && secuencia_) {
-      this.guiaRemisionService.obtenerGuiaRemisionxNroGuia(this.usuarioSession.empresa.id, 
-                                                            serie_,
-                                                            secuencia_).subscribe(data_ => {
-
-          const result: GuiaRemision[] = [];
-          result.push(data_);
-          this.rows = result;
-          this.loader.close();
-        },
-          (error: HttpErrorResponse) => {
-            this.loader.close();
-            this.errorResponse_ = error.error;
-            this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
-          });
-    } else {
-      this.buscarGuiasPorFiltros();
-
+  // Completar Zeros
+  completarZerosNroSerieCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        serieCli_: this.pad(valorDigitado, 5),
+      });
     }
   }
 
+  // Completar Zeros
+  completarZerosNroSecuenciaCli(event) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.formFilter.patchValue({
+        secuenciaCli_: this.pad(valorDigitado, 8),
+      });
+    }
+  }
 
-
-  buscarGuiasPorFiltros() {
-    const origen = this.formFilter.controls['filtroOrigen'].value || 0;
-    const destino = this.formFilter.controls['filtroDestino'].value || 0;
-    const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
-    const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
-
-    this.guiaRemisionService.listarGuiasRemisionPorFacturar(this.usuarioSession.empresa.id,
-                                origen,
-                                destino,
-                                fechaIni,
-                                fechaFin).subscribe(data_ => {
-      this.rows = data_;
-      this.loader.close();
-    },
-    (error: HttpErrorResponse) => {
-      this.loader.close();
-      this.errorResponse_ = error.error;
-      this.snackBar.open(this.errorResponse_.errorMessage, 'cerrar', { duration: 5000 });
-    });
-
+  calcularFechaHora(fecha: Date): Date {
+      const fechaLocal = fecha.toLocaleDateString();  // fecha local
+      const fechFormt = fechaLocal.split('/').reverse().join('-');  // fecha en formato YYYY-mm-DDD
+      return new Date(fechFormt);
   }
 
 
@@ -254,5 +357,33 @@ export class FacturaItemGuiasComponent implements OnInit {
     });
     this.dialogRef.close(this.listaItemsFactura);
   }
+
+  private handleError(error: HttpErrorResponse) {
+
+    this.loader.close();
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
 
 }

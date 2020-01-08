@@ -23,20 +23,20 @@
         <form [formGroup]="formFilter" novalidate>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" class="mb-0 p-0" fxLayoutAlign="start left">
                 <mat-form-field fxFlex="10%" class="pl-1">
-                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SERIE</b></mat-label>
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
-                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE SECUENCIA</b></mat-label>
-                    <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA</b></mat-label>
+                    <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" maxlength="8" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
                 </mat-form-field>
                 <mat-form-field fxFlex="10%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE CLI</b></mat-label>
-                    <input matInput [(ngModel)]="valorNroSerieCli_" name="nroSerieCli" [formControl]="formFilter.controls['nroSerieCli']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                    <input matInput [(ngModel)]="valorNroSerieCli_" name="nroSerieCli" [formControl]="formFilter.controls['nroSerieCli']" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA CLI</b></mat-label>
-                    <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:red" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                    <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
                 </mat-form-field>
                 <mat-label class="pl-1 ml-2" fxFlex="40%"> </mat-label>
                 <mat-form-field class="pl-1 ml-2" fxFlex="20%">
@@ -52,7 +52,6 @@
                     <mat-datepicker #picker2></mat-datepicker>
                 </mat-form-field>
             </div>
-            <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                 <mat-form-field class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
@@ -62,15 +61,17 @@
                         <mat-option value="1">Anulado</mat-option>
                     </mat-select>
                 </mat-form-field>
+
                 <mat-form-field class="pl-1" fxFlex="30%">
-                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>CHOFER</b></mat-label>
-                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ORIGEN</b></mat-label>
+                    <mat-select name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.id">
-                            {{chofer.nombres + ' ' + chofer.apellidos}}
+                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                            {{factoria.refLarga2}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
+
                 <mat-form-field class="pl-1" fxFlex="30%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>DESTINO</b></mat-label>
                     <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']">
@@ -84,10 +85,24 @@
                     <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
                 </section>
             </div>
-            <div class="p-1 full-width" align="right">
-                <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrar()"><mat-icon>search</mat-icon>Buscar</button>
-                <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
+
+            <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
+                <mat-form-field class="pl-1" fxFlex="30%">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>CHOFER</b></mat-label>
+                    <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']">
+                        <mat-option value="0">Todos</mat-option>
+                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.id">
+                            {{chofer.nombres + ' ' + chofer.apellidos}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div class="p-1 full-width" align="right">
+                    <button mat-raised-button align="right" color="primary" class="mr-1" (click)="filtrar()"><mat-icon>search</mat-icon>Buscar</button>
+                    <button mat-raised-button type="button" color="primary" class="mr-1" (click)="initForm()"><mat-icon>clear_all</mat-icon> Limpiar </button>
+                    <button mat-raised-button align="right" color="primary" (click)="ExportTOExcel()"><mat-icon>archive</mat-icon> Exportar</button>
+                </div>
             </div>
+
 
         </form>
     </mat-card-content>

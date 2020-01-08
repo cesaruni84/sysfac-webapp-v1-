@@ -33,6 +33,7 @@ export class LiquidacionService {
 
   obtenerLiquidacionPorNroDoc(idEmpresa: number, nroDocLiq: string) {
     const params = new HttpParams().set('nroDocLiq', nroDocLiq);
+    console.log("hpasda");
     return this.http.get<Liquidacion>(this.url + idEmpresa + '/liquidaciones/SRV1', {params: params});
   }
 

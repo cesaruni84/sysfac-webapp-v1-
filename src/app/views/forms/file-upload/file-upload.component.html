@@ -169,7 +169,7 @@
 
 
                                     <ngx-datatable-column name="" [flexGrow]="1" [width]="30">
-                                        <ng-template let-row="row" ngx-datatable-cell-template>
+                                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                             <span>
                                                 <button mat-icon-button mat-sm-button type="button" color="warn" matTooltip="Descartar Guia" (click)="eliminarGuia(row,rowIndex)"><mat-icon>delete forever</mat-icon></button>
                                             </span>
@@ -200,7 +200,7 @@
                                         </ng-template>
                                     </ngx-datatable-column>
 
-                                    <ngx-datatable-column name="Insumo" [flexGrow]="1" [width]="130" prop="guiaDetalle">
+                                    <ngx-datatable-column name="Insumo" [flexGrow]="1" [width]="130" prop="insumo">
                                         <ng-template let-row="row" ngx-datatable-cell-template>
                                             <div [style.fontSize.px]="11" align="left"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
                                         </ng-template>

@@ -498,6 +498,10 @@ export class FileUploadComponent implements OnInit {
       .subscribe(res => {
         if (res) {
           let i = this.rows.indexOf(row);
+          console.log(row);
+          console.log(i);
+          console.log(this.rows);
+
           this.rows.splice(i, 1);
           this.recalcularTotales();
 

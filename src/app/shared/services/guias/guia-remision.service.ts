@@ -33,13 +33,18 @@ export class GuiaRemisionService {
 
   listarGuiasConFiltros(idEmpresa: number,
                         nroSerie: string , nroSecuencia: string,
-                        idEstado: number, idChofer: number, idDestino: number,
+                        idEstado: number, idChofer: number, origen: number, idDestino: number,
+                        formateo: boolean, guiasSinLiqFact: boolean, soloFacturadas: boolean,
                         fechaIni: string, fechaFin: string) {
     const params = new HttpParams().set('nroSerie', nroSerie)
                                     .set('nroSecuencia', nroSecuencia)
                                     .set('chofer', idChofer.toString())
+                                    .set('origen', origen.toString())
                                     .set('destino', idDestino.toString())
                                     .set('estado', idEstado.toString())
+                                    .set('conFormateo', formateo.toString())
+                                    .set('guiasSinLiqFact', guiasSinLiqFact.toString())
+                                    .set('soloFacturadas', soloFacturadas.toString())
                                     .set('fechaIni', fechaIni.toString())
                                     .set('fechaFin', fechaFin.toString());
 
@@ -47,10 +52,21 @@ export class GuiaRemisionService {
   }
 
 
-  listarGuiasPorGuiaCliente(idEmpresa: number, nroSerieCli: string , nroSecuenciaCli: string,
-                          fechaIni: string, fechaFin: string) {
+  listarGuiasPorGuiaCliente(idEmpresa: number,
+                        nroSerieCli: string , nroSecuenciaCli: string,
+                        idEstado: number, idChofer: number, origen: number, idDestino: number,
+                        formateo: boolean, guiasSinLiqFact: boolean, soloFacturadas: boolean,
+                        fechaIni: string, fechaFin: string)
+  {
     const params = new HttpParams().set('nroSerieCli', nroSerieCli)
                 .set('nroSecuenciaCli', nroSecuenciaCli)
+                .set('chofer', idChofer.toString())
+                .set('origen', origen.toString())
+                .set('destino', idDestino.toString())
+                .set('estado', idEstado.toString())
+                .set('conFormateo', formateo.toString())
+                .set('guiasSinLiqFact', guiasSinLiqFact.toString())
+                .set('soloFacturadas', soloFacturadas.toString())
                 .set('fechaIni', fechaIni.toString())
                 .set('fechaFin', fechaFin.toString());
 

@@ -35,6 +35,7 @@ export class GuiaRemision {
     chofer: Chofer;
     idOrigen: string;
     idDestino: string;
+    idProducto: string;
 
     constructor () {
 

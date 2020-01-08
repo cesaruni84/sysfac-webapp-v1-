@@ -96,6 +96,33 @@ export class PagingTableComponent implements OnInit {
 
   ngOnInit() {
 
+    this.initForm();
+
+    // Recupera datos de usuario de session
+    this.usuarioSession = this.userService.getUserLoggedIn();
+
+    // Carga de Combos Factorias
+    this.factoriaService.listarComboFactorias('D').subscribe(data1 => {
+      this.comboFactorias = data1;
+    });
+
+    // Carga de Combos Choferes
+    this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
+      this.comboChoferes = data4;
+    });
+
+    // Carga de Grilla Principal
+    // this.busquedaInicial();
+
+    // this.guiaRemisionService.listarGrillaGuias(this.usuarioSession.empresa.id).subscribe(data => {
+    //   this.listaGrillaGuias = data;
+    //   this.rows = this.temp = this.total_rows_bd = data;
+    //   this.loader.close();
+    // });
+  }
+
+
+  initForm() {
     const fechaActual_ = new Date();
     const fechaIniTraslado_ = new Date();
     fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
@@ -109,41 +136,10 @@ export class PagingTableComponent implements OnInit {
       fechaFinTraslado: new FormControl(fechaActual_, ),
       estadoSelected: new FormControl('99', ),
       choferSelected: new FormControl('0', ),
+      origenSelected: new FormControl('0', ),
       destinatarioSelected: new FormControl('0', ),
       esFacturado: new FormControl(this.facturado, ),
-
    });
-
-    this.valorNroSerieCli_ = '';
-    this.valorNroSecuenciaCli_ = '';
-
-
-   // this.columns = this.service.getDataConf();
-    // this.rows = this.service.getAll();
-    // Recupera datos de usuario de session
-    this.usuarioSession = this.userService.getUserLoggedIn();
-    // this.loader.open();
-
-    // Carga de Combos Factorias
-    this.factoriaService.listarComboFactorias('D').subscribe(data1 => {
-      this.comboFactorias = data1;
-    });
-
-    // Carga de Combos Choferes
-    this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
-      this.comboChoferes = data4;
-    });
-
-
-
-    // Carga de Grilla Principal
-    this.busquedaInicial();
-
-    // this.guiaRemisionService.listarGrillaGuias(this.usuarioSession.empresa.id).subscribe(data => {
-    //   this.listaGrillaGuias = data;
-    //   this.rows = this.temp = this.total_rows_bd = data;
-    //   this.loader.close();
-    // });
   }
 
 
@@ -266,11 +262,14 @@ export class PagingTableComponent implements OnInit {
   }
 
   filtrar() {
-    if (this.formFilter.controls['nroSerieCli'].value ||
-        ( this.formFilter.controls['nroSecuenciaCli'].value) ) {
-      this.buscarPorGuiaCliente();
-    } else {
+    if (this.formFilter.controls['nroSerie'].value || this.formFilter.controls['nroSecuencia'].value ) {
       this.buscarGuiasConFiltro();
+    } else {
+      if (this.formFilter.controls['nroSerieCli'].value || this.formFilter.controls['nroSecuenciaCli'].value) {
+        this.buscarPorGuiaCliente();
+      } else {
+        this.buscarGuiasConFiltro();
+      }
     }
   }
 
@@ -288,18 +287,23 @@ export class PagingTableComponent implements OnInit {
     // Obtiene valores de parametros para la búsqueda
     const nroSerie  =  this.formFilter.controls['nroSerie'].value;
     const nroSecuencia  =  this.formFilter.controls['nroSecuencia'].value;
+    const estado  =  this.formFilter.controls['estadoSelected'].value;
+    const chofer = this.formFilter.controls['choferSelected'].value;
+    const origen = this.formFilter.controls['origenSelected'].value;
+    const destino = this.formFilter.controls['destinatarioSelected'].value;
+    const formateo = true ; // para grilla
+    const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
+    const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
     const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
-    const chofer = this.formFilter.controls['choferSelected'].value;
-    const destino = this.formFilter.controls['destinatarioSelected'].value;
-    const estado  =  this.formFilter.controls['estadoSelected'].value;
+
 
     this.guiaRemisionService.listarGuiasConFiltros(this.usuarioSession.empresa.id,
                                                         nroSerie || '',
                                                         nroSecuencia || '',
-                                                        estado,
-                                                        chofer,
-                                                        destino ,
+                                                        estado, chofer,
+                                                        origen, destino ,
+                                                        formateo, guiasSinLiqFact, soloFacturadas,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
@@ -324,12 +328,26 @@ export class PagingTableComponent implements OnInit {
     // Obtiene valores de parametros para la búsqueda
     const nroSerieCli  =  this.formFilter.controls['nroSerieCli'].value;
     const nroSecuenciaCli  =  this.formFilter.controls['nroSecuenciaCli'].value;
+    const estado  =  this.formFilter.controls['estadoSelected'].value;
+    const chofer = this.formFilter.controls['choferSelected'].value;
+    const origen = this.formFilter.controls['origenSelected'].value;
+    const destino = this.formFilter.controls['destinatarioSelected'].value;
+    const formateo = true ; // para grilla
+    const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
+    const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
     const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
 
     this.guiaRemisionService.listarGuiasPorGuiaCliente(this.usuarioSession.empresa.id,
                                                         nroSerieCli || '',
                                                         nroSecuenciaCli || '',
+                                                        estado,
+                                                        chofer,
+                                                        origen,
+                                                        destino,
+                                                        formateo,
+                                                        guiasSinLiqFact,
+                                                        soloFacturadas,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
