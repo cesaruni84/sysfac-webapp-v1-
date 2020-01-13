@@ -336,7 +336,7 @@ export class FacturaItemGuiasComponent implements OnInit {
     //
     this.listaItemsSelected.forEach(element => {
      let item: DocumentoItem = new DocumentoItem();
-     item.id = element.id;
+     item.idRelated = element.id;   // pasa el id de la Guia al id related del DocumentoItem
      item.codigo = element.serie + '-' + element.secuencia;
      item.descripcion = element.guiaDetalle[0].producto.nombre ;
      item.cantidad = element.totalCantidad;

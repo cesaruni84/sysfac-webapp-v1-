@@ -19,11 +19,12 @@ import { throwError } from 'rxjs/internal/observable/throwError';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { FacturaItemGuiasComponent } from './factura-item-guias/factura-item-guias.component';
 import { DocumentoItem } from '../../../shared/models/facturacion.model';
-import { ItemFacturaService } from '../../../shared/services/facturacion/item-factura.service';
+import { ItemFacturaService, EstadoDocumento } from '../../../shared/services/facturacion/item-factura.service';
 import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+
 
 @Component({
   selector: 'app-wizard',
@@ -83,7 +84,6 @@ export class WizardComponent implements OnInit {
 
   liquidaciones_ = [];
   guias_remision = [];
-  message = 'mensaje para mi hijo';
 
   // Manejo default de mensajes en grilla
     messages: any = {
@@ -112,11 +112,15 @@ export class WizardComponent implements OnInit {
 
   public comboEstadosFactura = [
     { id: 1, codigo: '001' , descripcion: 'Registrado' },
-    { id: 2, codigo: '002' , descripcion: 'Enviado a Facturador SUNAT'},
-    { id: 3, codigo: '003' , descripcion: 'Enviado y Aceptado SUNAT'},
-    { id: 4, codigo: '004' , descripcion: 'Observada SUNAT'},
-    { id: 5, codigo: '005' , descripcion: 'Anulada'},
+    { id: 2, codigo: '002' , descripcion: 'Cancelado'},
+    { id: 3, codigo: '003' , descripcion: 'Anulado'},
+
+    // { id: 3, codigo: '003' , descripcion: 'Enviado y Aceptado SUNAT'},
+    // { id: 4, codigo: '004' , descripcion: 'Observada SUNAT'},
+    // { id: 5, codigo: '005' , descripcion: 'Anulada'},
   ];
+
+
 
   constructor(
               @Inject(LOCALE_ID) private locale: string,
@@ -160,7 +164,7 @@ export class WizardComponent implements OnInit {
           CustomValidators.date
         ]
       ],
-      estado: [{value: '', disabled: true}],
+      estado: [{value: '', disabled: false}],
       observacion: [''],
       ordenServicio: [{value: '', disabled: false}],
       moneda: [''],
@@ -302,12 +306,18 @@ export class WizardComponent implements OnInit {
           let i = 0;
           documento.liquidaciones.forEach(element => {
             documento.documentoitemSet[i].guiasRemision = element.guias;
+            documento.documentoitemSet[i].idRelated = element.id;  // pasa el id real de la liquidacion
             i++;
           });
         }
 
         if (this.guias_remision.length > 0) {
           this.conGuiaRemision_  = true;
+          let i = 0;
+          documento.guiasRemision.forEach(element => {
+            documento.documentoitemSet[i].idRelated = element.id;  // pasa el id real de la guia de remision
+            i++;
+          });
         }
 
         // Completa items: documento.liquidaciones.guias[0]
@@ -529,7 +539,7 @@ export class WizardComponent implements OnInit {
   }
 
   onDetailToggle(event) {
-    console.log('Detail Toggled', event);
+    // console.log('Detail Toggled', event);
   }
 
   toggleExpandRow(row) {
@@ -555,6 +565,8 @@ export class WizardComponent implements OnInit {
        const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
        this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
 
+       console.log("fecha venc")
+       console.log(this.facturaForm.controls['fechaVencimiento'].value)
        const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
        this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
 
@@ -585,10 +597,13 @@ export class WizardComponent implements OnInit {
           let liquidacion: Liquidacion = new Liquidacion();
           let guia: GuiaRemision = new GuiaRemision();
           if (this.subTipoFactura === '2') {
-            liquidacion.id = element.id;
+            // liquidacion.id = element.id;
+            liquidacion.id = element.idRelated;
+
             this.liquidaciones_.push(liquidacion);
           } else if (this.subTipoFactura === '3') {
-            guia.id = element.id;
+            // guia.id = element.id;
+            guia.id = element.idRelated;
             this.guias_remision.push(guia);
           }
        });
@@ -597,9 +612,11 @@ export class WizardComponent implements OnInit {
        this.facturaDocumento.guiasRemision = this.guias_remision;
 
        this.facturaDocumento.documentoitemSet = this.rows.map(item => {
-          delete item.id;
-          return item;
-        } );
+            if (!this.edicion) {
+              delete item.id;
+             }
+            return item;
+        });
 
        this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
        this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
@@ -646,6 +663,35 @@ export class WizardComponent implements OnInit {
   nuevoDocumento() {
     // this.router.navigate([]);
     this.redirectTo('/forms/facturacion/registro');
+  }
+
+  anularDocumento() {
+
+    const serie = this.facturaForm.controls['serieDocumento'].value;
+    const secuencia = this.facturaForm.controls['numeroDocumento'].value;
+    const documentoAnulado = new Documento();
+    documentoAnulado.id = this.idDocumento;
+    documentoAnulado.observacion = this.facturaForm.controls['observacion'].value;
+    documentoAnulado.estado = EstadoDocumento.ANULADO;
+
+    this.confirmService.confirm({message: `Confirma anular el documento ${serie} - ${secuencia} ?`})
+      .subscribe(res => {
+        if (res) {
+          this.loader.open();
+          this.itemFacturaService.anularDocumentoElectronico(documentoAnulado, this.usuarioSession.empresa.id).subscribe(data_ => {
+            this.infoResponse_ = data_;
+            this.facturaForm.patchValue({
+              estado: this.comboEstadosFactura.find(o => o.id === EstadoDocumento.ANULADO),
+            });
+            this.loader.close();
+            this.facturaForm.disable();
+            this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+          },
+          (error: HttpErrorResponse) => {
+            this.handleError(error);
+          });
+        }
+      });
   }
 
   redirectTo(uri: string) {

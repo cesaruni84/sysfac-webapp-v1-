@@ -64,7 +64,7 @@
                     <mat-select [compareWith]="compareObjects" name="unidadMedida" [formControl]="itemForm_.controls['unidadMedida']">
                         <!-- <mat-option value="0">Todos</mat-option> -->
                         <mat-option *ngFor="let unidad of comboUnidades" [value]="unidad">
-                            {{unidad.descripcion}}
+                            {{ unidad.descripcion}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

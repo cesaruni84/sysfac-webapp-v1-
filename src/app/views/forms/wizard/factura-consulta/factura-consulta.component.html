@@ -51,7 +51,8 @@
                             <mat-select name="estado" [formControl]="formFilter.controls['estado']">
                                 <mat-option value="0">Todos</mat-option>
                                 <mat-option value="1">Registrado</mat-option>
-                                <mat-option value="2">Vencido</mat-option>
+                                <mat-option value="2">Cancelado</mat-option>
+                                <mat-option value="3">Anulado</mat-option>
                             </mat-select>
                         </mat-form-field>
 
@@ -123,7 +124,7 @@
 
                 <ngx-datatable-column name="Doc. Correlativo" [flexGrow]="1" [width]="130" prop="secuencia">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.secuencia }} </div>
+                        <div [style.fontSize.px]="12"> {{ this.retornarSecuencia(row) }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
@@ -142,14 +143,18 @@
 
                 <ngx-datatable-column name="F. Vencimiento" [flexGrow]="1" [width]="120" prop="fechaEmision2" [cellClass]="'my-custom-cell'">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
+                        <div [style.fontSize.px]="12"> {{ row?.fechaVencimiento | date: 'dd/MM/yyyy'}} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
 
                 <ngx-datatable-column name="Estado Doc." [flexGrow]="1" [width]="110" prop="estado">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <mat-chip mat-sm-chip class="full-width" [color]="'primary'" align="center" [selected]="row.estado =='1'">{{row.estado == '1' ? 'Vigente' : 'Vencido'}}</mat-chip>
+
+                        <mat-chip *ngIf="chip" mat-sm-chip class="full-width" selected [color]="chip.color">
+                            {{this.getValueGlosaEstado(row.estado)}}
+                        </mat-chip>
+
                     </ng-template>
                 </ngx-datatable-column>
 

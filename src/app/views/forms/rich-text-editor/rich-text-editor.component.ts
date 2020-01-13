@@ -169,11 +169,13 @@ export class RichTextEditorComponent implements OnInit {
     if (conFactura) {
       valorConFactura = 1;
     }
+    const buscarLiqSinFactura = false;
     this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
                                                         nroDocLiq || '',
                                                         origen,
                                                         destino,
                                                         estado ,
+                                                        buscarLiqSinFactura,
                                                         valorConFactura,
                                                         fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;

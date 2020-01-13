@@ -88,8 +88,8 @@
 <div class="p-0 m-0">
     <mat-card class="p-0 mt-05 mb-05 mr-0 ml-0">
         <div class="margin-333">
-            <ngx-datatable class="material striped" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' style="width: 1080px" [columnMode]="'force'" [limit]="5" [scrollbarH]="true" [scrollbarV]="false" [headerHeight]="40" [footerHeight]="50"
-                [rowHeight]="50" [rows]="rows" [columns]="columns" [messages]="messages">
+            <ngx-datatable class="material striped" [selected]="selected" [selectionType]="'checkbox'" (select)='onSelect($event)' [columnMode]="'force'" [limit]="5" [scrollbarH]="'true'" [scrollbarV]="false" [headerHeight]="40" [footerHeight]="50" [rowHeight]="50"
+                [rows]="rows" [columns]="columns" [messages]="messages">
 
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="true" [headerCheckboxable]="true" [checkboxable]="true">
                 </ngx-datatable-column>

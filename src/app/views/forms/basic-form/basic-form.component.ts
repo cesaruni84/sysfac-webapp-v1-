@@ -177,7 +177,16 @@ export class BasicFormComponent implements OnInit {
   parsearDatosGuiaRemision(data_: GuiaRemision) {
     this.valorIdGuia_ = data_.id;
     this.estadoSelected_ = data_.estado.toString();
+    console.log(data_.fechaRemision)
     this.valorFechaEmision_ = data_.fechaRemision;
+    console.log(this.valorFechaEmision_.toLocaleDateString);
+    this.basicForm.patchValue({
+      fechaEmision: new Date('2020-01-10'),
+   });
+   console.log(this.basicForm.controls['fechaEmision'].value);
+   console.log(new Date());
+
+
     this.valorFechaIniTraslado_ = data_.fechaTraslado;
     this.valorNroSerie_ = data_.serie;
     this.valorNroSecuencia_ = data_.secuencia;

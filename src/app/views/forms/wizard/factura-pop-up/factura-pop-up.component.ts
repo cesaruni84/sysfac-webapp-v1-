@@ -160,12 +160,14 @@ export class FacturaPopUpComponent implements OnInit {
     const destino = 0; // TODOS
     const estado  =  1; // REGISTRADO
     const valorConFactura = 0; // SIN FACTURAR
+    const buscarLiqSinFactura = true;
 
     this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
                                                             nroDocLiq || '',
                                                             origen,
                                                             destino,
                                                             estado ,
+                                                            buscarLiqSinFactura,
                                                             valorConFactura,
                                                             fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;
@@ -201,7 +203,7 @@ export class FacturaPopUpComponent implements OnInit {
     //
     this.listaItemsSelected.forEach(element => {
      let item: DocumentoItem = new DocumentoItem();
-     item.id = element.id;   // temporal
+     item.idRelated = element.id;   // pasa el id de liquidacion al Id Relacionado del DocumentoItem
      item.codigo = element.nrodoc;
      item.descripcion = element.glosa;
      item.cantidad = element.totalCantidad;

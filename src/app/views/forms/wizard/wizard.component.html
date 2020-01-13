@@ -193,7 +193,7 @@
                                     <mat-divider></mat-divider>
                                 </mat-card-title> -->
                                 <div class="mat-box-shadow">
-                                    <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expanded" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="10" [rows]="rows" [columns]="columns" [messages]="messages">
+                                    <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expanded" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="0" [rowHeight]="'auto'" [limit]="100" [rows]="rows" [columns]="columns" [messages]="messages">
 
                                         <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow (toggle)="onDetailToggle($event)">
                                             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
@@ -305,10 +305,11 @@
                                     </div>
                                     <br> <br>
                                     <div align="left">
-                                        <button mat-raised-button type="submit" matTooltip="Graba factura en el sistema" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar Factura</button>
+                                        <button mat-raised-button type="submit" matTooltip="Graba documento" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar</button>
+                                        <button mat-raised-button type="button" matTooltip="Anular documento" color="warn" (click)="anularDocumento()" [disabled]="!this.edicion" class="mr-1"><mat-icon>cancel</mat-icon> Anular </button>
                                         <!-- <button mat-raised-button type="button" [disabled]="true" matTooltip="Envia Documento a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button> -->
-                                        <button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Imprime documento electrónico" color="warn" class="mr-1"><mat-icon>print</mat-icon> Imprimir Factura</button>
-                                        <button mat-raised-button type="button" matTooltip="Nuevo documento electrónico" color="primary" (click)="nuevoDocumento()"><mat-icon>note_add</mat-icon> Nueva Factura</button>
+                                        <!--<button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Imprime documento" color="accent" class="mr-1"><mat-icon>print</mat-icon> Imprimir </button>-->
+                                        <button mat-raised-button type="button" matTooltip="Nuevo documento" color="primary" (click)="nuevoDocumento()"><mat-icon>note_add</mat-icon> Nuevo</button>
 
                                     </div>
                                     <br>

@@ -1,7 +1,7 @@
 import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
-import { MatSnackBar, MatDialog, MatDialogRef, DateAdapter, MAT_DATE_FORMATS } from '@angular/material';
+import { MatSnackBar, MatDialog, MatDialogRef, DateAdapter, MAT_DATE_FORMATS, ThemePalette } from '@angular/material';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsuarioService } from '../../../../shared/services/auth/usuario.service';
@@ -19,6 +19,11 @@ import { Cliente } from '../../../../shared/models/cliente.model';
 import { ClienteService } from 'app/shared/services/facturacion/cliente.service';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { ItemFacturaService } from '../../../../shared/services/facturacion/item-factura.service';
+
+export interface ChipColor {
+  name: string;
+  color: ThemePalette;
+}
 
 @Component({
   selector: 'app-factura-consulta',
@@ -41,11 +46,12 @@ export class FacturaConsultaComponent implements OnInit {
   columns = [];
   usuarioSession: Usuario;
   liquidacionesSelected: Liquidacion[];
+  chip: ChipColor = {name: 'Primary', color: 'warn'};
 
   // Ng Model
   formFilter: FormGroup;
   public valorNroSerieLiq_: string;
-  
+
   // Manejo default de mensajes en grilla
   messages: any = {
     // Message to show when array is presented
@@ -71,15 +77,12 @@ export class FacturaConsultaComponent implements OnInit {
 
 
   constructor(
-    private factoriaService: FactoriaService,
-    private route: ActivatedRoute,
     private router: Router,
     private userService: UsuarioService,
     private itemFacturaService: ItemFacturaService,
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
     private clienteService: ClienteService,
-    private dialog: MatDialog,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
   }
@@ -142,8 +145,8 @@ export class FacturaConsultaComponent implements OnInit {
     this.rows = [];
 
     // Obtiene valores de parametros para la búsqueda
-    let nroSerie  =  this.formFilter.controls['serie'].value;
-    let nroDocumento  =  this.formFilter.controls['secuencial'].value;
+    const nroSerie  =  this.formFilter.controls['serie'].value;
+    const nroDocumento  =  this.formFilter.controls['secuencial'].value;
     const fechaIni = formatDate(this.formFilter.controls['fechaIni'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['fechaFin'].value, 'yyyy-MM-dd', this.locale);
     const idCLiente = this.formFilter.controls['cliente'].value;
@@ -158,7 +161,6 @@ export class FacturaConsultaComponent implements OnInit {
                                                         estado,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
-      console.log(this.rows);
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
@@ -177,6 +179,40 @@ export class FacturaConsultaComponent implements OnInit {
     this.selected.push(...selected);
   }
 
+  getValueGlosaEstado( value: any) {
+
+    switch (value) {
+      case 1:
+        // this.chip.color = 'primary';
+        return 'Registrado';
+      case 2:
+        return 'Cancelado';
+      case 3:
+        // this.chip.color = 'warn';
+        return 'Anulado';
+      default:
+          return '?';
+    }
+  }
+
+
+  retornarSecuencia(value: any) {
+
+    switch (value.estado) {
+      case 1:
+          this.chip.color = 'primary';
+          break;
+      case 2:
+          this.chip.color = 'accent';
+          break;
+      case 3:
+          this.chip.color = 'warn';
+          break;
+      default:
+          break;
+    }
+      return value.secuencia;
+  }
 
   // Genera Reporte para Excel
   ExportTOExcel() {

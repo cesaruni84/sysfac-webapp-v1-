@@ -33,7 +33,6 @@ export class LiquidacionService {
 
   obtenerLiquidacionPorNroDoc(idEmpresa: number, nroDocLiq: string) {
     const params = new HttpParams().set('nroDocLiq', nroDocLiq);
-    console.log("hpasda");
     return this.http.get<Liquidacion>(this.url + idEmpresa + '/liquidaciones/SRV1', {params: params});
   }
 
@@ -50,6 +49,7 @@ export class LiquidacionService {
                                 idOrigen: number,
                                 idDestino: number,
                                 idEstado: number,
+                                buscarLiqSinFactura: boolean,
                                 conFactura: number,
                                  fechaIni: string,
                                  fechaFin: string) {
@@ -57,6 +57,7 @@ export class LiquidacionService {
                                     .set('origen', idOrigen.toString())
                                     .set('destino', idDestino.toString())
                                     .set('estado', idEstado.toString())
+                                    .set('buscarLiqSinFactura', buscarLiqSinFactura.toString())
                                     .set('facturado', conFactura.toString())
                                     .set('fechaIni', fechaIni.toString())
                                     .set('fechaFin', fechaFin.toString());

@@ -82,6 +82,8 @@ export class FileUploadComponent implements OnInit {
     selectedMessage: 'seleccionados'
   };
 
+
+
   // Manejo default de mensajes en grilla
   messages2: any = {
     // Message to show when array is presented
@@ -101,6 +103,8 @@ export class FileUploadComponent implements OnInit {
     dir: 'desc'
   };
 
+
+  sortBy: any = 'idProducto';
 
   // Ng Model
   liquidacionModel: Liquidacion;
@@ -366,6 +370,7 @@ export class FileUploadComponent implements OnInit {
 
       // Guias asociadas
       this.rows = data_.guias;
+      console.log(this.rows);
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -510,6 +515,7 @@ export class FileUploadComponent implements OnInit {
             this.guiaRemisionService.actualizarGuiaRemisionLiquidacion(row, this.idNroDocLiq).subscribe(data_ => {
               this.snackBar.open('Item eliminado!', 'OK', { duration: 1000 });
               this.loader.close();
+              console.log(this.rows);
             },
             (error: HttpErrorResponse) => {
               this.loader.close();

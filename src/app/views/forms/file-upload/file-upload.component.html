@@ -130,14 +130,16 @@
                                 <mat-divider></mat-divider>
                                 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expandable" [columnMode]="'force'" [scrollbarH]="'false'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'asc'}, {prop: 'secuenciaCliente', dir: 'asc'}]"
-                                    [groupRowsBy]="'idDestino'" [groupExpansionDefault]="true">
+                                <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expandable" [columnMode]="'force'" [scrollbarH]="'false'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'desc'}, {prop: 'secuenciaCliente', dir: 'desc'}]"
+                                    [groupRowsBy]="sortBy" [groupExpansionDefault]="true">
                                     <!-- Group Header Template -->
                                     <ngx-datatable-group-header [rowHeight]="60" #myGroupHeader (toggle)="onDetailToggle($event)">
                                         <ng-template let-group="group" let-expanded="expanded" ngx-datatable-group-header-template>
                                             <div style="padding-left:5px;color:rgba(0, 0, 0, 0.54);" [style.fontSize.px]="12" class="full-width">
                                                 <a href="javascript:void(0)" [class.datatable-icon-right]="!expanded" [class.datatable-icon-down]="expanded" title="Expand/Collapse Group" (click)="toggleExpandGroup(group)">
-                                                    <b> RUTA: {{group.value[0].remitente.refLarga2 + '  ➜  '+ group.value[0].destinatario.refLarga2}}</b>
+                                                    <b fxFlex="30%"> INSUMO:  {{group.value[0].guiaDetalle[0].producto.nombre + ''}}  </b>
+                                                    <b fxFlex="20%"> ORIGEN:  {{group.value[0].remitente.refLarga2}} </b>
+                                                    <b fxFlex="20%"> DESTINO: {{group.value[0].destinatario.refLarga2}}</b>
                                                 </a>
                                                 <br><br>
                                             </div>

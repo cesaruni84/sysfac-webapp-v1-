@@ -64,4 +64,5 @@ export class DocumentoItem {
     productos: Producto;
     unidadMedida: UnidadMedida;
     guiasRemision: GuiaRemision[];
+    idRelated: number;   // id de liquidacion o guia remision
 }

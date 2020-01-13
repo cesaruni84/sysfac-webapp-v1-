@@ -10,7 +10,7 @@ export class TableDetailComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @Input() data: any;
   rows = [];
-
+  sortBy: any = 'idProducto';
 
   constructor() { }
 
