@@ -2,6 +2,7 @@ import { Cliente } from '../../models/cliente.model';
 import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Cacheable } from 'ngx-cacheable';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,12 @@ export class ClienteService {
 
   constructor(private http: HttpClient) { }
 
+
+
+  @Cacheable({
+    maxCacheCount: 10,
+    maxAge: 5 * 60000,
+  })
   listarClientesPorEmpresa(idEmpresa: number) {
     return this.http.get<Cliente[]>(this.url + idEmpresa + '/clientes');
   }

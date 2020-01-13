@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialogRef, MatDialog, MatSnackBar } from '@angular/material';
 import { Subscription } from 'rxjs/Subscription';
 import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
@@ -6,13 +6,14 @@ import { AppLoaderService } from '../../../../shared/services/app-loader/app-loa
 import { MaestroVehiculosPopupComponent } from '../maestro-vehiculos/maestro-vehiculos-popup/maestro-vehiculos-popup.component';
 import { ChoferService } from '../../../../shared/services/chofer/chofer.service';
 import { MaestroChoferesPopupComponent } from './maestro-choferes-popup/maestro-choferes-popup.component';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
 
 @Component({
   selector: 'app-maestro-choferes',
   templateUrl: './maestro-choferes.component.html',
   styleUrls: ['./maestro-choferes.component.scss']
 })
-export class MaestroChoferesComponent implements OnInit {
+export class MaestroChoferesComponent implements OnInit, OnDestroy {
 
   public rows: any[];
   public getItemSub: Subscription;
@@ -57,7 +58,7 @@ export class MaestroChoferesComponent implements OnInit {
           // If user press cancel
           return;
         }
-        this.loader.open();
+        globalCacheBusterNotifier.next();
         this.listarChoferes();
         if (isNew) {
           this.snack.open('Registro añadido correctamente !', 'OK', { duration: 5000 });

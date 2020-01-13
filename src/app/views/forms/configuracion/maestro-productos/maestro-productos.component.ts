@@ -37,7 +37,6 @@ export class MaestroProductosComponent implements OnInit {
   listarProductos() {
      this.productoService.listarComboProductos().subscribe(data => {
         this.rows = data;
-        console.log(this.rows);
     });
   }
 

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { ClientePopupComponent } from './cliente-popup/cliente-popup.component';
 import { TipoDocPersona } from '../../../../shared/models/tipos_facturacion';
 import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
 
 @Component({
   selector: 'app-maestro-clientes',
@@ -78,6 +79,7 @@ export class MaestroClientesComponent implements OnInit {
           return;
         }
         // this.loader.open();
+        globalCacheBusterNotifier.next();
         this.obtenerClientesBD();
         if (isNew) {
           this.snack.open('Registro añadido correctamente !', 'OK', { duration: 5000 });

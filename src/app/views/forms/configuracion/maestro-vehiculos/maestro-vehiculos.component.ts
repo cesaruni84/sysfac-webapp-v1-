@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog, MatSnackBar, MatDialogRef } from '@angular/material';
 import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
@@ -6,13 +6,14 @@ import { FactoriaService } from '../../../../shared/services/factorias/factoria.
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
 import { VehiculoService } from '../../../../shared/services/vehiculo/vehiculo.service';
 import { MaestroVehiculosPopupComponent } from './maestro-vehiculos-popup/maestro-vehiculos-popup.component';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
 
 @Component({
   selector: 'app-maestro-vehiculos',
   templateUrl: './maestro-vehiculos.component.html',
   styleUrls: ['./maestro-vehiculos.component.scss']
 })
-export class MaestroVehiculosComponent implements OnInit {
+export class MaestroVehiculosComponent implements OnInit, OnDestroy {
 
   public rows: any[];
   public getItemSub: Subscription;
@@ -55,6 +56,7 @@ export class MaestroVehiculosComponent implements OnInit {
           return;
         }
         // this.loader.open();
+        globalCacheBusterNotifier.next();
         this.listarVehiculos();
         if (isNew) {
           this.snack.open('Registro añadido correctamente !', 'OK', { duration: 5000 });

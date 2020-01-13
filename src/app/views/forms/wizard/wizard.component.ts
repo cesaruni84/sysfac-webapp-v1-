@@ -1,5 +1,5 @@
 import { Documento } from './../../../shared/models/facturacion.model';
-import { Component, OnInit, Inject, LOCALE_ID, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, ViewChild, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV } from '../../../shared/models/tipos_facturacion';
@@ -24,6 +24,7 @@ import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -39,7 +40,8 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
     }
     ],
 })
-export class WizardComponent implements OnInit {
+export class WizardComponent implements OnInit, OnDestroy {
+
   @ViewChild(DatatableComponent) table: DatatableComponent;
 
   // Formulario
@@ -108,7 +110,9 @@ export class WizardComponent implements OnInit {
   public facturaDocumento: Documento;
   public listaItemsFactura: DocumentoItem[] = [];
 
-
+  private itemSub: Subscription;
+  private clienteSub: Subscription;
+  private doumentoSub: Subscription;
 
   public comboEstadosFactura = [
     { id: 1, codigo: '001' , descripcion: 'Registrado' },
@@ -188,6 +192,18 @@ export class WizardComponent implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    if (this.itemSub) {
+      this.itemSub.unsubscribe();
+    }
+    if (this.clienteSub) {
+      this.clienteSub.unsubscribe();
+    }
+    if (this.doumentoSub) {
+      this.doumentoSub.unsubscribe();
+    }
+  }
+
   cargarValoresFormulario() {
     this.cargarCombos();
     this.facturaForm.patchValue({
@@ -216,7 +232,7 @@ export class WizardComponent implements OnInit {
 
 
   validarGrabarActualizar() {
-    this.route.queryParams.subscribe(params => {
+    this.itemSub = this.route.queryParams.subscribe(params => {
         this.nroSerieQuery = params.serie;
         this.nroSecuenciaQuery =  params.secuencia;
         this.tipoDocumentoQuery =  params.tipoDoc;
@@ -246,7 +262,7 @@ export class WizardComponent implements OnInit {
     this.usuarioSession = this.userService.getUserLoggedIn();
 
     // Combo Clientes
-    this.clienteService.listarClientesPorEmpresa(1).subscribe(dataClientes => {
+    this.clienteSub = this.clienteService.listarClientesPorEmpresa(1).subscribe(dataClientes => {
       this.comboClientes = dataClientes;
     });
 
@@ -270,8 +286,7 @@ export class WizardComponent implements OnInit {
 
     // Obtiene datos de base de datos
     recuperarDocumentoBD()  {
-      this.loader.open();
-      this.itemFacturaService.obtenerDocumentPorSerie(this.usuarioSession.empresa.id,
+      this.doumentoSub = this.itemFacturaService.obtenerDocumentPorSerie(this.usuarioSession.empresa.id,
                                                       this.tipoDocumentoQuery,
                                                       this.nroSerieQuery,
                                                       this.nroSecuenciaQuery).subscribe((documento) => {
@@ -334,9 +349,6 @@ export class WizardComponent implements OnInit {
          this.otrosCargos = documento.otrosCargos;
          this.otrosTributos = documento.otrosTributos;
          this.importeTotal = documento.totalDocumento;
-
-
-         this.loader.close();
 
       }, (error: HttpErrorResponse) => {
         this.handleError(error);

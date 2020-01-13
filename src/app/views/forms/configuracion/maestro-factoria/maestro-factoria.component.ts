@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { MaestroFactoriaPopupComponent } from './maestro-factoria-popup/maestro-factoria-popup.component';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { CrudService } from '../../../cruds/crud.service';
+import { globalCacheBusterNotifier } from 'ngx-cacheable';
 
 @Component({
   selector: 'app-maestro-factoria',
@@ -56,6 +57,7 @@ export class MaestroFactoriaComponent implements OnInit {
           return;
         }
         // this.loader.open();
+        globalCacheBusterNotifier.next();
         this.listarFactorias();
         if (isNew) {
           this.snack.open('Registro añadido correctamente !', 'OK', { duration: 5000 });
