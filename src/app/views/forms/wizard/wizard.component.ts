@@ -559,88 +559,92 @@ export class WizardComponent implements OnInit, OnDestroy {
   }
 
 
-  submit() {
+  grabarFormulario(model: any, isValid: boolean, e: Event) {
     this.loader.open();
-
     if (this.rows.length === 0) {
         this.snack.open('Debe añadir al menos un item para el documento', 'OK', { duration: 2000 });
         this.loader.close();
     } else {
+      if (!this.facturaForm.invalid) {
+        this.facturaDocumento = new Documento();
+        this.liquidaciones_ = [];
+        this.guias_remision = [];
+        this.facturaDocumento.tipoDocumento = this.facturaForm.controls['tipoDocumento'].value.id;
+        this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
+        this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
 
-       this.facturaDocumento = new Documento();
-       this.liquidaciones_ = [];
-       this.guias_remision = [];
-       this.facturaDocumento.tipoDocumento = this.facturaForm.controls['tipoDocumento'].value.id;
-       this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
-       this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
+        const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
+        this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
 
-       const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
-       this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
-
-       console.log("fecha venc")
-       console.log(this.facturaForm.controls['fechaVencimiento'].value)
-       const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
-       this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
-
-       this.facturaDocumento.nroOrden = this.facturaForm.controls['ordenServicio'].value;
-       this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
-       this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
-       this.facturaDocumento.tipoOperacion = this.facturaForm.controls['tipoOperacion'].value.id;
-       this.facturaDocumento.moneda = this.facturaForm.controls['moneda'].value;
-       this.facturaDocumento.formaPago = this.facturaForm.controls['formaPago'].value;
-       this.facturaDocumento.cliente = this.facturaForm.controls['cliente'].value;
-       this.facturaDocumento.notas = this.subTipoFactura; // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
-       this.facturaDocumento.tipoAfectacion = 1;  // 10-Operación Gravada.
-       this.facturaDocumento.anticipos = this.anticipos;
-       this.facturaDocumento.descuentos = this.descuentos;
-       this.facturaDocumento.empresa = this.usuarioSession.empresa;
-       this.facturaDocumento.envioSunat = 0; // 0 : Documento No enviado, 1: Documento Enviado a SUNAT
-       this.facturaDocumento.estadoEnvioSunat = 0;
-       this.facturaDocumento.igv = this.valorIGV;
-       this.facturaDocumento.isc = this.otrosTributos;
-       this.facturaDocumento.otrosCargos = this.otrosCargos;
-       this.facturaDocumento.otrosTributos = this.otrosTributos;
-       this.facturaDocumento.subTotalVentas = this.totalSum;
-       this.facturaDocumento.totalDocumento = this.importeTotal;
-       this.facturaDocumento.ventaTotal = this.importeTotal;
-
-
-       this.rows.forEach(element => {
-          let liquidacion: Liquidacion = new Liquidacion();
-          let guia: GuiaRemision = new GuiaRemision();
-          if (this.subTipoFactura === '2') {
-            // liquidacion.id = element.id;
-            liquidacion.id = element.idRelated;
-
-            this.liquidaciones_.push(liquidacion);
-          } else if (this.subTipoFactura === '3') {
-            // guia.id = element.id;
-            guia.id = element.idRelated;
-            this.guias_remision.push(guia);
-          }
-       });
-
-       this.facturaDocumento.liquidaciones = this.liquidaciones_;
-       this.facturaDocumento.guiasRemision = this.guias_remision;
-
-       this.facturaDocumento.documentoitemSet = this.rows.map(item => {
-            if (!this.edicion) {
-              delete item.id;
-             }
-            return item;
+        console.log("fecha venc")
+        console.log(this.facturaForm.controls['fechaVencimiento'].value)
+        const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
+        this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
+ 
+        this.facturaDocumento.nroOrden = this.facturaForm.controls['ordenServicio'].value;
+        this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
+        this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
+        this.facturaDocumento.tipoOperacion = this.facturaForm.controls['tipoOperacion'].value.id;
+        this.facturaDocumento.moneda = this.facturaForm.controls['moneda'].value;
+        this.facturaDocumento.formaPago = this.facturaForm.controls['formaPago'].value;
+        this.facturaDocumento.cliente = this.facturaForm.controls['cliente'].value;
+        this.facturaDocumento.notas = this.subTipoFactura; // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+        this.facturaDocumento.tipoAfectacion = 1;  // 10-Operación Gravada.
+        this.facturaDocumento.anticipos = this.anticipos;
+        this.facturaDocumento.descuentos = this.descuentos;
+        this.facturaDocumento.empresa = this.usuarioSession.empresa;
+        this.facturaDocumento.envioSunat = 0; // 0 : Documento No enviado, 1: Documento Enviado a SUNAT
+        this.facturaDocumento.estadoEnvioSunat = 0;
+        this.facturaDocumento.igv = this.valorIGV;
+        this.facturaDocumento.isc = this.otrosTributos;
+        this.facturaDocumento.otrosCargos = this.otrosCargos;
+        this.facturaDocumento.otrosTributos = this.otrosTributos;
+        this.facturaDocumento.subTotalVentas = this.totalSum;
+        this.facturaDocumento.totalDocumento = this.importeTotal;
+        this.facturaDocumento.ventaTotal = this.importeTotal;
+ 
+ 
+        this.rows.forEach(element => {
+           let liquidacion: Liquidacion = new Liquidacion();
+           let guia: GuiaRemision = new GuiaRemision();
+           if (this.subTipoFactura === '2') {
+             // liquidacion.id = element.id;
+             liquidacion.id = element.idRelated;
+ 
+             this.liquidaciones_.push(liquidacion);
+           } else if (this.subTipoFactura === '3') {
+             // guia.id = element.id;
+             guia.id = element.idRelated;
+             this.guias_remision.push(guia);
+           }
         });
-
-       this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
-       this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
-       console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
-
-
-      if (!this.edicion) {
-        this.registrar();
-      }else {
-        this.actualizar();
+ 
+        this.facturaDocumento.liquidaciones = this.liquidaciones_;
+        this.facturaDocumento.guiasRemision = this.guias_remision;
+ 
+        this.facturaDocumento.documentoitemSet = this.rows.map(item => {
+             if (!this.edicion) {
+               delete item.id;
+              }
+             return item;
+         });
+ 
+        this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
+        this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
+        console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
+ 
+ 
+       if (!this.edicion) {
+         this.registrar();
+       }else {
+         this.actualizar();
+       }
+ 
+      } else {
+        this.snack.open('Complete los datos faltantes', 'OK', { duration: 2000 });
+        this.loader.close();
       }
-
+      
     }
 
   }

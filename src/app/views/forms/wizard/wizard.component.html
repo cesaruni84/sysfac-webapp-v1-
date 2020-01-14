@@ -1,7 +1,7 @@
 <mat-tab-group class="p-05">
     <mat-tab label="INFORMACION BASICA" align="center">
 
-        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="submit()">
+        <form [formGroup]="facturaForm" novalidate [style.fontSize.px]="12" (ngSubmit)="grabarFormulario(facturaForm.value, facturaForm.valid, $event)">
             <div fxLayout="row wrap">
                 <div fxFlex="100" fxFlex.gt-xs="100" class="pr-1">
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap="wrap">
@@ -305,7 +305,7 @@
                                     </div>
                                     <br> <br>
                                     <div align="left">
-                                        <button mat-raised-button type="submit" matTooltip="Graba documento" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar</button>
+                                        <button mat-raised-button matTooltip="Graba documento" color="primary" class="mr-1"><mat-icon>save</mat-icon> Grabar</button>
                                         <button mat-raised-button type="button" matTooltip="Anular documento" color="warn" (click)="anularDocumento()" [disabled]="!this.edicion" class="mr-1"><mat-icon>cancel</mat-icon> Anular </button>
                                         <!-- <button mat-raised-button type="button" [disabled]="true" matTooltip="Envia Documento a SUNAT" color="accent" class="mr-1"><mat-icon>send</mat-icon> Emitir Factura</button> -->
                                         <!--<button mat-raised-button type="button" [disabled]="!this.edicion" matTooltip="Imprime documento" color="accent" class="mr-1"><mat-icon>print</mat-icon> Imprimir </button>-->
