@@ -177,17 +177,8 @@ export class BasicFormComponent implements OnInit {
   parsearDatosGuiaRemision(data_: GuiaRemision) {
     this.valorIdGuia_ = data_.id;
     this.estadoSelected_ = data_.estado.toString();
-    console.log(data_.fechaRemision)
-    this.valorFechaEmision_ = data_.fechaRemision;
-    console.log(this.valorFechaEmision_.toLocaleDateString);
-    this.basicForm.patchValue({
-      fechaEmision: new Date('2020-01-10'),
-   });
-   console.log(this.basicForm.controls['fechaEmision'].value);
-   console.log(new Date());
-
-
-    this.valorFechaIniTraslado_ = data_.fechaTraslado;
+    this.valorFechaEmision_ = this.calcularFechaHoraLocal(data_.fechaRemision);
+    this.valorFechaIniTraslado_ = this.calcularFechaHoraLocal(data_.fechaTraslado);
     this.valorNroSerie_ = data_.serie;
     this.valorNroSecuencia_ = data_.secuencia;
     this.valorRemitenteSelected_ = data_.remitente;
@@ -207,7 +198,7 @@ export class BasicFormComponent implements OnInit {
     this.valorLicencia_ = data_.chofer.licencia;
     this.valorBalanzaSelected_ = data_.balanza;
     this.valorTicketBalanza_ = data_.ticketBalanza;
-    this.valorFechaRecepcion_ = data_.fechaRecepcion;
+    this.valorFechaRecepcion_ = this.calcularFechaHoraLocal(data_.fechaRecepcion);
     this.valorSerieCli_ = data_.serieCliente;
     this.valorSecuenciaCli_ = data_.secuenciaCliente;
   }
@@ -530,6 +521,15 @@ export class BasicFormComponent implements OnInit {
       } else {
           return true;
       }
+  }
+
+  calcularFechaHoraLocal(fechaString: Date): Date {
+    if (fechaString) {
+      const fe = new Date(fechaString.toString());
+      fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      return fe;
+    }
+
   }
 
   // Completar Zeros

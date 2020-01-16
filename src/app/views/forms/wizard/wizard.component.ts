@@ -25,6 +25,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { Subscription } from 'rxjs';
+import { getDay } from 'date-fns';
 
 
 @Component({
@@ -298,8 +299,8 @@ export class WizardComponent implements OnInit, OnDestroy {
           tipoDocumento: this.comboTiposDocumento[0],
           serieDocumento: documento.serie,
           numeroDocumento: documento.secuencia,
-          fechaEmision: documento.fechaEmision,
-          fechaVencimiento: documento.fechaVencimiento,
+          fechaEmision: this.calcularFechaHoraLocal(documento.fechaEmision) || '',
+          fechaVencimiento: this.calcularFechaHoraLocal(documento.fechaVencimiento) || '',
           estado: this.comboEstadosFactura.find(o => o.id === documento.estado),
           tipoOperacion: this.comboTiposOperacion.find(o => o.id === documento.tipoOperacion),
           moneda: this.comboMonedas.find(o => o.id === documento.moneda.id),
@@ -584,13 +585,19 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
 
         const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
-        this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
-
-        console.log("fecha venc")
+        fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+        this.facturaDocumento.fechaEmision = fe;
+        // this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
+        
         console.log(this.facturaForm.controls['fechaVencimiento'].value)
-        const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
-        this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
- 
+        if (this.facturaForm.controls['fechaVencimiento'].value) {
+          const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
+          fv.setTime(fv.getTime() + fv.getTimezoneOffset() * 60 * 1000);
+          this.facturaDocumento.fechaVencimiento = fv;
+        }
+
+        // this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
+
         this.facturaDocumento.nroOrden = this.facturaForm.controls['ordenServicio'].value;
         this.facturaDocumento.estado = this.facturaForm.controls['estado'].value.id;
         this.facturaDocumento.observacion = this.facturaForm.controls['observacion'].value;
@@ -612,15 +619,14 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.subTotalVentas = this.totalSum;
         this.facturaDocumento.totalDocumento = this.importeTotal;
         this.facturaDocumento.ventaTotal = this.importeTotal;
- 
- 
+
         this.rows.forEach(element => {
-           let liquidacion: Liquidacion = new Liquidacion();
-           let guia: GuiaRemision = new GuiaRemision();
+           const liquidacion: Liquidacion = new Liquidacion();
+           const guia: GuiaRemision = new GuiaRemision();
            if (this.subTipoFactura === '2') {
              // liquidacion.id = element.id;
              liquidacion.id = element.idRelated;
- 
+
              this.liquidaciones_.push(liquidacion);
            } else if (this.subTipoFactura === '3') {
              // guia.id = element.id;
@@ -628,33 +634,32 @@ export class WizardComponent implements OnInit, OnDestroy {
              this.guias_remision.push(guia);
            }
         });
- 
+
         this.facturaDocumento.liquidaciones = this.liquidaciones_;
         this.facturaDocumento.guiasRemision = this.guias_remision;
- 
+
         this.facturaDocumento.documentoitemSet = this.rows.map(item => {
              if (!this.edicion) {
                delete item.id;
               }
              return item;
          });
- 
+
         this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
         this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
-        console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
- 
- 
+        // console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
+
+
        if (!this.edicion) {
          this.registrar();
        }else {
          this.actualizar();
        }
- 
-      } else {
+    } else {
         this.snack.open('Complete los datos faltantes', 'OK', { duration: 2000 });
         this.loader.close();
       }
-      
+
     }
 
   }
@@ -763,6 +768,15 @@ export class WizardComponent implements OnInit, OnDestroy {
     const utc = fecha.getTime() + (fecha.getTimezoneOffset() * 60000);
     console.log('offset: ' + offset);
     return new Date(utc + (3600000 * offset));
+  }
+
+  calcularFechaHoraLocal(fechaString: Date): Date {
+    if (fechaString) {
+      const fe = new Date(fechaString.toString());
+      fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      return fe;
+    }
+
   }
 
   // Validar Digitos

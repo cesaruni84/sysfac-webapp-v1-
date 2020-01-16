@@ -27,7 +27,7 @@
                                         </mat-form-field>
                                         <mat-form-field fxFlex="8%" appearance="">
                                             <mat-label style="font-size: 14px"><b>SERIE </b></mat-label>
-                                            <input matInput type="text" name="serieDocumento" [formControl]="facturaForm.controls['serieDocumento']" maxlength="5" [disabled]="" [style.fontSize.px]="14" style="color:green;">
+                                            <input matInput type="text" name="serieDocumento" [formControl]="facturaForm.controls['serieDocumento']" maxlength="5" [style.fontSize.px]="14" style="color:green;">
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
 
                                             <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="facturaForm.controls['serieDocumento'].hasError('required')">
@@ -37,7 +37,7 @@
 
                                         <mat-form-field fxFlex="16.5%" appearance="">
                                             <mat-label><b>CORRELATIVO </b></mat-label>
-                                            <input matInput type="text" name="numeroDocumento" [formControl]="facturaForm.controls['numeroDocumento']" maxlength="8" [disabled]="" [style.fontSize.px]="14" style="color:green" (keypress)='validaDigitos($event)'>
+                                            <input matInput type="text" name="numeroDocumento" [formControl]="facturaForm.controls['numeroDocumento']" maxlength="8" [style.fontSize.px]="14" style="color:green" (keypress)='validaDigitos($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
 
                                             <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="facturaForm.controls['numeroDocumento'].hasError('required')">
@@ -61,7 +61,7 @@
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA VENCIMIENTO</b></mat-label>
                                             <input matInput name="fechaVencimiento" [formControl]="facturaForm.controls['fechaVencimiento']" [matDatepicker]="picker" valuemaxlength="10" style="color:#3f51b5">
                                             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                                            <mat-datepicker touchUi #picker disabled="false"></mat-datepicker>
+                                            <mat-datepicker touchUi #picker></mat-datepicker>
                                             <mat-error *ngIf="facturaForm.controls['fechaVencimiento'].hasError('required')">
                                                 <strong>* REQUERIDO</strong>
                                             </mat-error>

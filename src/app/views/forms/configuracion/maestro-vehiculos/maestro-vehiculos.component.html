@@ -43,7 +43,7 @@
 
             <ngx-datatable-column name="Fecha Registro Sist." [flexGrow]="1">
                 <ng-template let-row="row" ngx-datatable-cell-template>
-                    <div [style.fontSize.px]="12"> {{ row?.fechaRegistro }}</div>
+                    <div [style.fontSize.px]="12"> {{ row?.fechaRegistro | date: 'dd/MM/yyyy' }}</div>
                 </ng-template>
             </ngx-datatable-column>
 

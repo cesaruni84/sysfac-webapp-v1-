@@ -334,14 +334,14 @@ export class FileUploadComponent implements OnInit {
       this.estadoLiquidacion_ = data_.estado.toString();
       this.situacionLiquidacion_ = data_.situacion.toString();
       this.monedaLiquidacion_ = data_.moneda.toString();
-      this.valorFechaIniTraslado_ = data_.fecIniTraslado;
-      this.valorFechaFinTraslado_ = data_.fecFinTraslado;
-      this.valorFechaRegistro_ = data_.fechaEmision;
+      this.valorFechaIniTraslado_ = this.calcularFechaHoraLocal(data_.fecIniTraslado);
+      this.valorFechaFinTraslado_ = this.calcularFechaHoraLocal(data_.fecFinTraslado) ;
+      this.valorFechaRegistro_ = this.calcularFechaHoraLocal(data_.fechaEmision);
       this.motivoTrasladoSelected_ = data_.motivo.id;
       this.valorGlosa_ = data_.glosa;
 
       if (data_.notas1) {
-        let valuesOrigen: number[] = data_.notas1.split(',').map(origen => {
+        const valuesOrigen: number[] = data_.notas1.split(',').map(origen => {
           return parseInt(origen);
         } );
         this.valorOrigenSelected_ = this.comboFactorias.filter(factoria => valuesOrigen.includes(factoria.id));
@@ -351,7 +351,7 @@ export class FileUploadComponent implements OnInit {
       }
 
       if (data_.notas2) {
-        let valuesDestino: number[] = data_.notas2.split(',').map(destino => {
+        const valuesDestino: number[] = data_.notas2.split(',').map(destino => {
           return parseInt(destino);
         } );
 
@@ -762,6 +762,15 @@ export class FileUploadComponent implements OnInit {
         str = '0' + str;
     }
     return str;
+  }
+
+  calcularFechaHoraLocal(fechaString: Date): Date {
+    if (fechaString) {
+      const fe = new Date(fechaString.toString());
+      fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      return fe;
+    }
+
   }
 
  
