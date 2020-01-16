@@ -68,4 +68,12 @@ public tipoDocumentoPersona = [
     { id: 3, codigo: '003' , descripcion: ' OTRO' },
   ];
 
+public tiposEstadoFactura = [
+    { id: 1, codigo: '001' , descripcion: 'Registrado' },
+    { id: 2, codigo: '002' , descripcion: 'Cancelado'},
+    { id: 3, codigo: '003' , descripcion: 'Anulado'},
+    // { id: 3, codigo: '003' , descripcion: 'Enviado y Aceptado SUNAT'},
+    // { id: 4, codigo: '004' , descripcion: 'Observada SUNAT'},
+    // { id: 5, codigo: '005' , descripcion: 'Anulada'},
+];
 }

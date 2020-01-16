@@ -99,14 +99,14 @@
         <!-- Listado de Documentos -->
         <div class="mat-box-shadow margin-333 p-0">
             <ngx-datatable class="material striped" [columnMode]="'force'" [scrollbarH]="'true'" [headerHeight]="40" [footerHeight]="48" [rowHeight]="'auto'" [limit]="5" [rows]="rows" [columns]="columns" [messages]="messages">
-                <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="100">
+                <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="110">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <span title="Consultar Documento {{ row?.serie + '-' + row?.secuencia}}">
-                            <button mat-icon-button mat-sm-button color="primary"  class="mr-1"  (click)="consultarDocumento(row)"><mat-icon align ="center top">search</mat-icon></button>
-                            <!--<button mat-icon-button mat-sm-button color="primary"  (click)="consultarDocumento(row)"><mat-icon align ="center top">cloud_upload</mat-icon></button>-->
+                        <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarDocumento(row)"><mat-icon>search</mat-icon></button>
+                        <button mat-icon-button mat-sm-button color="primary" matTooltip="Cancelación" (click)="cancelarDocumento(row)"><mat-icon>double_arrow</mat-icon></button>
 
-                            <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
-                        </span>
+                        <!--<button mat-icon-button mat-sm-button color="primary"  (click)="consultarDocumento(row)"><mat-icon align ="center top">cloud_upload</mat-icon></button>-->
+
+                        <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
                     </ng-template>
                 </ngx-datatable-column>
 
@@ -116,13 +116,13 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Doc. Serie" [flexGrow]="1" [width]="80" prop="serie">
+                <ngx-datatable-column name="Serie" [flexGrow]="1" [width]="80" prop="serie">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <div [style.fontSize.px]="12"> {{ row?.serie }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Doc. Correlativo" [flexGrow]="1" [width]="130" prop="secuencia">
+                <ngx-datatable-column name="Correlativo" [flexGrow]="1" [width]="120" prop="secuencia">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <div [style.fontSize.px]="12"> {{ this.retornarSecuencia(row) }} </div>
                     </ng-template>
@@ -171,11 +171,11 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Env. Sunat" [flexGrow]="1" [width]="100" prop="factura.ordenServicio">
+                <!-- <ngx-datatable-column name="Env. Sunat" [flexGrow]="1" [width]="100" prop="factura.ordenServicio">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <div [style.fontSize.px]="12"> {{ row?.envioSunat === 0? 'NO' : 'SI' }} </div>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column> -->
 
 
                 <!--

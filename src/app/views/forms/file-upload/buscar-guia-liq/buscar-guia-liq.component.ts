@@ -172,6 +172,7 @@ export class BuscarGuiaLiqComponent implements OnInit {
                                                         origen, destino ,
                                                         formateo, guiasSinLiqFact, soloFacturadas,
                                                         fechaIni, fechaFin).subscribe(data_ => {
+                                                          console.log(data_)
       this.rows = data_;
       this.loader.close();
     },

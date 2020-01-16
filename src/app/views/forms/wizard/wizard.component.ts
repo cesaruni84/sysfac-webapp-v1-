@@ -18,8 +18,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { FacturaItemGuiasComponent } from './factura-item-guias/factura-item-guias.component';
-import { DocumentoItem } from '../../../shared/models/facturacion.model';
-import { ItemFacturaService, EstadoDocumento } from '../../../shared/services/facturacion/item-factura.service';
+import { DocumentoItem, EstadoDocumento } from '../../../shared/models/facturacion.model';
+import { ItemFacturaService } from '../../../shared/services/facturacion/item-factura.service';
 import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
@@ -556,6 +556,16 @@ export class WizardComponent implements OnInit, OnDestroy {
 
   toggleExpandRow(row) {
     this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  dateChanged(evt){
+    const selectedDate = new Date(evt);
+   // console.log("by default:", selectedDate);
+   // console.log("by UTCString:", selectedDate.toUTCString());
+  //  console.log("by LocaleString:", selectedDate.toLocaleString());
+  //  console.log("by LocaleTimeString:", selectedDate.toLocaleTimeString());
+   this.facturaForm.controls['fechaEmision'].setValue(new Date(selectedDate.toUTCString()));
+
   }
 
 

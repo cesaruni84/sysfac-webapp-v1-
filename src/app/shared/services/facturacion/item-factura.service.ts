@@ -4,12 +4,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Documento } from '../../models/facturacion.model';
 
 
-export enum EstadoDocumento {
-  REGISTRADO = 1,
-  CANCELADO = 2,
-  ANULADO = 3,
-};
-
 @Injectable({
   providedIn: 'root'
 })
@@ -41,6 +35,11 @@ export class ItemFacturaService {
   anularDocumentoElectronico(documento: Documento, idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.put<any>(this.url + idEmpresa + '/documentos/' + documento.id + '/extorno', documento, this.httpOptions);
+  }
+
+  cancelarDocumentoElectronico(documento: Documento, idEmpresa: number) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put<any>(this.url + idEmpresa + '/documentos/' + documento.id + '/cancelacion', documento, this.httpOptions);
   }
 
   listarDocumentosPorFiltro(idEmpresa: number,

@@ -52,3 +52,8 @@ export class TipoDocPersona extends TipoGenerico {
     }
 }
 
+export class TiposEstadosDocumento extends TipoGenerico {
+    constructor() {
+        super();
+    }
+}

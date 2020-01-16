@@ -2,6 +2,7 @@ import { GuiaRemision } from './guia_remision.model';
 import { MotivoTraslado } from './motivo_traslado.model';
 import { Factoria } from './factoria.model';
 import { OrdenServicio } from './orden-servicio';
+import { Documento } from './facturacion.model';
 export class Liquidacion {
     id: number;
     tipocod: string;
@@ -26,6 +27,7 @@ export class Liquidacion {
     ordenServicio: OrdenServicio;
     notas1: string;
     notas2: string;
+    documento: Documento;
 
     constructor () {
 

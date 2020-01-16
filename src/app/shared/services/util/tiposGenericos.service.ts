@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV, TipoItem, TipoDocPersona } from '../../models/tipos_facturacion';
+import { TipoDocumento, TipoOperacion, FormaPago, Moneda, TipoIGV, TipoItem, TipoDocPersona, 
+  TiposEstadosDocumento } from '../../models/tipos_facturacion';
 import { TiposGenericosDB } from '../../models/tiposGenericosDB';
 
 @Injectable({
@@ -41,5 +42,9 @@ export class TiposGenericosService {
   public retornarTiposDocPersona(): TipoDocPersona[] {
     return this.tiposGenericos.tipoDocumentoPersona;
   }
+  public retornarEstadosDocumento(): TiposEstadosDocumento[] {
+    return this.tiposGenericos.tiposEstadoFactura;
+  }
+
 
 }

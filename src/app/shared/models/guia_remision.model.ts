@@ -63,6 +63,26 @@ export interface GrillaGuiaRemision {
     fechaRecepcion: string;
 }
 
+
+export interface GuiaRemisionReportExcel {
+    id?: number;
+    nroguia?: string;
+    nroSecuencia?: string;
+    fechaEmision?: Date;
+    usuarioRegistra?: string;
+    nroLiq?: string;
+    ordenServicio?: string;
+    remitente?: string;
+    destinatario?: string;
+    estado?: string;
+    producto?: string;
+    cantidad?: string;
+    chofer?: string;
+    nroGuiaCliente?: string;
+    factura?: string;
+    fechaRecepcion?: string;
+}
+
 export class GuiasRemisionPDF {
     id: number;
     fechaTraslado: string;

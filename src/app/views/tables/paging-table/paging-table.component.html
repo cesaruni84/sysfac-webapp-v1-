@@ -142,7 +142,9 @@
         </ngx-datatable-column>
         <ngx-datatable-column name="Fecha de Emisión" [flexGrow]="1" [width]="130" prop="fechaEmision">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div>
+                <!-- <div [style.fontSize.px]="12"> {{ row?.fechaEmision | date: 'dd/MM/yyyy'}} </div> -->
+                <div [style.fontSize.px]="12"> {{ row?.fechaEmision}} </div>
+
             </ng-template>
         </ngx-datatable-column>
 
@@ -209,7 +211,9 @@
 
         <ngx-datatable-column name="Fec. Recepción" [flexGrow]="1" [width]="130" prop="fechaRecepcion">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="13"> {{ row?.fechaRecepcion | date: 'dd/MM/yyyy'}}</div>
+                <!-- <div [style.fontSize.px]="13"> {{ row?.fechaRecepcion | date: 'dd/MM/yyyy'}}</div> -->
+                <div [style.fontSize.px]="13"> {{ row?.fechaRecepcion}}</div>
+
             </ng-template>
         </ngx-datatable-column>
 

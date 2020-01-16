@@ -19,6 +19,9 @@ import { Cliente } from '../../../../shared/models/cliente.model';
 import { ClienteService } from 'app/shared/services/facturacion/cliente.service';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { ItemFacturaService } from '../../../../shared/services/facturacion/item-factura.service';
+import { Documento, EstadoDocumento } from '../../../../shared/models/facturacion.model';
+import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
+import { throwError } from 'rxjs';
 
 export interface ChipColor {
   name: string;
@@ -82,6 +85,7 @@ export class FacturaConsultaComponent implements OnInit {
     private itemFacturaService: ItemFacturaService,
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
+    private confirmService: AppConfirmService,
     private clienteService: ClienteService,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
@@ -216,7 +220,9 @@ export class FacturaConsultaComponent implements OnInit {
 
   // Genera Reporte para Excel
   ExportTOExcel() {
-    this.excelService.generarReporteLiquidaciones(this.rows);
+    if (this.rows) {
+      this.excelService.generarReporteFacturacion(this.rows);
+    }
   }
 
   // Envia a Página de Consulta de Documento de Facturaciòn
@@ -233,8 +239,74 @@ export class FacturaConsultaComponent implements OnInit {
   }
 
 
+  cancelarDocumento(row: Documento) {
+    const documentoCancelado = new Documento();
+    const serie = row.serie;
+    const secuencia = row.secuencia;
+    documentoCancelado.id = row.id;
+    documentoCancelado.observacionSunat = 'Cancelado con Fecha ' + new Date().toLocaleDateString();
+    documentoCancelado.estado = EstadoDocumento.CANCELADO;
+
+    this.confirmService.confirm({message: `Confirma cancelar el documento ${serie} - ${secuencia} ?`})
+      .subscribe(res => {
+        if (res) {
+          this.loader.open();
+          this.itemFacturaService.cancelarDocumentoElectronico(documentoCancelado, this.usuarioSession.empresa.id).subscribe(data_ => {
+            this.actualizarRegistroGrilla(row);
+            this.loader.close();
+            this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+          },
+          (error: HttpErrorResponse) => {
+            this.handleError(error);
+          });
+        }
+      });
+  }
+
+  actualizarRegistroGrilla(row) {
+    this.updateEstado(EstadoDocumento.CANCELADO, 'estado', this.getRowIndex(row));
+  }
+
+  updateEstado(value, cell, rowIndex) {
+    this.rows[rowIndex][cell] = value;
+    this.rows = [...this.rows];
+  }
+
+  getRowIndex(row: any): number {
+    const index = this.rows.findIndex(item => item.id === row.id);
+    return index;
+  }
+
   compareObjects(o1: any, o2: any): boolean {
     return o1.ruc === o2.ruc && o1.id === o2.id;
   }
+
+  private handleError(error: HttpErrorResponse) {
+
+    this.loader.close();
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 5000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 5000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
 
 }

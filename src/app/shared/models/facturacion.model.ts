@@ -66,3 +66,10 @@ export class DocumentoItem {
     guiasRemision: GuiaRemision[];
     idRelated: number;   // id de liquidacion o guia remision
 }
+
+export enum EstadoDocumento {
+    REGISTRADO = 1,
+    CANCELADO = 2,
+    ANULADO = 3,
+};
+
