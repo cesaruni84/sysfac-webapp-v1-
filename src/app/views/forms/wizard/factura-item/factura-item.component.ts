@@ -110,8 +110,8 @@ export class FacturaItemComponent implements OnInit {
     return o1.codigo === o2.codigo && o1.id === o2.id;
   }
 
-  calcularTotal(){
-    let value = (this.tarifa_form.value * this.cantidad_form.value ) - this.descuentos_form.value;
+  calcularTotal() {
+    const value = (this.tarifa_form.value * this.cantidad_form.value ) - this.descuentos_form.value;
     this.total_ = value;
     this.valorIGV_ = 0.18 * this.total_;
   }
@@ -126,7 +126,7 @@ export class FacturaItemComponent implements OnInit {
   }
 
   despuesDigitarTarifa(event: any) {
-    let value = (event.target.value * this.cantidad_form.value ) - this.descuentos_form.value;
+    const value = (event.target.value * this.cantidad_form.value ) - this.descuentos_form.value;
     if (value  > 0) {
       this.total_ = Number.parseFloat(value.toFixed(2));
       this.valorIGV_ = 0.18 * this.total_;
@@ -135,8 +135,8 @@ export class FacturaItemComponent implements OnInit {
   }
 
   despuesDigitarCantidad(event: any) {
-    console.log(event.target.value );
-    let value = (event.target.value * this.tarifa_form.value) - this.descuentos_form.value;
+    // console.log(event.target.value );
+    const value = (event.target.value * this.tarifa_form.value) - this.descuentos_form.value;
     if (value  > 0) {
       this.total_ = Number.parseFloat(value.toFixed(2));
       this.valorIGV_ = 0.18 * this.total_;
@@ -145,7 +145,7 @@ export class FacturaItemComponent implements OnInit {
   }
 
   despuesDigitarDescuentos(event: any) {
-    let value = (this.tarifa_form.value * this.cantidad_form.value ) - event.target.value;
+    const value = (this.tarifa_form.value * this.cantidad_form.value ) - event.target.value;
     if (value  > 0) {
       this.total_ = Number.parseFloat(value.toFixed(2));
       this.valorIGV_ = 0.18 * this.total_;

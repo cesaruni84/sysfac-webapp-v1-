@@ -94,8 +94,10 @@ export class FacturaConsultaComponent implements OnInit {
   ngOnInit() {
 
     const fechaActual_ = new Date();
-    const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
+    let fechaIniTraslado_ = new Date();
+    // fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
+    fechaIniTraslado_  =   new Date(fechaActual_.getFullYear(), fechaActual_.getMonth(), 1);
+
 
     this.formFilter = new FormGroup({
       serie: new FormControl('',),

@@ -37,7 +37,7 @@
 
                                         <mat-form-field fxFlex="16.5%" appearance="">
                                             <mat-label><b>CORRELATIVO </b></mat-label>
-                                            <input matInput type="text" name="numeroDocumento" [formControl]="facturaForm.controls['numeroDocumento']" maxlength="8" [style.fontSize.px]="14" style="color:green" (keypress)='validaDigitos($event)'>
+                                            <input matInput type="text" name="numeroDocumento" [formControl]="facturaForm.controls['numeroDocumento']" maxlength="8" [style.fontSize.px]="14" style="color:green" (keypress)='validaDigitos($event)' (change)='validarDocumento($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
 
                                             <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="facturaForm.controls['numeroDocumento'].hasError('required')">

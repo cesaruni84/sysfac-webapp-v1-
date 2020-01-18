@@ -109,16 +109,26 @@ export class GuiaRemisionService {
 
   actualizarGuiaRemisionLiquidacion(guiaRemision: GuiaRemision, idLiquidacion: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.put<any>(this.url3 + '/' + idLiquidacion + '/guias/'+ guiaRemision.id , guiaRemision, this.httpOptions);
+    return this.http.put<any>(this.url3 + '/' + idLiquidacion + '/guias/' + guiaRemision.id , guiaRemision, this.httpOptions);
   }
   obtenerGuiaRemisionxNroGuia(idEmpresa: number, nroSerie: string , nroSecuencia: string ) {
     const params = new HttpParams().set('nroSerie', nroSerie).set('nroSecuencia', nroSecuencia);
     return this.http.get<GuiaRemision>(this.url + idEmpresa + '/guias/SRV3', {params: params});
   }
 
+  buscaGuiaRemisionxNroGuia(idEmpresa: number, nroSerie: string , nroSecuencia: string ) {
+    const params = new HttpParams().set('nroSerie', nroSerie).set('nroSecuencia', nroSecuencia);
+    return this.http.get<any>(this.url + idEmpresa + '/guias/SRV5', {params: params});
+  }
+
   obtenerGuiaRemisionxNroGuiaCliente(idEmpresa: number, nroSerieCli: string , nroSecuenciaCli: string ) {
     const params = new HttpParams().set('nroSerieCli', nroSerieCli).set('nroSecuenciaCli', nroSecuenciaCli);
     return this.http.get<GuiaRemision>(this.url + idEmpresa + '/guia-cliente/SRV3', {params: params});
+  }
+
+  buscaGuiaRemisionxNroGuiaCliente(idEmpresa: number, nroSerie: string , nroSecuencia: string ) {
+    const params = new HttpParams().set('nroSerie', nroSerie).set('nroSecuencia', nroSecuencia);
+    return this.http.get<any>(this.url + idEmpresa + '/guias-cliente/SRV5', {params: params});
   }
 
 

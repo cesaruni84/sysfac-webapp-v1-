@@ -87,8 +87,10 @@ export class RichTextEditorComponent implements OnInit {
 
   ngOnInit() {
     const fechaActual_ = new Date();
-    const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
+    let fechaIniTraslado_ = new Date();
+    // fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 90);
+    fechaIniTraslado_  =   new Date(fechaActual_.getFullYear(), fechaActual_.getMonth(), 1);
+
 
     this.formFilter = new FormGroup({
       nroSerieLiq: new FormControl('', CustomValidators.digits),
@@ -113,11 +115,11 @@ export class RichTextEditorComponent implements OnInit {
 
     });
 
-    this.loader.open();
-    this.liquidacionService.listarLiquidacionesPorEmpresa(this.usuarioSession.empresa.id).subscribe(liquidaciones => {
-      this.rows = liquidaciones;
-      this.loader.close();
-    });
+    // this.loader.open();
+    // this.liquidacionService.listarLiquidacionesPorEmpresa(this.usuarioSession.empresa.id).subscribe(liquidaciones => {
+    //   this.rows = liquidaciones;
+    //   this.loader.close();
+    // });
 
 
   }

@@ -40,7 +40,7 @@
                                         <mat-label fxFlex="12%" [style.fontSize.px]="12" style="color:rgba(0, 0, 0, 0.54);"><b>GUIA REMISION:</b> </mat-label>
                                         <mat-form-field fxFlex="8%" appearance="">
                                             <mat-label style="font-size: 14px"><b>SERIE </b></mat-label>
-                                            <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="5" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
+                                            <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="basicForm.controls['nroSerie']" maxlength="5" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerie($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
                                             <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSerie'].hasError('required')">
                                                 <strong>* REQUERIDO</strong>
@@ -49,7 +49,7 @@
 
                                         <mat-form-field fxFlex="12%" appearance="">
                                             <mat-label><b>SECUENCIA </b></mat-label>
-                                            <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="8" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                                            <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="basicForm.controls['nroSecuencia']" maxlength="8" value="" [disabled]="edicion" style="color:#3f51b5" (keypress)='validaDigitos($event)' (change)='completarZerosNroSecuencia($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
                                             <mat-error [style.fontSize.px]="10" class="full-width" *ngIf="basicForm.controls['nroSecuencia'].hasError('required')">
                                                 <strong>* REQUERIDO</strong>
@@ -73,7 +73,7 @@
                                         <mat-label fxFlex="12%" [style.fontSize.px]="12" style="color:rgba(0, 0, 0, 0.54);"><b>GUIA REMISION CLI:</b> </mat-label>
                                         <mat-form-field fxFlex="8%" appearance="">
                                             <mat-label style="font-size: 14px"><b>SERIE </b></mat-label>
-                                            <input matInput [(ngModel)]="valorSerieCli_" name="nroSerieClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSerieClie']" value="" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                                            <input matInput [(ngModel)]="valorSerieCli_" name="nroSerieClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSerieClie']" value="" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerieCli($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
                                             <mat-error *ngIf="basicForm.controls['nroSerieClie'].hasError('required')">
                                                 <strong>* REQUERIDO</strong>
@@ -82,7 +82,7 @@
 
                                         <mat-form-field fxFlex="12%" appearance="">
                                             <mat-label><b>SECUENCIA</b></mat-label>
-                                            <input matInput [(ngModel)]="valorSecuenciaCli_" name="nroSequenClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSequenClie']" value="" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                                            <input matInput [(ngModel)]="valorSecuenciaCli_" name="nroSequenClie" [style.fontSize.px]="14" [formControl]="basicForm.controls['nroSequenClie']" value="" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (change)='completarZerosNroSecuenciaCli($event)'>
                                             <mat-icon matSuffix inline="true">edit</mat-icon>
                                             <mat-error *ngIf="basicForm.controls['nroSequenClie'].hasError('required')">
                                                 <strong>* REQUERIDO</strong>

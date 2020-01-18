@@ -269,7 +269,7 @@ export class FileUploadComponent implements OnInit {
         let registroRepetido: boolean = false;
         if (this.rows.length > 0) {
           this.rows.forEach(element2 => {
-              if (element.id == element2.id){
+              if (element.id === element2.id) {
                 registroRepetido = true;
               }
           });
@@ -281,7 +281,7 @@ export class FileUploadComponent implements OnInit {
           let rowDataorigen = { ...rowData.remitente};
           this.valorOrigenSelected_.splice(this.valorOrigenSelected_.length, 0, rowDataorigen);
           this.valorOrigenSelected_ = [...this.valorOrigenSelected_];
-    
+
           let rowDataDestino = { ...rowData.destinatario};
           this.valorDestinoSelected_.splice(this.valorDestinoSelected_.length, 0, rowDataDestino);
           this.valorDestinoSelected_ = [...this.valorDestinoSelected_];
@@ -655,24 +655,19 @@ export class FileUploadComponent implements OnInit {
   }
 
   grabarLiquidacion() {
-
-    // Manda POST hacia BD AWS
     this.liquidacionService.registrarLiquidacionBD(this.liquidacionModel, this.usuarioSession.empresa.id ).subscribe((data_) => {
       this.infoResponse_ = data_;
       this.loader.close();
       this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
       this.inserto = true;
-
-      // Resetea Formulario
-       // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
-        //  this.redirectTo('/forms/liquidacion');
-       // });
+      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        this.nuevaLiquidacion();
+      });
     },
     (error: HttpErrorResponse) => {
       this.handleError(error);
     });
   }
-
 
   actualizarLiquidacion() {
 
@@ -751,8 +746,33 @@ export class FileUploadComponent implements OnInit {
   completarZerosNroDoc(event) {
     const valorDigitado = event.target.value.toLowerCase();
     // this.valorNroDocumentoLiq_ = this.pad(valorDigitado, 12);
-    this.formLiquidacion.patchValue({
-      nroDocumentoLiq: this.pad(valorDigitado, 12),
+    if (!(valorDigitado === '')) {
+      this.formLiquidacion.patchValue({
+        nroDocumentoLiq: this.pad(valorDigitado, 12),
+      });
+      this.validarNroLiquidacion(this.nroDocumentoLiq.value);
+    }
+
+  }
+
+  validarNroLiquidacion( nroLiq: any) {
+    this.liquidacionService.validarLiquidacionPorNroDoc(this.usuarioSession.empresa.id, nroLiq ).subscribe((data_) => {
+      this.infoResponse_ = data_;
+      if (this.infoResponse_.codeMessage === 'MFA1001') {
+        this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', {
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          duration: 5000
+        });
+        this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+          this.formLiquidacion.patchValue({
+            nroDocumentoLiq: '',
+          });
+        });
+      }
+    },
+    (error: HttpErrorResponse) => {
+        this.handleError(error);
     });
   }
 
@@ -773,7 +793,7 @@ export class FileUploadComponent implements OnInit {
 
   }
 
- 
+
 
   // Pop -up para Actualizar Tarifa
   openDialog(value, row) {

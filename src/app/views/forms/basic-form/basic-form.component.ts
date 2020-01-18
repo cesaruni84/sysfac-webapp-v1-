@@ -52,7 +52,7 @@ export class BasicFormComponent implements OnInit {
 
   @ViewChild(MatProgressBar) progressBar: MatProgressBar;
   @ViewChild(MatButton) submitButton: MatButton;
-  
+
   events: string[] = [];
   roomsFilter: any = {};
 
@@ -259,7 +259,7 @@ export class BasicFormComponent implements OnInit {
       ]),
       nroCertificado_: new FormControl({value: '', disabled: true}, Validators.required),
       nroLicencia_: new FormControl({value: '', disabled: true}, Validators.required),
-      balanzaSelected: new FormControl('',),
+      balanzaSelected: new FormControl('', ),
       nroTicketBal: new FormControl('', [
         Validators.minLength(1),
         Validators.maxLength(30),
@@ -399,7 +399,9 @@ export class BasicFormComponent implements OnInit {
       ft.setTime(ft.getTime() + ft.getTimezoneOffset() * 60 * 1000);
       this.guiaRemision.fechaTraslado = ft;
 
-      this.guiaRemision.fechaRecepcion = new Date(this.basicForm.get('fechaRecepcion').value);
+      const fr = new Date(this.basicForm.get('fechaRecepcion').value);
+      fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
+      this.guiaRemision.fechaRecepcion = fr;
 
       this.guiaRemision.balanza = this.basicForm.get('balanzaSelected').value;
       this.guiaRemision.remitente = this.basicForm.get('remitenteSelected').value;
@@ -408,7 +410,7 @@ export class BasicFormComponent implements OnInit {
       this.guiaRemision.chofer = this.basicForm.get('choferSelected').value;
 
       // console.log('objeto: ' + this.guiaRemision);
-      // console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
+      console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
 
       if (this.edicion) {
         this.actualizar();
@@ -425,6 +427,9 @@ export class BasicFormComponent implements OnInit {
       this.progressBar.mode = 'determinate';
       this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', { duration: 5000 , panelClass: ['green-snackbar'] });
       this.inserto = true;
+      this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+        this.nuevaGuia();  // redirige a una nueva pantalla
+      });
     },
     (error: HttpErrorResponse) => {
       this.progressBar.mode = 'determinate';
@@ -464,9 +469,33 @@ export class BasicFormComponent implements OnInit {
       this.recuperarDatosGuiaBD(this.valorNroSerie_, this.valorNroSecuencia_);
       this.edicion = true;
     }
-
   }
 
+  /**
+   * Busca guia en el Sistema, en modo Edicion/ Nuevo
+   */
+  validaSiExisteGuiaRemision(serie: string, secuencia: string) {
+    if (serie && secuencia ) {
+      this.guiaRemisioService.buscaGuiaRemisionxNroGuia( this.usuarioSession.empresa.id, serie, secuencia)
+      .subscribe((data_) => {
+        this.infoResponse_ = data_;
+        if (this.infoResponse_.codeMessage === 'GRT102') {
+          this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', {
+            verticalPosition: 'top',
+            horizontalPosition: 'right',
+            duration: 5000
+          });
+          this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+            this.basicForm.patchValue({
+              nroSecuencia: '',
+            });
+          });
+        }
+      }, (error: HttpErrorResponse) => {
+        this.handleError(error);
+      });
+    }
+  }
 
     /**
    * Consulta de Guia de Pantalla de Registro
@@ -481,6 +510,31 @@ export class BasicFormComponent implements OnInit {
 
   }
 
+    /**
+   * Busca guia cliente en el Sistema, en modo Edicion/ Nuevo
+   */
+  validaSiExisteGuiaRemisionCliente(serie: string, secuencia: string) {
+    if (serie && secuencia ) {
+      this.guiaRemisioService.buscaGuiaRemisionxNroGuiaCliente( this.usuarioSession.empresa.id, serie, secuencia)
+      .subscribe((data_) => {
+        this.infoResponse_ = data_;
+        if (this.infoResponse_.codeMessage === 'GRT102') {
+          this.snackBar.open(this.infoResponse_.alertMessage, 'cerrar', {
+            verticalPosition: 'top',
+            horizontalPosition: 'right',
+            duration: 5000
+          });
+          // this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+          //   this.basicForm.patchValue({
+          //     nroSequenClie: '',
+          //   });
+          // });
+        }
+      }, (error: HttpErrorResponse) => {
+        this.handleError(error);
+      });
+    }
+  }
 
 
   regresar() {
@@ -509,6 +563,7 @@ export class BasicFormComponent implements OnInit {
 
   onChangeFechaEmision(type: string, event: MatDatepickerInputEvent<Date>) {
     this.valorFechaIniTraslado_ = event.value;
+    this.valorFechaRecepcion_ = event.value;
   }
 
   // Validar Digitos
@@ -535,25 +590,36 @@ export class BasicFormComponent implements OnInit {
   // Completar Zeros
   completarZerosNroSerie(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroSerie_ = this.pad(valorDigitado, 5);
+    if (!(valorDigitado === '')) {
+      this.valorNroSerie_ = this.pad(valorDigitado, 5);
+    };
+
   }
 
   // Completar Zeros
  completarZerosNroSecuencia(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
+    if (!(valorDigitado === '')) {
+      this.valorNroSecuencia_ = this.pad(valorDigitado, 8);
+      this.validaSiExisteGuiaRemision(this.valorNroSerie_, this.valorNroSecuencia_);
+    };
   }
 
   // Completar Zeros
   completarZerosNroSerieCli(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorSerieCli_ = this.pad(valorDigitado, 5);
+    if (!(valorDigitado === '')) {
+      this.valorSerieCli_ = this.pad(valorDigitado, 5);
+    }
   }
 
   // Completar Zeros
   completarZerosNroSecuenciaCli(event) {
     const valorDigitado = event.target.value.toLowerCase();
-    this.valorSecuenciaCli_ = this.pad(valorDigitado, 8);
+    if (!(valorDigitado === '')) {
+      this.valorSecuenciaCli_ = this.pad(valorDigitado, 8);
+      this.validaSiExisteGuiaRemisionCliente(this.valorSerieCli_, this.valorSecuenciaCli_);
+    }
   }
 
 

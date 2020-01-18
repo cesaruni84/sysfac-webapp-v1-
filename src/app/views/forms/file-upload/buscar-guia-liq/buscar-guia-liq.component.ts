@@ -103,8 +103,10 @@ export class BuscarGuiaLiqComponent implements OnInit {
 
   initForm() {
     const fechaActual_ = new Date();
-    const fechaIniTraslado_ = new Date();
-    fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
+    let fechaIniTraslado_ = new Date();
+    // fechaIniTraslado_.setDate((fechaIniTraslado_.getDate()) - 30);
+    fechaIniTraslado_  =   new Date(fechaActual_.getFullYear(), fechaActual_.getMonth(), 1);
+
 
     this.formFilter = this.fb.group({
       serie_: ['', ],
@@ -172,7 +174,6 @@ export class BuscarGuiaLiqComponent implements OnInit {
                                                         origen, destino ,
                                                         formateo, guiasSinLiqFact, soloFacturadas,
                                                         fechaIni, fechaFin).subscribe(data_ => {
-                                                          console.log(data_)
       this.rows = data_;
       this.loader.close();
     },

@@ -18,8 +18,6 @@ export class LiquidacionService {
 
   constructor(private http: HttpClient) { }
 
-
-
   registrarLiquidacionBD(liquidacion: Liquidacion, idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<any>(this.url + idEmpresa + '/liquidaciones' , liquidacion, this.httpOptions);
@@ -30,10 +28,14 @@ export class LiquidacionService {
     return this.http.put<any>(this.url + idEmpresa + '/liquidaciones/' + liquidacion.id, liquidacion, this.httpOptions);
   }
 
-
   obtenerLiquidacionPorNroDoc(idEmpresa: number, nroDocLiq: string) {
     const params = new HttpParams().set('nroDocLiq', nroDocLiq);
     return this.http.get<Liquidacion>(this.url + idEmpresa + '/liquidaciones/SRV1', {params: params});
+  }
+
+  validarLiquidacionPorNroDoc(idEmpresa: number, nroDocLiq: string) {
+    const params = new HttpParams().set('nroDocLiq', nroDocLiq);
+    return this.http.get<any>(this.url + idEmpresa + '/liquidaciones/SRV5', {params: params});
   }
 
   @Cacheable({

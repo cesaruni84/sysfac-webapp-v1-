@@ -23,7 +23,7 @@ export class TableDetailComponent implements OnInit {
   }
 
   onDetailToggle(event) {
-    console.log('Detail Toggled', event);
+    // console.log('Detail Toggled', event);
   }
 
   toggleExpandGroup(group) {

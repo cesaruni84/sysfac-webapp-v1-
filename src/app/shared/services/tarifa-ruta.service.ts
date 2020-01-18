@@ -23,11 +23,16 @@ export class TarifaRutaService {
 
   registrarTarifa(tarifaRuta: TarifaRuta) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<any>(this.url + tarifaRuta.empresa.id + '/tarifas', tarifaRuta, this.httpOptions);
+    return this.http.post<any>(this.url + 1 + '/tarifas', tarifaRuta, this.httpOptions);
   }
 
   actualizarTarifa(tarifaRuta: TarifaRuta) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.put<any>(this.url + tarifaRuta.empresa.id + '/tarifas/' + tarifaRuta.id, tarifaRuta, this.httpOptions);
+  }
+
+  eliminarTarifa(tarifaRuta: TarifaRuta) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.delete<any>(this.url + tarifaRuta.empresa.id + '/tarifas/' + tarifaRuta.id, this.httpOptions);
   }
 }

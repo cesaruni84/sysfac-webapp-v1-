@@ -1,6 +1,4 @@
-import { Component, Input, Optional, Host, Inject } from '@angular/core';
-import { SatPopover } from '@ncstate/sat-popover';
-import { filter } from 'rxjs/operators/filter';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 
 @Component({
@@ -8,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
   styleUrls: ['inline-edit.component.scss'],
   templateUrl: './inline-edit.component.html',
 })
-export class InlineEditComponent {
+export class InlineEditComponent implements OnInit  {
 
   value = '';
 
@@ -17,7 +15,6 @@ export class InlineEditComponent {
 
   ngOnInit() {
     this.value = this.data.tarifa;
-    console.log();
   }
 
   onSubmit() {

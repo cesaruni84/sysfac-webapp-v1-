@@ -70,4 +70,13 @@ obtenerDocumentPorSerie(idEmpresa: number, tipoDocumento: number, serieDoc: stri
 }
 
 
+
+validarDocumentPorSerie(idEmpresa: number, tipoDocumento: number, serieDoc: string, secuenciaDoc: string) {
+  const params = new HttpParams().set('tipoDocumento', tipoDocumento.toString())
+                                  .set('nroSerie', serieDoc.toString())
+                                  .set('nroSecuencia', secuenciaDoc.toString());
+
+  return this.http.get<any>(this.url + idEmpresa + '/documentos/SRV5', { params: params });
+}
+
 }

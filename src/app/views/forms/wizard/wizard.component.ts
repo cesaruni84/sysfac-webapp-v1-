@@ -27,7 +27,6 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { Subscription } from 'rxjs';
 import { getDay } from 'date-fns';
 
-
 @Component({
   selector: 'app-wizard',
   templateUrl: './wizard.component.html',
@@ -38,7 +37,7 @@ import { getDay } from 'date-fns';
     },
     {
         provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
-    }
+    },
     ],
 })
 export class WizardComponent implements OnInit, OnDestroy {
@@ -559,16 +558,6 @@ export class WizardComponent implements OnInit, OnDestroy {
     this.table.rowDetail.toggleExpandRow(row);
   }
 
-  dateChanged(evt){
-    const selectedDate = new Date(evt);
-   // console.log("by default:", selectedDate);
-   // console.log("by UTCString:", selectedDate.toUTCString());
-  //  console.log("by LocaleString:", selectedDate.toLocaleString());
-  //  console.log("by LocaleTimeString:", selectedDate.toLocaleTimeString());
-   this.facturaForm.controls['fechaEmision'].setValue(new Date(selectedDate.toUTCString()));
-
-  }
-
 
   grabarFormulario(model: any, isValid: boolean, e: Event) {
     this.loader.open();
@@ -585,15 +574,16 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
 
         const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
-        fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
-        this.facturaDocumento.fechaEmision = fe;
+        // fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+        this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
+
         // this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
-        
-        console.log(this.facturaForm.controls['fechaVencimiento'].value)
+
         if (this.facturaForm.controls['fechaVencimiento'].value) {
           const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
-          fv.setTime(fv.getTime() + fv.getTimezoneOffset() * 60 * 1000);
-          this.facturaDocumento.fechaVencimiento = fv;
+          //  fv.setTime(fv.getTime() + fv.getTimezoneOffset() * 60 * 1000);
+          this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
+          // this.facturaDocumento.fechaVencimiento = fv;
         }
 
         // this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
@@ -656,7 +646,7 @@ export class WizardComponent implements OnInit, OnDestroy {
          this.actualizar();
        }
     } else {
-        this.snack.open('Complete los datos faltantes', 'OK', { duration: 2000 });
+        this.snack.open('Complete los datos faltantes', 'OK', { duration: 5000 });
         this.loader.close();
       }
 
@@ -670,7 +660,7 @@ export class WizardComponent implements OnInit, OnDestroy {
       this.loader.close();
       this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
       this.snack._openedSnackBarRef.afterDismissed().subscribe(() => {
-        this.redirectTo('/forms/facturacion/registro');
+        this.nuevoDocumento();
       });
     },
     (error: HttpErrorResponse) => {
@@ -684,6 +674,31 @@ export class WizardComponent implements OnInit, OnDestroy {
       this.infoResponse_ = data_;
       this.loader.close();
       this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+    },
+    (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
+  }
+
+
+  validarDocumento(event: any) {
+    const valorDigitado = event.target.value.toLowerCase();
+    if (!(valorDigitado === '')) {
+      this.validar(this.facturaForm.controls['serieDocumento'].value, valorDigitado, this.facturaForm.controls['tipoDocumento'].value.id);
+    };
+  }
+
+  validar(serie: any, secuencia: any, tipoDoc: any) {
+    this.itemFacturaService.validarDocumentPorSerie( this.usuarioSession.empresa.id, tipoDoc, serie, secuencia).subscribe(data_ => {
+      this.infoResponse_ = data_;
+      if (this.infoResponse_.codeMessage === 'MFA1001') {
+        this.snack.open(this.infoResponse_.alertMessage, 'OK', { verticalPosition: 'top', horizontalPosition: 'right', duration: 5000 });
+        this.snack._openedSnackBarRef.afterDismissed().subscribe(() => {
+          this.facturaForm.patchValue({
+            numeroDocumento: '',
+          });
+        });
+      }
     },
     (error: HttpErrorResponse) => {
       this.handleError(error);
