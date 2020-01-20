@@ -29,8 +29,12 @@ export class SidebarSideComponent implements OnInit, OnDestroy, AfterViewInit {
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
-    //this.iconTypeMenuTitle = this.navService.iconTypeMenuTitle;
+    // this.iconTypeMenuTitle = this.navService.iconTypeMenuTitle;
     this.menuItemsSub = this.navService.menuItems$.subscribe(menuItem => {
+       if (this.usuarioSession.cargo === 'Registrador') {
+        // No mostrar opción de Facturación
+        menuItem.splice(menuItem.findIndex(e => e.name === 'Facturación'), 1);
+      }
       this.menuItems = menuItem;
       // Checks item list has any icon type.
       this.hasIconTypeMenuItem = !!this.menuItems.filter(item => item.type === 'icon').length;
