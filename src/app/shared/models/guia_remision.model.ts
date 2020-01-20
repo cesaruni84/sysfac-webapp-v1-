@@ -81,6 +81,7 @@ export interface GuiaRemisionReportExcel {
     nroGuiaCliente?: string;
     factura?: string;
     fechaRecepcion?: string;
+    estadoFactura?: string;
 }
 
 export class GuiasRemisionPDF {

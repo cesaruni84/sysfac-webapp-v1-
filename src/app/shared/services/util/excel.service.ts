@@ -5,7 +5,6 @@ import * as fs from 'file-saver';
 import { Liquidacion } from '../../models/liquidacion.model';
 import { Documento } from '../../models/facturacion.model';
 import { TiposGenericosService } from './tiposGenericos.service';
-import { GuiaRemision, GrillaGuiaRemision, GuiaRemisionReportExcel } from '../../models/guia_remision.model';
 
 export class LiquidacionReportExcel {
   item?: number;
@@ -29,6 +28,7 @@ export interface DocumentosReportExcel {
   fechaEmision?: Date;
   fechaVencimiento?: Date;
   estado?: string;
+  moneda?: string;
   totalDocumento?: number;
   observacion?: string;
 }
@@ -72,10 +72,11 @@ export class ExcelService {
       { header: 'Fecha Emisión', key: 'fechaEmision', width: 20, style: { numFmt: 'dd/mm/yyyy' }},
       { header: 'Usuario Registra', key: 'usuarioRegistra', width: 20},
       { header: 'Nro. de Liquidación', key: 'nroLiq', width: 22},
-      { header: 'Factura', key: 'factura', width: 22},
+      { header: 'Factura', key: 'factura', width: 20},
+      { header: 'Estado Factura', key: 'nemonicoEstadoFactura', width: 17},
       { header: 'Remitente', key: 'remitente', width: 40},
       { header: 'Destinatario', key: 'destinatario', width: 40},
-      { header: 'Estado', key: 'estado', width: 15},
+      { header: 'Estado Guia', key: 'estado', width: 17},
       { header: 'Producto', key: 'producto', width: 40},
       { header: 'Cantidad', key: 'cantidad', width: 20},
       { header: 'Chofer', key: 'chofer', width: 40},
@@ -86,26 +87,26 @@ export class ExcelService {
      // Añade Cabecera
     worksheet.columns = header_key;
 
-    // values = values.forEach(guia => {
-    //   const guia_: GuiaRemisionReportExcel = {};
-    //   guia_.fechaEmision = new Date(guia.fechaEmision);
-    // });
-
-    // console.log(values);
-
-     // Decorar fila de cabeceera
-    worksheet.getRow(1).eachCell((cell, number) => {
-       cell.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: { argb: 'E2EFDA' },
-         bgColor: { argb: 'FF0000FF' }
-       };
-       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-       cell.font = { name: 'Calibri', family: 4, size: 12, bold: true };
-     });
-
+    // Añade valores
     worksheet.addRows(values);
+
+    // Decorar las filas
+    worksheet.eachRow((cell, number) => {
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: false };
+    });
+
+    // Decorar primera fila - cabeceera
+    worksheet.getRow(1).eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'E2EFDA' },
+        bgColor: { argb: 'FF0000FF' }
+      };
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: true };
+    });
 
     // Exportar a Excel
     workbook.xlsx.writeBuffer().then((data) => {
@@ -114,7 +115,21 @@ export class ExcelService {
     });
 
   }
+  getValueGlosaEstadoFactura( value: any): string {
 
+    switch (value) {
+      case 1:
+        // this.chip.color = 'primary';
+        return 'Registrado';
+      case 2:
+        return 'Cancelado';
+      case 3:
+        // this.chip.color = 'warn';
+        return 'Anulado';
+      default:
+          return '-';
+    }
+  }
 
    // Reporte para Liquidaciones
   generarReporteLiquidaciones(values: Liquidacion[]) {
@@ -143,19 +158,6 @@ export class ExcelService {
 
      // Añade Cabecera
     worksheet.columns = header_key;
-
-     // Decorar fila de cabeceera
-    worksheet.getRow(1).eachCell((cell, number) => {
-       cell.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: { argb: 'E2EFDA' },
-         bgColor: { argb: 'FF0000FF' }
-       };
-       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-       cell.font = { name: 'Calibri', family: 4, size: 12, bold: true };
-     });
-
     this.listaLiquidaciones = values;
 
     // Añade data
@@ -177,6 +179,24 @@ export class ExcelService {
     });
     // worksheet.addRows(this.listaLiquidaciones);
 
+
+    // Decorar las filas
+    worksheet.eachRow((cell, number) => {
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: false };
+    });
+
+    // Decorar primera fila - cabeceera
+    worksheet.getRow(1).eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'E2EFDA' },
+        bgColor: { argb: 'FF0000FF' }
+      };
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: true };
+    });
 
     // Exportar a Excel
     workbook.xlsx.writeBuffer().then((data) => {
@@ -209,24 +229,13 @@ export class ExcelService {
       { header: 'F. Emisión', key: 'fechaEmision', width: 16, style: { numFmt: 'dd/mm/yyyy' }},
       { header: 'F. Vencimiento', key: 'fechaVencimiento', width: 16, style: { numFmt: 'dd/mm/yyyy' }},
       { header: 'Estado', key: 'estado', width: 16},
-      { header: 'Importe', key: 'totalDocumento', width: 25, style: { numFmt: '"S/"#,##0.00;[Red]\-"£"#,##0.00'}},
+      { header: 'Moneda', key: 'moneda', width: 16},
+      { header: 'Importe', key: 'totalDocumento', width: 25, style: { numFmt: '#,##0.00;[Red]\-"£"#,##0.00'}},
       { header: 'Glosa/Observación', key: 'observacion', width: 50},
     ];
 
      // Añade Cabecera
     worksheet.columns = header_key;
-
-     // Decorar fila de cabeceera
-    worksheet.getRow(1).eachCell((cell, number) => {
-       cell.fill = {
-         type: 'pattern',
-         pattern: 'solid',
-         fgColor: { argb: 'E2EFDA' },
-         bgColor: { argb: 'FF0000FF' }
-       };
-       cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
-       cell.font = { name: 'Calibri', family: 4, size: 12, bold: true };
-     });
 
     this.listaDocumentos = values;
     this.estadosDocumento =  this.tiposGenericos.retornarEstadosDocumento();
@@ -246,12 +255,48 @@ export class ExcelService {
       }
 
       reporteFacturacion.estado = this.estadosDocumento.find(o => o.id === documento.estado).descripcion || '?';
+      reporteFacturacion.moneda = documento.moneda.descripcion;
       reporteFacturacion.totalDocumento = documento.totalDocumento;
       reporteFacturacion.observacion = documento.observacion;
       worksheet.addRow(reporteFacturacion).commit();
     });
 
     // worksheet.addRows(this.listaLiquidaciones);
+    // Decorar las filas
+    worksheet.eachRow((cell, number) => {
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: false };
+    });
+
+    // Decorar primera fila - cabeceera
+    worksheet.getRow(1).eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'E2EFDA' },
+        bgColor: { argb: 'FF0000FF' }
+      };
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: true };
+    });
+
+        // Decorar las filas
+    worksheet.eachRow((cell, number) => {
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: false };
+    });
+
+    // Decorar primera fila - cabeceera
+    worksheet.getRow(1).eachCell((cell, number) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'E2EFDA' },
+        bgColor: { argb: 'FF0000FF' }
+      };
+      cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } }
+      cell.font = { name: 'Calibri Light', family: 4, size: 11, bold: true };
+    });
 
     // Exportar a Excel
     workbook.xlsx.writeBuffer().then((data) => {

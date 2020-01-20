@@ -57,14 +57,8 @@ export class FacturaConsultaComponent implements OnInit {
 
   // Manejo default de mensajes en grilla
   messages: any = {
-    // Message to show when array is presented
-    // but contains no values
     emptyMessage: '-',
-
-    // Footer total message
     totalMessage: 'total',
-
-    // Footer selected message
     selectedMessage: 'selected'
   };
 
@@ -105,7 +99,7 @@ export class FacturaConsultaComponent implements OnInit {
       fechaIni: new FormControl(fechaIniTraslado_, ),
       fechaFin: new FormControl(fechaActual_, ),
       estado: new FormControl('0', ),
-      cliente:  new FormControl('0',),
+      cliente:  new FormControl('0', )
    });
 
     // Recupera datos de usuario de session
@@ -198,6 +192,12 @@ export class FacturaConsultaComponent implements OnInit {
         return 'Anulado';
       default:
           return '?';
+    }
+  }
+
+  getSimboloMoneda( value: Documento): string {
+    if (value) {
+        return value.moneda.nemonico;
     }
   }
 

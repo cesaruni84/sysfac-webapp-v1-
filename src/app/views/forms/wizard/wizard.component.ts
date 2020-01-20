@@ -311,6 +311,9 @@ export class WizardComponent implements OnInit, OnDestroy {
           ordenServicio: documento.nroOrden || ''
         });
 
+        // Simbolo de Moneda
+        this.simbolo = this.comboMonedas.find(o => o.id === documento.moneda.id).nemonico || 'S/';
+
         // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
         this.subTipoFactura = documento.notas;
         this.liquidaciones_ = documento.liquidaciones;
@@ -340,7 +343,6 @@ export class WizardComponent implements OnInit, OnDestroy {
 
          // Completa totales
          this.totalSum = documento.subTotalVentas;
-         this.simbolo = 'S/';
          this.subTotal = documento.subTotalVentas;
          this.anticipos = documento.anticipos;
          this.descuentos = documento.descuentos;

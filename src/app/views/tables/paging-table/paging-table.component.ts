@@ -21,6 +21,7 @@ import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../../shared/models/error_response.model';
 import { throwError } from 'rxjs';
+import { ChipColor } from '../../forms/wizard/factura-consulta/factura-consulta.component';
 
 @Component({
   selector: 'app-paging-table',
@@ -47,6 +48,7 @@ export class PagingTableComponent implements OnInit {
   listaGrillaGuias: GrillaGuiaRemision[];
   formFilter: FormGroup;
   errorResponse_: ErrorResponse;
+  chip: ChipColor = {name: 'Primary', color: undefined};
 
 
   // Ng Model
@@ -363,57 +365,38 @@ export class PagingTableComponent implements OnInit {
 
   }
 
+  retornarSecuencia(value: any) {
 
+    switch (value.estadoFactura) {
+      case 1:
+          this.chip.color = 'primary';
+          break;
+      case 2:
+          this.chip.color = 'accent';
+          break;
+      case 3:
+          this.chip.color = 'warn';
+          break;
+      default:
+          break;
+    }
+      return value.nroSecuencia;
+  }
 
+  getValueGlosaEstadoFactura( value: any) {
 
-  filtrarGuias() {
-    this.temp =  this.total_rows_bd;
-    const valorNroSerie_  =  this.formFilter.controls['nroSerie'].value;
-    const valorNroSecuencia_  =  this.formFilter.controls['nroSecuencia'].value;
-    const fechaIniTraslado_  =  new Date(this.formFilter.controls['fechaIniTraslado'].value);
-    const fechaFinTraslado_  =  new Date(this.formFilter.controls['fechaFinTraslado'].value);
-    const estadoSelected_  =  this.formFilter.controls['estadoSelected'].value;
-    const choferSelected_  =  this.formFilter.controls['choferSelected'].value;
-    const destinatarioSelected_  =  this.formFilter.controls['destinatarioSelected'].value;
-    const mostrarGuiasFacturadas  =  this.formFilter.controls['esFacturado'].value;
-    const rows2 = this.temp.filter(function(d) {
-    const mostrarSerie = (d.nroguia.toLowerCase().indexOf(valorNroSerie_) !== -1) || !valorNroSerie_;
-    const mostrarSecuencia = (d.nroSecuencia.toLowerCase().indexOf(valorNroSecuencia_) !== -1) || !valorNroSecuencia_ ;
-    const fechaEmisionRow = new Date(d.fechaEmision);
-    fechaEmisionRow.setTime(fechaEmisionRow.getTime() + fechaEmisionRow.getTimezoneOffset() * 60 * 1000);
-    const mostrarFechaRow = ((fechaEmisionRow <=  fechaFinTraslado_) && (fechaEmisionRow >=  fechaIniTraslado_) ) ;
-    const mostrarEstado = (d.estado.indexOf(estadoSelected_) !== -1) ;
-    const mostrarChofer = (d.chofer.indexOf(choferSelected_) !== -1);
-    const mostrarDestinatario = (d.destinatario.indexOf(destinatarioSelected_) !== -1) ;
-    const guiaFacturada = d.ordenServicio.toLowerCase() !== '---------' ;
-    const guiaNoFacturada = d.ordenServicio.toLowerCase() === '---------' ;
-
-      let mostrarRegistro = false;
-      if (!mostrarGuiasFacturadas) {
-        if (guiaNoFacturada) {
-          mostrarRegistro = true;
-        }
-      } else {
-        if (guiaFacturada) {
-          mostrarRegistro = true;
-        }
-      }
-
-
-      // return d.nroguia.toLowerCase().indexOf(val) !== -1 || !val;
-      // return true;
-       return  mostrarSerie &&
-               mostrarSecuencia &&
-               mostrarFechaRow &&
-               mostrarEstado &&
-               mostrarChofer &&
-               mostrarDestinatario &&
-               mostrarRegistro;
-    });
-
-    this.rows = rows2;
-    this.table.offset = 0;
-
+    switch (value) {
+      case 1:
+        // this.chip.color = 'primary';
+        return 'Registrado';
+      case 2:
+        return 'Cancelado';
+      case 3:
+        // this.chip.color = 'warn';
+        return 'Anulado';
+      default:
+          return '-';
+    }
   }
 
 

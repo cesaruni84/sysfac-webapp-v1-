@@ -41,13 +41,13 @@
                 <mat-label class="pl-1 ml-2" fxFlex="40%"> </mat-label>
                 <mat-form-field class="pl-1 ml-2" fxFlex="20%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO (EMISION)</b></mat-label>
-                    <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" maxlength="10">
+                    <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" maxlength="10" style="color:#3f51b5">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
                 <mat-form-field class="pl-1" fxFlex="20%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN (EMISION)</b></mat-label>
-                    <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" maxlength="10">
+                    <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" maxlength="10" style="color:#3f51b5">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                     <mat-datepicker #picker2></mat-datepicker>
                 </mat-form-field>
@@ -131,7 +131,8 @@
 
         <ngx-datatable-column name="Nro. Secuencia" [flexGrow]="1" [width]="110" prop="nroSecuencia">
             <ng-template let-row="row" ngx-datatable-cell-template>
-                <div [style.fontSize.px]="12"> {{ row?.nroSecuencia }} </div>
+                <div [style.fontSize.px]="12"> {{ this.retornarSecuencia(row) }} </div>
+
             </ng-template>
         </ngx-datatable-column>
 
@@ -165,6 +166,14 @@
             </ng-template>
         </ngx-datatable-column>
 
+        <ngx-datatable-column name="Estado Factura" [flexGrow]="1" [width]="110" prop="estadoFactura">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <mat-chip *ngIf="chip && (row?.estadoFactura)" mat-sm-chip class="full-width" selected [color]="chip.color">
+                    {{this.getValueGlosaEstadoFactura(row?.estadoFactura)}}
+                </mat-chip>
+            </ng-template>
+        </ngx-datatable-column>
+
         <ngx-datatable-column name="Razón Soc. Rem" [flexGrow]="1" [width]="270" prop="remitente">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <div [style.fontSize.px]="12"> {{ row?.remitente }} </div>
@@ -177,7 +186,7 @@
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Estado" [flexGrow]="1" [width]="110" prop="estado">
+        <ngx-datatable-column name="Estado Guía" [flexGrow]="1" [width]="110" prop="estado">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <mat-chip mat-sm-chip class="full-width" [color]="'primary'" [selected]="row.estado =='REGISTRADO'">{{row.estado == 'REGISTRADO' ? 'Registrado' : 'Anulado'}}</mat-chip>
             </ng-template>
