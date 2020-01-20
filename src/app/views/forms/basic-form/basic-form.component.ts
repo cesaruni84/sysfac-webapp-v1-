@@ -7,7 +7,7 @@ import { Balanza } from '../../../shared/models/balanza.model';
 import { UnidadMedida } from '../../../shared/models/unidad_medida.model';
 import { Producto } from '../../../shared/models/producto.model';
 import { Factoria } from '../../../shared/models/factoria.model';
-import { Component, OnInit, ViewChild, Optional, Inject, LOCALE_ID, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Optional, Inject, LOCALE_ID, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { CustomValidators } from 'ng2-validation';
 import { Chofer } from '../../../shared/models/chofer.model';
@@ -27,6 +27,8 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/extra/fr';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
+import { takeUntil } from 'rxjs/operators';
+import { Subject, ReplaySubject } from 'rxjs';
 
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
@@ -48,13 +50,22 @@ registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
     ],
 })
 
-export class BasicFormComponent implements OnInit {
+export class BasicFormComponent implements OnInit , OnDestroy {
 
   @ViewChild(MatProgressBar) progressBar: MatProgressBar;
   @ViewChild(MatButton) submitButton: MatButton;
 
   events: string[] = [];
   roomsFilter: any = {};
+
+  /** Subject that emits when the component has been destroyed. */
+  protected _onDestroy = new Subject<void>();
+  public productosFiltrados: ReplaySubject<Producto[]> = new ReplaySubject<Producto[]>(1);
+  public balanzasFiltrados: ReplaySubject<Balanza[]> = new ReplaySubject<Balanza[]>(1);
+  public factoriasOrigenFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public choferesFiltrados: ReplaySubject<Chofer[]> = new ReplaySubject<Chofer[]>(1);
+
 
   // NgModel
   valorIdGuia_: number;
@@ -147,6 +158,11 @@ export class BasicFormComponent implements OnInit {
 
   }
 
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
   validarGrabarActualizar() {
     this.route.queryParams.subscribe(params => {
         this.serieQuery = params._serie;
@@ -237,6 +253,12 @@ export class BasicFormComponent implements OnInit {
       rucDestinatario_: new FormControl({value: '', disabled: true}, Validators.required),
       direDestinatario_: new FormControl({value: '', disabled: true}, Validators.required),
       productoSelected: new FormControl('', Validators.required),
+      productoFiltro: new FormControl('', ),
+      origenFiltro: new FormControl('', ),
+      destinoFiltro: new FormControl('', ),
+      balanzaFiltro: new FormControl('', ),
+      choferFiltro: new FormControl('', ),
+
       cantidad: new FormControl('', [
         Validators.required,
         Validators.pattern(numberPatern)
@@ -292,16 +314,38 @@ export class BasicFormComponent implements OnInit {
   cargarCombosFormulario() {
     // Carga de Combos Factorias- Remitente
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
-          this.comboFactorias = data1;
+      this.comboFactorias = data1;
+      this.factoriasOrigenFiltrados.next(data1.slice());
+      // listen for search field value changes
+      this.basicForm.controls['origenFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaOrigen();
+      });
+
     });
 
     // Carga de Combos Factorias- Destinatario
     this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
       this.comboFactoriasDestino = data7;
+      this.factoriasDestinoFiltrados.next(data7.slice());
+      // listen for search field value changes
+      this.basicForm.controls['destinoFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaDestino();
+      });
     });
     // Carga de Combos Productos
     this.productoService.listarComboProductos().subscribe(data2 => {
       this.comboProductos = data2;
+      this.productosFiltrados.next(data2.slice());
+          // listen for search field value changes
+      this.basicForm.controls[ 'productoFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarProductos();
+      });
     },
     (error: HttpErrorResponse) => { // Error del Server
         this.handleError(error);
@@ -315,11 +359,25 @@ export class BasicFormComponent implements OnInit {
      // Carga de Combos Choferes
     this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
+      this.choferesFiltrados.next(data4.slice());
+          // listen for search field value changes
+      this.basicForm.controls['choferFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarChoferes();
+      });
      });
 
     // Carga de Combos Balanza
     this.balanzaService.listarComboBalanzas().subscribe(data5 => {
       this.comboBalanzas = data5;
+      this.balanzasFiltrados.next(data5.slice());
+      // listen for search field value changes
+      this.basicForm.controls['balanzaFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarBalanzas();
+      });
     });
   }
 
@@ -339,6 +397,99 @@ export class BasicFormComponent implements OnInit {
     this.valorPlacaTracto_ = e.value.vehiculo.placaTracto;
     this.valorPlacaBombona_ = e.value.vehiculo.placaBombona;
   }
+
+  /* FILTROS PARA BUSQUEDA EN COMBOS */
+  protected filtrarProductos() {
+    if (!this.comboProductos) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.basicForm.controls['productoFiltro'].value;
+    if (!search) {
+      this.productosFiltrados.next(this.comboProductos.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.productosFiltrados.next(
+      this.comboProductos.filter(producto => producto.nombre.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaOrigen() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.basicForm.controls['origenFiltro'].value;
+    if (!search) {
+      this.factoriasOrigenFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasOrigenFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaDestino() {
+    if (!this.comboFactoriasDestino) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.basicForm.controls['destinoFiltro'].value;
+    if (!search) {
+      this.factoriasDestinoFiltrados.next(this.comboFactoriasDestino.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasDestinoFiltrados.next(
+      this.comboFactoriasDestino.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarBalanzas() {
+    if (!this.comboBalanzas) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.basicForm.controls['balanzaFiltro'].value;
+    if (!search) {
+      this.balanzasFiltrados.next(this.comboBalanzas.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.balanzasFiltrados.next(
+      this.comboBalanzas.filter(balanza => balanza.descripcion.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarChoferes() {
+    if (!this.comboChoferes) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.basicForm.controls['choferFiltro'].value;
+    if (!search) {
+      this.choferesFiltrados.next(this.comboChoferes.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.choferesFiltrados.next(
+      this.comboChoferes.filter(chofer => chofer.nombres.toLowerCase().indexOf(search) > -1 ||
+                                          chofer.apellidos.toLowerCase().indexOf(search) > -1 )
+    );
+  }
+
 
   // Grabar Guia de Remisión
   grabarGuiaRemision(model: any, isValid: boolean, e: Event) {

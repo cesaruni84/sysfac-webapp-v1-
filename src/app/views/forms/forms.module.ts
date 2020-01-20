@@ -62,6 +62,7 @@ import { FacturaItemGuiasComponent } from './wizard/factura-item-guias/factura-i
 import { TableDetailComponent } from './wizard/table-detail/table-detail.component';
 import { ClientePopupComponent } from './configuracion/maestro-clientes/cliente-popup/cliente-popup.component';
 import { ProductosPopupComponent } from './configuracion/maestro-productos/productos-popup/productos-popup.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @NgModule({
   imports: [
@@ -74,6 +75,7 @@ import { ProductosPopupComponent } from './configuracion/maestro-productos/produ
     MatInputModule,
     MatListModule,
     MatCardModule,
+    NgxMatSelectSearchModule,
     MatToolbarModule,
     MatTooltipModule,
     MatChipsModule,

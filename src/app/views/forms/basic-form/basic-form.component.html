@@ -138,7 +138,10 @@
                                         <mat-form-field fxFlex="70%" appearance="">
                                             <mat-label><b>RAZON SOCIAL / PLANTA </b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorRemitenteSelected_" name="remitenteSelected" [formControl]="basicForm.controls['remitenteSelected']" (selectionChange)="seleccionarFactoriaRemitente($event)" requeried>
-                                                <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="basicForm.controls['origenFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let factoria of factoriasOrigenFiltrados | async" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
@@ -177,7 +180,10 @@
                                         <mat-form-field fxFlex="70%" appearance="">
                                             <mat-label><b>RAZON SOCIAL / PLANTA </b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorDestinatarioSelected_" name="destinatarioSelected" [formControl]="basicForm.controls['destinatarioSelected']" (selectionChange)="seleccionarFactoriaDestinatario($event)">
-                                                <mat-option *ngFor="let factoria of comboFactoriasDestino" [value]="factoria">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="basicForm.controls['destinoFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let factoria of factoriasDestinoFiltrados | async" [value]="factoria">
                                                     {{factoria.refLarga2}}
                                                 </mat-option>
                                             </mat-select>
@@ -224,7 +230,10 @@
                                         <mat-form-field class="full-width">
                                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>DESCRIPCION</b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorProductoSelected_" name="productoSelected" [formControl]="basicForm.controls[ 'productoSelected']" requeried>
-                                                <mat-option *ngFor="let producto of comboProductos" [value]="producto">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="basicForm.controls['productoFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let producto of productosFiltrados | async" [value]="producto">
                                                     {{producto.nombre}}
                                                 </mat-option>
                                             </mat-select>
@@ -284,7 +293,10 @@
                                         <mat-form-field class="full-width" appearance="">
                                             <mat-label><b>CODIGO BALANZA </b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorBalanzaSelected_" name="balanzaSelected" [formControl]="basicForm.controls['balanzaSelected']">
-                                                <mat-option *ngFor="let balanza of comboBalanzas" [value]="balanza">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="basicForm.controls['balanzaFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let balanza of balanzasFiltrados | async" [value]="balanza">
                                                     {{balanza.descripcion}}
                                                 </mat-option>
                                             </mat-select>
@@ -342,7 +354,10 @@
                                         <mat-form-field fxFlex="40%" appearance="">
                                             <mat-label><b>CHOFER</b></mat-label>
                                             <mat-select [compareWith]="compareObjects" [(ngModel)]="valorChoferSelected_" name="choferSelected" [formControl]="basicForm.controls['choferSelected']" (selectionChange)="seleccionarChofer($event)" requeried>
-                                                <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="basicForm.controls['choferFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let chofer of choferesFiltrados | async" [value]="chofer">
                                                     {{chofer.nombres + ' ' + chofer.apellidos + ' - DNI ' + chofer.dni }}
                                                 </mat-option>
                                             </mat-select>
