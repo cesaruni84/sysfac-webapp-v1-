@@ -306,7 +306,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       ]),
     });
 
-
+    // Camviar
     this.estadoSelected_ = '0';
 
   }
@@ -351,7 +351,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
         this.handleError(error);
     });
 
-    // Carga de Combos Unidades de Medida
+    // Carga de Combos Unidades de Medida -
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidadMedida = data3;
     });
