@@ -60,8 +60,11 @@
             <mat-form-field fxFlex="30%" class="full-width" appearance="">
                 <mat-label><b>ORIGEN</b></mat-label>
                 <mat-select name="filtroOrigen" [formControl]="formFilter.controls['filtroOrigen']">
+                    <mat-option>
+                        <ngx-mat-select-search [formControl]="formFilter.controls['filtroOrigen_']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                    </mat-option>
                     <mat-option value="0">Todos</mat-option>
-                    <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                    <mat-option *ngFor="let factoria of factoriasOrigenFiltrados | async" [value]="factoria.id">
                         {{factoria.refLarga2}}
                     </mat-option>
                 </mat-select>
@@ -69,8 +72,11 @@
             <mat-form-field fxFlex="30%" class="full-width" appearance="">
                 <mat-label><b>DESTINO</b></mat-label>
                 <mat-select name="filtroDestino" [formControl]="formFilter.controls['filtroDestino']">
+                    <mat-option>
+                        <ngx-mat-select-search [formControl]="formFilter.controls['filtroDestino_']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                    </mat-option>
                     <mat-option value="0">Todos</mat-option>
-                    <mat-option *ngFor="let factoria2 of comboFactoriasDestino" [value]="factoria2.id">
+                    <mat-option *ngFor="let factoria2 of factoriasDestinoFiltrados | async" [value]="factoria2.id">
                         {{factoria2.refLarga2}}
                     </mat-option>
                 </mat-select>

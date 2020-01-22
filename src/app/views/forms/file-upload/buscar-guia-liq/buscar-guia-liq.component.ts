@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, OnDestroy } from '@angular/core';
 import { Usuario } from '../../../../shared/models/usuario.model';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
@@ -13,8 +13,9 @@ import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
-import { throwError } from 'rxjs';
+import { throwError, Subject, ReplaySubject } from 'rxjs';
 import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-factura-item-guias',
@@ -29,7 +30,7 @@ import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
     }
     ]
 })
-export class BuscarGuiaLiqComponent implements OnInit {
+export class BuscarGuiaLiqComponent implements OnInit, OnDestroy {
 
   rows = [];
   temp = [];
@@ -47,6 +48,10 @@ export class BuscarGuiaLiqComponent implements OnInit {
   public comboFactoriasDestino: Factoria[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
+
+  protected _onDestroy = new Subject<void>();
+  public factoriasOrigenFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
 
   // Manejo default de mensajes en grilla
   messages: any = {
@@ -89,16 +94,35 @@ export class BuscarGuiaLiqComponent implements OnInit {
 
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
+      this.factoriasOrigenFiltrados.next(data1.slice());
+      // listen for search field value changes
+      this.formFilter.controls['filtroOrigen_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaOrigen();
+      });
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
+      this.factoriasDestinoFiltrados.next(data3.slice());
+      // listen for search field value changes
+      this.formFilter.controls['filtroDestino_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaDestino();
+      });
     });
 
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidades = data3;
     });
 
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
   initForm() {
@@ -114,7 +138,9 @@ export class BuscarGuiaLiqComponent implements OnInit {
       serieCli_: ['', ],
       secuenciaCli_: ['', ],
       filtroOrigen: ['0', ],
+      filtroOrigen_: ['', ],
       filtroDestino: ['0', ],
+      filtroDestino_: ['', ],
       filtroFechaIni: new FormControl(fechaIniTraslado_, ),
       filtroFechaFin: new FormControl(fechaActual_, ),
     });
@@ -128,6 +154,52 @@ export class BuscarGuiaLiqComponent implements OnInit {
     }
     return str;
   }
+
+
+  protected filtrarFactoriaOrigen() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    // console.log(this.formFilter.controls['filtroOrigen_'].value);
+    let search = this.formFilter.controls['filtroOrigen_'].value;  // devuelve id
+
+    // search = this.comboFactorias.find(o => o.id === id).refLarga2;
+
+
+    if (!search) {
+      this.factoriasOrigenFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasOrigenFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaDestino() {
+    if (!this.comboFactoriasDestino) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['filtroDestino_'].value;  // devuelve id
+    // const id = this.formFilter.controls['filtroDestino_'].value;
+    // let search = this.comboFactoriasDestino.find(o => o.id === id).refLarga2;
+
+    if (!search) {
+      this.factoriasDestinoFiltrados.next(this.comboFactoriasDestino.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasDestinoFiltrados.next(
+      this.comboFactoriasDestino.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
 
 
   buscar() {

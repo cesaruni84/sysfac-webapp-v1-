@@ -55,9 +55,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   @ViewChild(MatProgressBar) progressBar: MatProgressBar;
   @ViewChild(MatButton) submitButton: MatButton;
 
-  events: string[] = [];
-  roomsFilter: any = {};
-
   /** Subject that emits when the component has been destroyed. */
   protected _onDestroy = new Subject<void>();
   public productosFiltrados: ReplaySubject<Producto[]> = new ReplaySubject<Producto[]>(1);
