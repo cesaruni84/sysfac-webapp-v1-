@@ -19,7 +19,7 @@
 
                                         <mat-form-field fxFlex="20%" appearance="">
                                             <mat-label><b>TIPO DOCUMENTO </b></mat-label>
-                                            <mat-select [formControl]="facturaForm.controls['tipoDocumento']" align="top">
+                                            <mat-select [formControl]="facturaForm.controls['tipoDocumento']">
                                                 <mat-option *ngFor="let tipoDocumento of comboTiposDocumento" [value]="tipoDocumento">
                                                     {{tipoDocumento.nemonico}}
                                                 </mat-option>

@@ -132,13 +132,13 @@
 
                 <ngx-datatable-column name="Destino" [flexGrow]="1" [width]="150" prop="destino" sorteable="true">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="11" align="left">{{ row?.destinatario.nombre }} </div>
+                        <div [style.fontSize.px]="11" align="left">{{ row?.destinatario?.nombre }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Insumo" [flexGrow]="1" [width]="200" prop="guiaDetalle">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="11"> {{ row?.guiaDetalle[0].producto.nombre }} </div>
+                        <div [style.fontSize.px]="11"> {{ row?.guiaDetalle[0]?.producto?.nombre }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 
@@ -158,7 +158,7 @@
 
                 <ngx-datatable-column name="UM" [flexGrow]="1" [width]="60" prop="unidadMedida">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="11">{{ row?.guiaDetalle[0].unidadMedida.valor }} </div>
+                        <div [style.fontSize.px]="11">{{ row?.guiaDetalle[0]?.unidadMedida?.valor }} </div>
                     </ng-template>
                 </ngx-datatable-column>
 

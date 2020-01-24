@@ -149,7 +149,7 @@ export class WizardComponent implements OnInit, OnDestroy {
     this.facturaForm = this.formBuilder.group({
       cliente: ['', [Validators.required]],
       direccion: new FormControl({value: '', disabled: true}, ),
-      tipoDocumento: [{value: '', disabled: true}],
+      tipoDocumento: [{value: '', disabled: false}],
       serieDocumento: ['E001', [Validators.required]],
       numeroDocumento: ['', [Validators.required]],
       tipoOperacion: [''],

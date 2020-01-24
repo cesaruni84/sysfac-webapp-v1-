@@ -45,6 +45,12 @@ export class GuiaRemision {
 
 }
 
+export enum EstadoGuia {
+    REGISTRADO = 0,
+    ANULADO = 1,
+};
+
+
 export interface GrillaGuiaRemision {
     id: number;
     nroguia: string;

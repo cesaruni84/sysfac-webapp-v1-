@@ -17,7 +17,7 @@ import { throwError } from 'rxjs/internal/observable/throwError';
 import { DateAdapter, MAT_DATE_FORMATS, MatDatepickerInputEvent, MatButton, MatProgressBar, MAT_DIALOG_DATA } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
-import { GuiaRemision } from '../../../shared/models/guia_remision.model';
+import { GuiaRemision, EstadoGuia } from '../../../shared/models/guia_remision.model';
 import { GuiaDetalle } from '../../../shared/models/guia_remision_detalle.model';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
@@ -29,6 +29,7 @@ import localeFrExtra from '@angular/common/locales/extra/fr';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, ReplaySubject } from 'rxjs';
+import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
@@ -93,6 +94,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   valorFechaRecepcion_: Date;
   valorSerieCli_: string;
   valorSecuenciaCli_: string;
+  guiaRemisionAnulada: any;
 
   // Usuario sesionado
   usuarioSession: Usuario;
@@ -128,6 +130,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
               private balanzaService: BalanzaService,
               private userService: UsuarioService,
               private guiaRemisioService: GuiaRemisionService,
+              private confirmService: AppConfirmService,
               private route: ActivatedRoute,
               private router: Router,
               public snackBar: MatSnackBar,
@@ -181,6 +184,9 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   recuperarDatosGuiaBDPorGuiaCliente(serieCli_: string, secuenciaCli_: string ) {
     this.guiaRemisioService.obtenerGuiaRemisionxNroGuiaCliente( this.usuarioSession.empresa.id, serieCli_, secuenciaCli_)
     .subscribe((data_) => {
+        if (data_.estado === EstadoGuia.ANULADO) {
+
+        }
         this.parsearDatosGuiaRemision(data_);
     }, (error: HttpErrorResponse) => {
       this.handleError(error);
@@ -188,32 +194,55 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   }
 
   parsearDatosGuiaRemision(data_: GuiaRemision) {
-    this.valorIdGuia_ = data_.id;
+    this.valorIdGuia_ = data_.id || 0;
     this.estadoSelected_ = data_.estado.toString();
     this.valorFechaEmision_ = this.calcularFechaHoraLocal(data_.fechaRemision);
     this.valorFechaIniTraslado_ = this.calcularFechaHoraLocal(data_.fechaTraslado);
+    this.valorFechaRecepcion_ = this.calcularFechaHoraLocal(data_.fechaRecepcion);
     this.valorNroSerie_ = data_.serie;
     this.valorNroSecuencia_ = data_.secuencia;
-    this.valorRemitenteSelected_ = data_.remitente;
-    this.valorRucRemitente_ = data_.remitente.cliente.ruc;
-    this.valorDirRemitente_ = data_.remitente.cliente.direccion;
-    this.valorDestinatarioSelected_ = data_.destinatario;
-    this.valorRucDestinatario_ = data_.destinatario.cliente.ruc;
-    this.valorDirDestinatario_ = data_.destinatario.cliente.direccion;
-    this.valorIdGuiaDetalle_ = data_.guiaDetalle[0].id;
-    this.valorProductoSelected_ = data_.guiaDetalle[0].producto;
+
+    if (data_.remitente) {
+      this.valorRemitenteSelected_ = data_.remitente;
+      this.valorRucRemitente_ = data_.remitente.cliente.ruc;
+      this.valorDirRemitente_ = data_.remitente.cliente.direccion;
+    }
+
+    if (data_.destinatario) {
+      this.valorDestinatarioSelected_ = data_.destinatario;
+      this.valorRucDestinatario_ = data_.destinatario.cliente.ruc;
+      this.valorDirDestinatario_ = data_.destinatario.cliente.direccion;
+    }
+
+    if (data_.guiaDetalle[0]) {
+      this.valorIdGuiaDetalle_ = data_.guiaDetalle[0].id;
+      this.valorProductoSelected_ = data_.guiaDetalle[0].producto;
+      this.valorUMSelected_ = data_.guiaDetalle[0].unidadMedida;
+    }
+
     this.valorCantidad_ = data_.totalCantidad;
-    this.valorUMSelected_ = data_.guiaDetalle[0].unidadMedida;
-    this.valorChoferSelected_ = data_.chofer;
     this.valorPlacaTracto_ = data_.placaTracto;
     this.valorPlacaBombona_ = data_.placaBombona;
-    this.valorCertificado_ = data_.chofer.certificado;
-    this.valorLicencia_ = data_.chofer.licencia;
-    this.valorBalanzaSelected_ = data_.balanza;
-    this.valorTicketBalanza_ = data_.ticketBalanza;
-    this.valorFechaRecepcion_ = this.calcularFechaHoraLocal(data_.fechaRecepcion);
-    this.valorSerieCli_ = data_.serieCliente;
-    this.valorSecuenciaCli_ = data_.secuenciaCliente;
+
+    if (data_.chofer) {
+      this.valorChoferSelected_ = data_.chofer;
+      this.valorCertificado_ = data_.chofer.certificado;
+      this.valorLicencia_ = data_.chofer.licencia;
+    }
+
+    if (data_.balanza) {
+      this.valorBalanzaSelected_ = data_.balanza;
+    }
+    this.valorTicketBalanza_ = data_.ticketBalanza || '';
+    this.valorSerieCli_ = data_.serieCliente || '';
+    this.valorSecuenciaCli_ = data_.secuenciaCliente || '';
+
+    if (data_.estado === EstadoGuia.ANULADO) {
+      this.guiaRemisionAnulada = true;
+      this.basicForm.disable();
+    }
+
+
   }
 
   compareObjects(o1: any, o2: any): boolean {
@@ -558,7 +587,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       this.guiaRemision.chofer = this.basicForm.get('choferSelected').value;
 
       // console.log('objeto: ' + this.guiaRemision);
-      console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
+      // console.log('Form data are: ' + JSON.stringify(this.guiaRemision));
 
       if (this.edicion) {
         this.actualizar();
@@ -690,6 +719,74 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       globalCacheBusterNotifier.next();
     }
     this.redirectTo('/forms/paging');
+
+  }
+
+  anularGuiaRemision() {
+
+
+    const serie = this.basicForm.controls['nroSerie'].value;
+    const secuencia = this.basicForm.controls['nroSecuencia'].value;
+
+    if (serie && secuencia ) {
+      const guiaRemisionCancelada = new GuiaRemision();
+
+      guiaRemisionCancelada.serie = serie;
+      guiaRemisionCancelada.secuencia = secuencia;
+      guiaRemisionCancelada.estado = EstadoGuia.ANULADO;  // Anulado
+
+
+      let fe = new Date();
+      if (this.basicForm.get('fechaEmision').value) {
+         fe = new Date(this.basicForm.get('fechaEmision').value);
+         fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      }
+      guiaRemisionCancelada.fechaRemision = fe;
+
+      let ft = new Date();
+      if (this.basicForm.get('fechaIniTraslado').value) {
+        ft = new Date(this.basicForm.get('fechaIniTraslado').value);
+        ft.setTime(ft.getTime() + ft.getTimezoneOffset() * 60 * 1000);
+      }
+      guiaRemisionCancelada.fechaTraslado = ft;
+
+      let fr = new Date();
+      if (this.basicForm.get('fechaRecepcion').value) {
+        fr = new Date(this.basicForm.get('fechaRecepcion').value);
+        fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
+      }
+      guiaRemisionCancelada.fechaRecepcion = fr;
+      guiaRemisionCancelada.placaTracto = '?';
+      guiaRemisionCancelada.placaTracto = '?';
+      guiaRemisionCancelada.ticketBalanza = '?';
+      guiaRemisionCancelada.totalCantidad = 0.00;
+      guiaRemisionCancelada.totalPeso = 0.00;
+      guiaRemisionCancelada.tarifa = 0.00;
+      guiaRemisionCancelada.guiaDetalle = [];
+      guiaRemisionCancelada.empresa = this.usuarioSession.empresa;
+      guiaRemisionCancelada.usuarioRegistro = this.usuarioSession.codigo;
+      guiaRemisionCancelada.usuarioActualiza = this.usuarioSession.codigo;
+      this.confirmService.confirm({message: `Confirma anular la guia de remisión:  ${serie} - ${secuencia} ?`})
+        .subscribe(res => {
+          if (res) {
+            this.guiaRemisioService.anularGuiaRemisionBD(guiaRemisionCancelada).subscribe(data_ => {
+              this.infoResponse_ = data_;
+              this.basicForm.patchValue({
+                estadoSelected: `${EstadoGuia.ANULADO}`
+              });
+              this.guiaRemisionAnulada = true;
+              this.basicForm.disable();
+              this.snackBar.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
+            },
+            (error: HttpErrorResponse) => {
+              this.handleError(error);
+            });
+          }
+        });
+    }
+
+
+
 
   }
 

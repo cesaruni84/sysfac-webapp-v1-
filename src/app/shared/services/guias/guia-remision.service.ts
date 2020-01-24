@@ -107,6 +107,12 @@ export class GuiaRemisionService {
     return this.http.put<any>(this.url2 + '/' + guiaRemision.id, guiaRemision, this.httpOptions);
   }
 
+
+  anularGuiaRemisionBD(guiaRemision: GuiaRemision) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put<any>(this.url2 + '/' + 0 +  '/extorno', guiaRemision, this.httpOptions);
+  }
+
   actualizarGuiaRemisionLiquidacion(guiaRemision: GuiaRemision, idLiquidacion: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.put<any>(this.url3 + '/' + idLiquidacion + '/guias/' + guiaRemision.id , guiaRemision, this.httpOptions);

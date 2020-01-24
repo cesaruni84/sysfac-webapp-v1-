@@ -2,9 +2,9 @@ export class TiposGenericosDB {
 
 public tiposDocumentoDB = [
     { id: 1, codigo: '01' , descripcion: 'Factura' , nemonico: '01 - Factura' },
-    { id: 2, codigo: '03' , descripcion: 'Boleta de Venta' , nemonico: '03 - Boleta de Venta' },
-    { id: 3, codigo: '07' , descripcion: 'Nota de Crédito' , nemonico: '07 - Nota de Crédito' },
-    { id: 4, codigo: '08' , descripcion: 'Nota de Débito' , nemonico: '08 - Nota de Débito' },
+    { id: 2, codigo: '07' , descripcion: 'Nota de Crédito' , nemonico: '07 - Nota de Crédito' },
+    { id: 3, codigo: '08' , descripcion: 'Nota de Débito' , nemonico: '08 - Nota de Débito' },
+    { id: 4, codigo: '03' , descripcion: 'Boleta de Venta' , nemonico: '03 - Boleta de Venta' }
 ];
 
 public tiposOperacionDB = [

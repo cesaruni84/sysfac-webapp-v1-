@@ -18,7 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
-import { GuiaRemision } from '../../../../shared/models/guia_remision.model';
+import { GuiaRemision, EstadoGuia } from '../../../../shared/models/guia_remision.model';
 import { throwError } from 'rxjs';
 
 @Component({
@@ -158,7 +158,7 @@ export class FacturaItemGuiasComponent implements OnInit {
     // Obtiene valores de parametros para la búsqueda
     const nroSerie  =  this.formFilter.controls['serie_'].value;
     const nroSecuencia  =  this.formFilter.controls['secuencia_'].value;
-    const estado =  99; // no aplica
+    const estado =  EstadoGuia.REGISTRADO; // en esta vista solo traer guias registradas mas no anuladas
     const chofer = 0; // no aplica
     const origen = this.formFilter.controls['filtroOrigen'].value;
     const destino = this.formFilter.controls['filtroDestino'].value;
@@ -199,7 +199,7 @@ export class FacturaItemGuiasComponent implements OnInit {
     // Obtiene valores de parametros para la búsqueda
     const nroSerieCli  =  this.formFilter.controls['serieCli_'].value;
     const nroSecuenciaCli  =  this.formFilter.controls['secuenciaCli_'].value;
-    const estado =  99; // no aplica
+    const estado =  EstadoGuia.REGISTRADO; // no aplica
     const chofer = 0; // no aplica
     const origen = this.formFilter.controls['filtroOrigen'].value;
     const destino = this.formFilter.controls['filtroDestino'].value;
