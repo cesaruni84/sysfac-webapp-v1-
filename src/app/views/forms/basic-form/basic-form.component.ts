@@ -30,6 +30,8 @@ import { globalCacheBusterNotifier } from 'ngx-cacheable';
 import { takeUntil } from 'rxjs/operators';
 import { Subject, ReplaySubject } from 'rxjs';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
+import { Liquidacion } from '../../../shared/models/liquidacion.model';
+import { Documento } from '../../../shared/models/facturacion.model';
 
 
 registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
@@ -94,6 +96,8 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   valorFechaRecepcion_: Date;
   valorSerieCli_: string;
   valorSecuenciaCli_: string;
+  liquidacion: Liquidacion;
+  documento: Documento;
   guiaRemisionAnulada: any;
 
   // Usuario sesionado
@@ -104,8 +108,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   // Variables para el listado de los Combos
   comboFactorias: Factoria[];
   comboFactoriasDestino: Factoria[];
-
-
   comboProductos: Producto[];
   comboUnidadMedida: UnidadMedida[];
   comboChoferes: Chofer[];
@@ -242,6 +244,8 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       this.basicForm.disable();
     }
 
+    this.liquidacion = data_.liquidacion;
+    this.documento = data_.documento;
 
   }
 
@@ -540,6 +544,8 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       // Prepara objeto a grabar en BD
       this.guiaRemision = new GuiaRemision();
       this.guiaDetalle_ = new GuiaDetalle();
+      const liquidacion_ = new Liquidacion();
+      const documento_ = new Documento();
       const listaGuias = [];
 
       this.guiaRemision.serie =  this.valorNroSerie_;
@@ -585,6 +591,16 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       this.guiaRemision.destinatario = this.basicForm.get('destinatarioSelected').value;
       this.guiaRemision.empresa = this.usuarioSession.empresa;
       this.guiaRemision.chofer = this.basicForm.get('choferSelected').value;
+
+      if (this.liquidacion) {
+        liquidacion_.id = this.liquidacion.id;
+        this.guiaRemision.liquidacion = liquidacion_;
+      }
+
+      if (this.documento) {
+        documento_.id = this.documento.id;
+        this.guiaRemision.documento = documento_;
+      }
 
       // console.log('objeto: ' + this.guiaRemision);
       // console.log('Form data are: ' + JSON.stringify(this.guiaRemision));

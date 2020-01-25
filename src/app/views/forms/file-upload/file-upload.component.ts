@@ -30,6 +30,7 @@ import { InlineEditComponent } from './inline-edit/inline-edit.component';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { throwError } from 'rxjs';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
+import { Documento } from '../../../shared/models/facturacion.model';
 
 
 @Component({
@@ -119,6 +120,7 @@ export class FileUploadComponent implements OnInit {
   valorOrigenSelected_: Factoria[]= [];
   valorDestinoSelected_: Factoria[]= [];
   motivoTrasladoSelected_: any;
+  documento: Documento;
 
   // Manejo de usuario
   errorResponse_: ErrorResponse;
@@ -370,6 +372,7 @@ export class FileUploadComponent implements OnInit {
 
       // Guias asociadas
       this.rows = data_.guias;
+      this.documento = data_.documento;
 
       // Obtiene % impuesto I.G.V - 1
       this.impuestoService.obtenerValorImpuesto(1).subscribe(data2 => {
@@ -564,6 +567,7 @@ export class FileUploadComponent implements OnInit {
 
     this.loader.open();
     this.guias_remision = [];
+    const documento_ = new Documento();
 
     if (this.formLiquidacion.invalid) {
       console.log('hay errores aun');
@@ -638,6 +642,11 @@ export class FileUploadComponent implements OnInit {
             });
 
             this.liquidacionModel.guias = this.guias_remision;
+
+            if (this.documento) {
+              documento_.id = this.documento.id;
+              this.liquidacionModel.documento = documento_;
+            }
             // console.log('Form data are: ' + JSON.stringify(this.liquidacionModel));
 
             if (this.edicion) {

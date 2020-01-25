@@ -3,6 +3,7 @@ import { Empresa } from './empresa.model';
 import { Chofer } from './chofer.model';
 import { Factoria } from './factoria.model';
 import { GuiaDetalle } from './guia_remision_detalle.model';
+import { Documento } from './facturacion.model';
 
 export class GuiaRemision {
     id: number;
@@ -31,6 +32,7 @@ export class GuiaRemision {
     remitente: Factoria;
     destinatario: Factoria;
     liquidacion: any;
+    documento: Documento;
     empresa: Empresa;
     chofer: Chofer;
     idOrigen: string;
