@@ -246,6 +246,8 @@ export class FacturaConsultaComponent implements OnInit {
     const serie = row.serie;
     const secuencia = row.secuencia;
     documentoCancelado.id = row.id;
+    documentoCancelado.serie = serie;
+    documentoCancelado.secuencia = secuencia;
     documentoCancelado.observacionSunat = 'Cancelado con Fecha ' + new Date().toLocaleDateString();
     documentoCancelado.estado = EstadoDocumento.CANCELADO;
 

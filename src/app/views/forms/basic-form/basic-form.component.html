@@ -418,7 +418,7 @@
             <div align="center">
                 <button mat-raised-button color="primary" class="mr-1" type="button" (click)="regresar()"><mat-icon>keyboard_backspace</mat-icon>Regresar</button>
                 <button mat-raised-button color="primary" matTooltip="Grabar Guia de Remisión" class="mr-1" [disabled]="guiaRemisionAnulada"><mat-icon>save</mat-icon> Grabar</button>
-                <button mat-raised-button color="primary" matTooltip="Nueva Guia de Remisión" class="mr-1" type="button" (click)="nuevaGuia()" [disabled]="guiaRemisionAnulada"><mat-icon>note_add</mat-icon> Nuevo</button>
+                <button mat-raised-button color="primary" matTooltip="Nueva Guia de Remisión" class="mr-1" type="button" (click)="nuevaGuia()"><mat-icon>note_add</mat-icon> Nuevo</button>
                 <button mat-raised-button color="warn" matTooltip="Anular Guia de Remisión" class="mr-1" type="button" (click)="anularGuiaRemision()" [disabled]="guiaRemisionAnulada"><mat-icon>cancel</mat-icon> Anular</button>
                 <!-- <button mat-raised-button class="mat-primary" color="warn" type="button" class="mr-1" (click)="cancelarGuiaRem()" [disabled]="false"><mat-icon>cancel</mat-icon> Cancelar</button> -->
             </div>

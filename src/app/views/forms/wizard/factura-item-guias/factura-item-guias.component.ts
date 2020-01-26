@@ -19,7 +19,8 @@ import { Producto } from '../../../../shared/models/producto.model';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { GuiaRemision, EstadoGuia } from '../../../../shared/models/guia_remision.model';
-import { throwError } from 'rxjs';
+import { throwError, Subject, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-factura-item-guias',
@@ -56,6 +57,10 @@ export class FacturaItemGuiasComponent implements OnInit {
   public listaItemsFactura: DocumentoItem[] = [];
   public valorOrigenSelected_: any;
   public valorDestinoSelected_: any;
+
+  protected _onDestroy = new Subject<void>();
+  public factoriasOrigenFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
 
 
   // Manejo default de mensajes en grilla
@@ -101,10 +106,24 @@ export class FacturaItemGuiasComponent implements OnInit {
 
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
+      this.factoriasOrigenFiltrados.next(data1.slice());
+      // listen for search field value changes
+      this.formFilter.controls['filtroOrigen_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaOrigen();
+      });
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
+      this.factoriasDestinoFiltrados.next(data3.slice());
+      // listen for search field value changes
+      this.formFilter.controls['filtroDestino_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaDestino();
+      });
     });
 
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
@@ -126,11 +145,51 @@ export class FacturaItemGuiasComponent implements OnInit {
       serieCli_: ['', ],
       secuenciaCli_: ['', ],
       filtroOrigen: ['0', ],
+      filtroOrigen_: ['', ],
       filtroDestino: ['0', ],
+      filtroDestino_: ['', ],
       filtroFechaIni: new FormControl(fechaIniTraslado_, ),
       filtroFechaFin: new FormControl(fechaActual_, ),
     });
   }
+
+  protected filtrarFactoriaOrigen() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['filtroOrigen_'].value;
+    if (!search) {
+      this.factoriasOrigenFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasOrigenFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaDestino() {
+    if (!this.comboFactoriasDestino) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['filtroDestino_'].value;
+    if (!search) {
+      this.factoriasDestinoFiltrados.next(this.comboFactoriasDestino.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasDestinoFiltrados.next(
+      this.comboFactoriasDestino.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+
 
   buscar() {
     if (this.formFilter.controls['serie_'].value || this.formFilter.controls['secuencia_'].value) {

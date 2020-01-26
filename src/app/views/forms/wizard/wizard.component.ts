@@ -612,6 +612,12 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.totalDocumento = this.importeTotal;
         this.facturaDocumento.ventaTotal = this.importeTotal;
 
+        if (this.rows.length === 1 && this.subTipoFactura === '1') {
+          if (this.facturaDocumento.observacion === '') {
+            this.facturaDocumento.observacion = this.rows[0].descripcion;
+          }
+        }
+
         this.rows.forEach(element => {
            const liquidacion: Liquidacion = new Liquidacion();
            const guia: GuiaRemision = new GuiaRemision();
@@ -640,7 +646,6 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.usuarioRegistro = this.usuarioSession.codigo;
         this.facturaDocumento.usuarioActualiza = this.usuarioSession.codigo;
         // console.log('Form data are: ' + JSON.stringify(this.facturaDocumento));
-
 
        if (!this.edicion) {
          this.registrar();
@@ -719,6 +724,8 @@ export class WizardComponent implements OnInit, OnDestroy {
     const secuencia = this.facturaForm.controls['numeroDocumento'].value;
     const documentoAnulado = new Documento();
     documentoAnulado.id = this.idDocumento;
+    documentoAnulado.serie = serie;
+    documentoAnulado.secuencia = secuencia;
     documentoAnulado.observacion = this.facturaForm.controls['observacion'].value;
     documentoAnulado.estado = EstadoDocumento.ANULADO;
 
