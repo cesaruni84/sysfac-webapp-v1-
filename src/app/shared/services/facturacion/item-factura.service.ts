@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HOST } from '../../helpers/var.constant';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Documento } from '../../models/facturacion.model';
+import { Cacheable } from 'ngx-cacheable';
 
 
 @Injectable({
@@ -41,6 +42,7 @@ export class ItemFacturaService {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.put<any>(this.url + idEmpresa + '/documentos/' + documento.id + '/cancelacion', documento, this.httpOptions);
   }
+
 
   listarDocumentosPorFiltro(idEmpresa: number,
                             serie: string,

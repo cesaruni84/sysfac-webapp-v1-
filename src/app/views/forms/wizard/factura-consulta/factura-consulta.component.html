@@ -19,18 +19,29 @@
                 <form [formGroup]="formFilter" novalidate>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" class="m-0 p-0" fxLayoutAlign="start left">
 
-                        <mat-form-field fxFlex="12%">
+                        <mat-form-field fxFlex="18%" appearance="">
+                            <mat-label><b>TIPO DOCUMENTO </b></mat-label>
+                            <mat-select [formControl]="formFilter.controls['tipoDocumento']">
+                                <mat-option value="0">Todos</mat-option>
+                                <mat-option *ngFor="let tipoDocumento of comboTiposDocumento" [value]="tipoDocumento.id">
+                                    {{tipoDocumento.nemonico}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
+                        <mat-form-field fxFlex="10%">
                             <mat-label style="font-size: 13px"><b>SERIE</b></mat-label>
                             <input matInput name="serie" [formControl]="formFilter.controls['serie']" maxlength="5" style="color:green;">
                             <mat-icon matSuffix inline="true">edit</mat-icon>
                         </mat-form-field>
 
-                        <mat-form-field class="pl-01" fxFlex="15%">
+                        <mat-form-field class="pl-01" fxFlex="13%">
                             <mat-label style="font-size: 13px"><b>CORRELATIVO</b></mat-label>
                             <input matInput name="secuencial" [formControl]="formFilter.controls['secuencial']" maxlength="8" style="color:green">
                             <mat-icon matSuffix inline="true">edit</mat-icon>
                         </mat-form-field>
 
+                        <mat-label fxFlex="5%"></mat-label>
 
                         <mat-form-field class="pl-01" fxFlex="20%">
                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO EMISION</b></mat-label>
@@ -46,15 +57,7 @@
                             <mat-datepicker #picker2></mat-datepicker>
                         </mat-form-field>
 
-                        <mat-form-field fxFlex="21%" class="pl-1">
-                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
-                            <mat-select name="estado" [formControl]="formFilter.controls['estado']">
-                                <mat-option value="0">Todos</mat-option>
-                                <mat-option value="1">Registrado</mat-option>
-                                <mat-option value="2">Cancelado</mat-option>
-                                <mat-option value="3">Anulado</mat-option>
-                            </mat-select>
-                        </mat-form-field>
+
 
                         <!-- <mat-form-field class="pl-1">
                             <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
@@ -68,16 +71,27 @@
 
                     </div>
 
-                    <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="start left">
-                    </div>
-
                     <br>
                     <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%">
+
+                        <mat-form-field fxFlex="18%">
+                            <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
+                            <mat-select name="estado" [formControl]="formFilter.controls['estado']">
+                                <mat-option value="0">Todos</mat-option>
+                                <mat-option value="1">Registrado</mat-option>
+                                <mat-option value="2">Cancelado</mat-option>
+                                <mat-option value="3">Anulado</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+
                         <mat-form-field fxFlex="38%" floatPlaceholder="never">
                             <mat-label><b>CLIENTE</b></mat-label>
-                            <mat-select [compareWith]="compareObjects" name="cliente" [formControl]="formFilter.controls['cliente']">
+                            <mat-select name="cliente" [formControl]="formFilter.controls['cliente']">
+                                <mat-option>
+                                    <ngx-mat-select-search [formControl]="formFilter.controls['cliente_']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                </mat-option>
                                 <mat-option value="0">Todos</mat-option>
-                                <mat-option *ngFor="let cliente of comboClientes" [value]="cliente.id">
+                                <mat-option *ngFor="let cliente of clientesFiltrados | async" [value]="cliente.id">
                                     {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
                                 </mat-option>
                             </mat-select>
@@ -110,11 +124,11 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- <ngx-datatable-column name="Item" [flexGrow]="1" [width]="50" prop="id">
+                <ngx-datatable-column name="Tipo Doc." [flexGrow]="1" [width]="100" prop="id">
                     <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                        <div [style.fontSize.px]="12"> {{ rowIndex + 1 }} </div>
+                        <div [style.fontSize.px]="12"> {{ this.retornarLiteralTipoDocumento(row?.tipoDocumento) }} </div>
                     </ng-template>
-                </ngx-datatable-column> -->
+                </ngx-datatable-column>
 
                 <ngx-datatable-column name="Serie" [flexGrow]="1" [width]="80" prop="serie">
                     <ng-template let-row="row" ngx-datatable-cell-template>
@@ -141,11 +155,11 @@
                 </ngx-datatable-column>
 
 
-                <ngx-datatable-column name="F. Vencimiento" [flexGrow]="1" [width]="120" prop="fechaEmision2" [cellClass]="'my-custom-cell'">
+                <!-- <ngx-datatable-column name="F. Vencimiento" [flexGrow]="1" [width]="120" prop="fechaEmision2" [cellClass]="'my-custom-cell'">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <div [style.fontSize.px]="12"> {{ row?.fechaVencimiento | date: 'dd/MM/yyyy'}} </div>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column> -->
 
 
                 <ngx-datatable-column name="Estado Doc." [flexGrow]="1" [width]="110" prop="estado">

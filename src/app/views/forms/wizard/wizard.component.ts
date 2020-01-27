@@ -24,8 +24,9 @@ import { GuiaRemision } from 'app/shared/models/guia_remision.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, ReplaySubject } from 'rxjs';
 import { getDay } from 'date-fns';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wizard',
@@ -109,10 +110,11 @@ export class WizardComponent implements OnInit, OnDestroy {
   public comboClientes: Cliente[];
   public facturaDocumento: Documento;
   public listaItemsFactura: DocumentoItem[] = [];
-
   private itemSub: Subscription;
   private clienteSub: Subscription;
   private doumentoSub: Subscription;
+  protected _onDestroy = new Subject<void>();
+  public clientesFiltrados: ReplaySubject<Cliente[]> = new ReplaySubject<Cliente[]>(1);
 
   public comboEstadosFactura = [
     { id: 1, codigo: '001' , descripcion: 'Registrado' },
@@ -148,6 +150,7 @@ export class WizardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.facturaForm = this.formBuilder.group({
       cliente: ['', [Validators.required]],
+      cliente_: [''],
       direccion: new FormControl({value: '', disabled: true}, ),
       tipoDocumento: [{value: '', disabled: false}],
       serieDocumento: ['E001', [Validators.required]],
@@ -202,6 +205,9 @@ export class WizardComponent implements OnInit, OnDestroy {
     if (this.doumentoSub) {
       this.doumentoSub.unsubscribe();
     }
+
+    this._onDestroy.next();
+    this._onDestroy.complete();
   }
 
   cargarValoresFormulario() {
@@ -264,6 +270,13 @@ export class WizardComponent implements OnInit, OnDestroy {
     // Combo Clientes
     this.clienteSub = this.clienteService.listarClientesPorEmpresa(1).subscribe(dataClientes => {
       this.comboClientes = dataClientes;
+      this.clientesFiltrados.next(dataClientes.slice());
+      // listen for search field value changes
+      this.facturaForm.controls['cliente_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarClientes();
+      });
     });
 
 
@@ -283,6 +296,24 @@ export class WizardComponent implements OnInit, OnDestroy {
     this.comboTiposIGV = this.tiposGenService.retornarTiposIGV();
 
   }
+  filtrarClientes() {
+    if (!this.comboClientes) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.facturaForm.controls['cliente_'].value;
+    if (!search) {
+      this.clientesFiltrados.next(this.comboClientes.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.clientesFiltrados.next(
+      this.comboClientes.filter(cliente => cliente.razonSocial.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
 
     // Obtiene datos de base de datos
     recuperarDocumentoBD()  {
@@ -295,7 +326,7 @@ export class WizardComponent implements OnInit, OnDestroy {
 
         // Completa valores de formulario cabecerea
         this.facturaForm.patchValue({
-          tipoDocumento: this.comboTiposDocumento[0],
+          tipoDocumento: this.comboTiposDocumento.find(o => o.id === documento.tipoDocumento),
           serieDocumento: documento.serie,
           numeroDocumento: documento.secuencia,
           fechaEmision: this.calcularFechaHoraLocal(documento.fechaEmision) || '',

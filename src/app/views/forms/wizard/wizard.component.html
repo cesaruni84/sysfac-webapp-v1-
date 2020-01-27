@@ -143,7 +143,10 @@
                                         <mat-form-field fxFlex="40%" appearance="">
                                             <mat-label><b>CLIENTE</b></mat-label>
                                             <mat-select [compareWith]="compareObjects" name="cliente" [formControl]="facturaForm.controls['cliente']" (selectionChange)="seleccionarCliente($event)">
-                                                <mat-option *ngFor="let cliente of comboClientes" [value]="cliente">
+                                                <mat-option>
+                                                    <ngx-mat-select-search [formControl]="facturaForm.controls['cliente_']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                                                </mat-option>
+                                                <mat-option *ngFor="let cliente of clientesFiltrados | async" [value]="cliente">
                                                     {{'RUC ' + cliente.ruc + ' - '+cliente.razonSocial}}
                                                 </mat-option>
                                             </mat-select>

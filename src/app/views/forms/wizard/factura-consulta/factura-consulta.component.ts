@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
 import { MatSnackBar, MatDialog, MatDialogRef, DateAdapter, MAT_DATE_FORMATS, ThemePalette } from '@angular/material';
@@ -21,7 +21,10 @@ import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/dat
 import { ItemFacturaService } from '../../../../shared/services/facturacion/item-factura.service';
 import { Documento, EstadoDocumento } from '../../../../shared/models/facturacion.model';
 import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
-import { throwError } from 'rxjs';
+import { throwError, Subject, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { TipoDocumento } from '../../../../shared/models/tipos_facturacion';
+import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
 
 export interface ChipColor {
   name: string;
@@ -41,7 +44,7 @@ export interface ChipColor {
     }
     ],
 })
-export class FacturaConsultaComponent implements OnInit {
+export class FacturaConsultaComponent implements OnInit, OnDestroy {
 
   rows = [];
   temp = [];
@@ -67,11 +70,12 @@ export class FacturaConsultaComponent implements OnInit {
   infoResponse_: InfoResponse;
 
   // Combos para filtros de búsqueda
-  comboFactorias: Factoria[];
-  comboFactoriasDestino: Factoria[];
   comboClientes: Cliente[];
+  comboTiposDocumento: TipoDocumento[];
   facturacionCheck = false;
 
+  protected _onDestroy = new Subject<void>();
+  public clientesFiltrados: ReplaySubject<Cliente[]> = new ReplaySubject<Cliente[]>(1);
 
   constructor(
     private router: Router,
@@ -80,6 +84,7 @@ export class FacturaConsultaComponent implements OnInit {
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
     private confirmService: AppConfirmService,
+    private tiposGenService: TiposGenericosService,
     private clienteService: ClienteService,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
@@ -94,12 +99,15 @@ export class FacturaConsultaComponent implements OnInit {
 
 
     this.formFilter = new FormGroup({
-      serie: new FormControl('',),
+      tipoDocumento: new FormControl('', ),
+      serie: new FormControl('', ),
       secuencial: new FormControl('', CustomValidators.digits),
       fechaIni: new FormControl(fechaIniTraslado_, ),
       fechaFin: new FormControl(fechaActual_, ),
       estado: new FormControl('0', ),
-      cliente:  new FormControl('0', )
+      cliente:  new FormControl('0', ),
+      cliente_:  new FormControl('', ),
+
    });
 
     // Recupera datos de usuario de session
@@ -108,10 +116,47 @@ export class FacturaConsultaComponent implements OnInit {
     // Combo Clientes
     this.clienteService.listarClientesPorEmpresa(this.usuarioSession.empresa.id).subscribe(dataClientes => {
       this.comboClientes = dataClientes;
+      this.clientesFiltrados.next(dataClientes.slice());
+      // listen for search field value changes
+      this.formFilter.controls['cliente_'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarClientes();
+      });
+    });
+
+
+    // Combo Tipos Documento
+    this.comboTiposDocumento = this.tiposGenService.retornarTiposDocumento();
+
+    this.formFilter.patchValue({
+      tipoDocumento: '0',
     });
 
   }
+  filtrarClientes() {
+    if (!this.comboClientes) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['cliente_'].value;
+    if (!search) {
+      this.clientesFiltrados.next(this.comboClientes.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.clientesFiltrados.next(
+      this.comboClientes.filter(cliente => cliente.razonSocial.toLowerCase().indexOf(search) > -1)
+    );
+  }
 
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
 
   // Completar Zeros
   completarZerosNroSerieLiq(event) {
@@ -151,12 +196,13 @@ export class FacturaConsultaComponent implements OnInit {
     const fechaFin = formatDate(this.formFilter.controls['fechaFin'].value, 'yyyy-MM-dd', this.locale);
     const idCLiente = this.formFilter.controls['cliente'].value;
     const estado  =  this.formFilter.controls['estado'].value;
-    const FACTURA = 1; // FACTURA=1
+    const TIPO_DOCUMENTO = this.formFilter.controls['tipoDocumento'].value;
+    // const FACTURA = 1; // FACTURA=1
 
     this.itemFacturaService.listarDocumentosPorFiltro(this.usuarioSession.empresa.id,
                                                         nroSerie || '',
                                                         nroDocumento || '',
-                                                        FACTURA,
+                                                        TIPO_DOCUMENTO,
                                                         idCLiente ,
                                                         estado,
                                                         fechaIni, fechaFin).subscribe(data_ => {
@@ -201,6 +247,13 @@ export class FacturaConsultaComponent implements OnInit {
     }
   }
 
+  retornarLiteralTipoDocumento(idTipoDoc: any) {
+    if (this.comboTiposDocumento.find(o => o.id === idTipoDoc)) {
+      return this.comboTiposDocumento.find(o => o.id === idTipoDoc).descripcion;
+    } else {
+      return '?';
+    }
+  }
 
   retornarSecuencia(value: any) {
 
@@ -282,8 +335,10 @@ export class FacturaConsultaComponent implements OnInit {
   }
 
   compareObjects(o1: any, o2: any): boolean {
-    return o1.ruc === o2.ruc && o1.id === o2.id;
+    return o1.name === o2.name && o1.id === o2.id;
   }
+
+
 
   private handleError(error: HttpErrorResponse) {
 

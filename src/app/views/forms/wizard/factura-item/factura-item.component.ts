@@ -1,19 +1,22 @@
 import { TiposGenericosService } from './../../../../shared/services/util/tiposGenericos.service';
 import { ProductoService } from './../../../../shared/services/productos/producto.service';
 import { DocumentoItem } from './../../../../shared/models/facturacion.model';
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
 import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/unidad-medida.service';
 import { TipoIGV } from '../../../../shared/models/tipos_facturacion';
+import { Subject, ReplaySubject } from 'rxjs';
+import { Producto } from '../../../../shared/models/producto.model';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-factura-item',
   templateUrl: './factura-item.component.html',
   styleUrls: ['./factura-item.component.scss']
 })
-export class FacturaItemComponent implements OnInit {
+export class FacturaItemComponent implements OnInit, OnDestroy {
 
   public itemForm_: FormGroup;
   public comboTiposIGV: TipoIGV[];
@@ -39,6 +42,8 @@ export class FacturaItemComponent implements OnInit {
 
   comboUnidades: UnidadMedida[];
   comboProductos: any [];
+  protected _onDestroy = new Subject<void>();
+  public productosFiltrados: ReplaySubject<Producto[]> = new ReplaySubject<Producto[]>(1);
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -58,6 +63,7 @@ export class FacturaItemComponent implements OnInit {
 
     this.itemForm_ = this.fb.group({
       productos: [{value: itemFactura.productos || '', disabled: false}],
+      productos_: [''],
       tipo: [{value: itemFactura.tipo, disabled: false}],
       codigo: [{value: itemFactura.codigo || '', disabled: false}],
       descripcion: [{value: itemFactura.descripcion || '', disabled: false}],
@@ -81,13 +87,41 @@ export class FacturaItemComponent implements OnInit {
 
       this.productoService.listarComboProductosServicios(1).subscribe(data_ => {
         this.comboProductos = data_;
+        this.productosFiltrados.next(data_.slice());
+        // listen for search field value changes
+        this.itemForm_.controls['productos_'].valueChanges
+          .pipe(takeUntil(this._onDestroy))
+          .subscribe(() => {
+            this.filtrarProductos();
+        });
       });
 
        // Combo Tipos de Afectación IGV
       this.comboTiposIGV = this.tiposGenService.retornarTiposIGV();
 
   }
+  filtrarProductos() {
+    if (!this.comboProductos) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.itemForm_.controls['productos_'].value;
+    if (!search) {
+      this.productosFiltrados.next(this.comboProductos.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.productosFiltrados.next(
+      this.comboProductos.filter(producto => producto.descripcion.toLowerCase().indexOf(search) > -1)
+    );
+  }
 
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
 
   seleccionarProducto(e: any) {
     this.itemForm_.patchValue({
