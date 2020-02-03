@@ -15,11 +15,13 @@ import { PagingTableComponent } from './paging-table/paging-table.component';
 
 import { TablesRoutes } from './tables.routing';
 import { MatTabsModule } from '@angular/material/tabs';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 @NgModule({
   imports: [
     CommonModule,
     MatDatepickerModule,
+    NgxMatSelectSearchModule,
     MatTabsModule,
     MatInputModule,
     NgxDatatableModule,

@@ -34,8 +34,7 @@ export class GuiaRemisionService {
   listarGuiasConFiltros(idEmpresa: number,
                         nroSerie: string , nroSecuencia: string,
                         idEstado: number, idChofer: number, origen: number, idDestino: number,
-                        formateo: boolean, guiasSinLiqFact: boolean, soloFacturadas: boolean,
-                        fechaIni: string, fechaFin: string) {
+                        formateo: boolean, tipoBusqueda: number, fechaIni: string, fechaFin: string) {
     const params = new HttpParams().set('nroSerie', nroSerie)
                                     .set('nroSecuencia', nroSecuencia)
                                     .set('chofer', idChofer.toString())
@@ -43,8 +42,9 @@ export class GuiaRemisionService {
                                     .set('destino', idDestino.toString())
                                     .set('estado', idEstado.toString())
                                     .set('conFormateo', formateo.toString())
-                                    .set('guiasSinLiqFact', guiasSinLiqFact.toString())
-                                    .set('soloFacturadas', soloFacturadas.toString())
+                                   // .set('guiasSinLiqFact', guiasSinLiqFact.toString())
+                                   // .set('soloFacturadas', soloFacturadas.toString())
+                                    .set('tipoBusqueda', tipoBusqueda.toString())
                                     .set('fechaIni', fechaIni.toString())
                                     .set('fechaFin', fechaFin.toString());
 
@@ -55,8 +55,7 @@ export class GuiaRemisionService {
   listarGuiasPorGuiaCliente(idEmpresa: number,
                         nroSerieCli: string , nroSecuenciaCli: string,
                         idEstado: number, idChofer: number, origen: number, idDestino: number,
-                        formateo: boolean, guiasSinLiqFact: boolean, soloFacturadas: boolean,
-                        fechaIni: string, fechaFin: string)
+                        formateo: boolean, tipoBusqueda: number,fechaIni: string, fechaFin: string)
   {
     const params = new HttpParams().set('nroSerieCli', nroSerieCli)
                 .set('nroSecuenciaCli', nroSecuenciaCli)
@@ -65,8 +64,9 @@ export class GuiaRemisionService {
                 .set('destino', idDestino.toString())
                 .set('estado', idEstado.toString())
                 .set('conFormateo', formateo.toString())
-                .set('guiasSinLiqFact', guiasSinLiqFact.toString())
-                .set('soloFacturadas', soloFacturadas.toString())
+                .set('tipoBusqueda', tipoBusqueda.toString())
+                // .set('guiasSinLiqFact', guiasSinLiqFact.toString())
+                // .set('soloFacturadas', soloFacturadas.toString())
                 .set('fechaIni', fechaIni.toString())
                 .set('fechaFin', fechaFin.toString());
 

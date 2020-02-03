@@ -52,6 +52,11 @@ export enum EstadoGuia {
     ANULADO = 1,
 };
 
+export enum TipoBusquedaGuias {
+    TODOS = 0,
+    GUIAS_FACTURADAS = 1,
+    GUIAS_NO_FACTURADAS = 2,
+};
 
 export interface GrillaGuiaRemision {
     id: number;

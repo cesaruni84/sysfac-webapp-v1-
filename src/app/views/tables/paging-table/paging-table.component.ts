@@ -1,6 +1,6 @@
 import { FactoriaService } from '../../../shared/services/factorias/factoria.service';
 import { UsuarioService } from '../../../shared/services/auth/usuario.service';
-import { Component, OnInit, ViewChild, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, LOCALE_ID, Inject, OnDestroy } from '@angular/core';
 import { TablesService } from '../tables.service';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { Usuario } from '../../../shared/models/usuario.model';
@@ -13,15 +13,16 @@ import { FormGroup, FormControl} from '@angular/forms';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { CustomValidators } from 'ng2-validation';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { GrillaGuiaRemision } from '../../../shared/models/guia_remision.model';
+import { GrillaGuiaRemision, TipoBusquedaGuias } from '../../../shared/models/guia_remision.model';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { ExcelService } from '../../../shared/services/util/excel.service';
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse } from '../../../shared/models/error_response.model';
-import { throwError } from 'rxjs';
+import { throwError, Subject, ReplaySubject } from 'rxjs';
 import { ChipColor } from '../../forms/wizard/factura-consulta/factura-consulta.component';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-paging-table',
@@ -38,7 +39,7 @@ import { ChipColor } from '../../forms/wizard/factura-consulta/factura-consulta.
 })
 
 
-export class PagingTableComponent implements OnInit {
+export class PagingTableComponent implements OnInit, OnDestroy {
 
   rows = [];
   temp = [];
@@ -62,6 +63,10 @@ export class PagingTableComponent implements OnInit {
   public choferSelected_: any;
   public destinatarioSelected_: any;
   public facturado: boolean = false;
+  protected _onDestroy = new Subject<void>();
+  public factoriasOrigenFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public choferesFiltrados: ReplaySubject<Chofer[]> = new ReplaySubject<Chofer[]>(1);
 
   messages: any = {
     // Message to show when array is presented
@@ -106,11 +111,32 @@ export class PagingTableComponent implements OnInit {
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('D').subscribe(data1 => {
       this.comboFactorias = data1;
+      this.factoriasOrigenFiltrados.next(data1.slice());
+      // listen for search field value changes
+      this.formFilter.controls['origenFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaOrigen();
+      });
+      this.factoriasDestinoFiltrados.next(data1.slice());
+      // listen for search field value changes
+      this.formFilter.controls['destinoFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaDestino();
+      });
     });
+
 
     // Carga de Combos Choferes
     this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
       this.comboChoferes = data4;
+      this.choferesFiltrados.next(data4.slice());
+      this.formFilter.controls['choferFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarChoferes();
+      });
     });
 
     // Carga de Grilla Principal
@@ -123,6 +149,66 @@ export class PagingTableComponent implements OnInit {
     // });
   }
 
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
+
+  protected filtrarFactoriaOrigen() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['origenFiltro'].value;
+    if (!search) {
+      this.factoriasOrigenFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasOrigenFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaDestino() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['destinoFiltro'].value;
+    if (!search) {
+      this.factoriasDestinoFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasDestinoFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarChoferes() {
+    if (!this.comboChoferes) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['choferFiltro'].value;
+    if (!search) {
+      this.choferesFiltrados.next(this.comboChoferes.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.choferesFiltrados.next(
+      this.comboChoferes.filter(chofer => chofer.nombres.toLowerCase().indexOf(search) > -1 ||
+                                          chofer.apellidos.toLowerCase().indexOf(search) > -1 )
+    );
+  }
 
   initForm() {
     const fechaActual_ = new Date();
@@ -143,7 +229,11 @@ export class PagingTableComponent implements OnInit {
       choferSelected: new FormControl('0', ),
       origenSelected: new FormControl('0', ),
       destinatarioSelected: new FormControl('0', ),
-      esFacturado: new FormControl(this.facturado, ),
+      origenFiltro: new FormControl('', ),
+      destinoFiltro: new FormControl('', ),
+      choferFiltro: new FormControl('', ),
+      filtroFacturas: new FormControl('0', ),
+      // esFacturado: new FormControl(this.facturado, ),
    });
   }
 
@@ -297,18 +387,24 @@ export class PagingTableComponent implements OnInit {
     const origen = this.formFilter.controls['origenSelected'].value;
     const destino = this.formFilter.controls['destinatarioSelected'].value;
     const formateo = true ; // para grilla
-    const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
-    const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
+    // const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
+    // const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
+    let tipoBusqueda  =  this.formFilter.controls['filtroFacturas'].value;
     const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
 
+    if (nroSerie && nroSecuencia) {
+      if (nroSerie !== '' && nroSecuencia !== '') {
+        tipoBusqueda = TipoBusquedaGuias.TODOS;  // aplica para esta pantalla.
+      }
+    }
 
     this.guiaRemisionService.listarGuiasConFiltros(this.usuarioSession.empresa.id,
                                                         nroSerie || '',
                                                         nroSecuencia || '',
                                                         estado, chofer,
                                                         origen, destino ,
-                                                        formateo, guiasSinLiqFact, soloFacturadas,
+                                                        formateo, tipoBusqueda,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
@@ -338,8 +434,16 @@ export class PagingTableComponent implements OnInit {
     const origen = this.formFilter.controls['origenSelected'].value;
     const destino = this.formFilter.controls['destinatarioSelected'].value;
     const formateo = true ; // para grilla
-    const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
-    const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
+    let tipoBusqueda  =  this.formFilter.controls['filtroFacturas'].value;
+    // const guiasSinLiqFact = false;  // todo guias facturadas y no facturadas
+    // const soloFacturadas = this.formFilter.controls['esFacturado'].value;   // depende del check de la pantalla de filtros
+
+    if (nroSerieCli && nroSecuenciaCli ) {
+      if (nroSerieCli !== '' && nroSecuenciaCli !== '') {
+        tipoBusqueda = TipoBusquedaGuias.TODOS;  // aplica para esta pantalla.
+      }
+    }
+
     const fechaIni = formatDate(this.formFilter.controls['fechaIniTraslado'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['fechaFinTraslado'].value, 'yyyy-MM-dd', this.locale);
 
@@ -351,8 +455,7 @@ export class PagingTableComponent implements OnInit {
                                                         origen,
                                                         destino,
                                                         formateo,
-                                                        guiasSinLiqFact,
-                                                        soloFacturadas,
+                                                        tipoBusqueda,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();

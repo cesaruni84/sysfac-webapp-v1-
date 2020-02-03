@@ -42,14 +42,14 @@
                     <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
                     <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
-                <mat-label class="pl-1 ml-2" fxFlex="40%"> </mat-label>
-                <mat-form-field class="pl-1 ml-2" fxFlex="20%">
+                <mat-label fxFlex="10%"></mat-label>
+                <mat-form-field class="pl-1" fxFlex="15%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA INICIO (EMISION)</b></mat-label>
                     <input matInput name="fechaIniTraslado" [formControl]="formFilter.controls['fechaIniTraslado']" [matDatepicker]="picker" maxlength="10" style="color:#3f51b5">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-                <mat-form-field class="pl-1" fxFlex="20%">
+                <mat-form-field class="pl-1" fxFlex="15%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FECHA FIN (EMISION)</b></mat-label>
                     <input matInput name="fechaFinTraslado" [formControl]="formFilter.controls['fechaFinTraslado']" [matDatepicker]="picker2" maxlength="10" style="color:#3f51b5">
                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
@@ -66,38 +66,58 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="pl-1" fxFlex="30%">
+                <mat-form-field class="pl-1" fxFlex="35%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ORIGEN</b></mat-label>
                     <mat-select name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="formFilter.controls['origenFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                        <mat-option *ngFor="let factoria of factoriasOrigenFiltrados | async" [value]="factoria.id">
                             {{factoria.refLarga2}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field class="pl-1" fxFlex="30%">
+                <mat-form-field class="pl-1" fxFlex="35%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>DESTINO</b></mat-label>
                     <mat-select name="destinatarioSelected" [formControl]="formFilter.controls['destinatarioSelected']">
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="formFilter.controls['destinoFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let factoria of comboFactorias" [value]="factoria.id">
+                        <mat-option *ngFor="let factoria of factoriasDestinoFiltrados | async" [value]="factoria.id">
                             {{factoria.refLarga2}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <section class="pl-1 ml-05">
+
+
+
+                <!-- <section class="pl-1 ml-05">
                     <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Facturado </mat-checkbox>
-                </section>
+                </section> -->
             </div>
 
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%" fxLayoutAlign=" left">
                 <mat-form-field class="pl-1" fxFlex="30%">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>CHOFER</b></mat-label>
                     <mat-select name="choferSelected" [formControl]="formFilter.controls['choferSelected']">
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="formFilter.controls['choferFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let chofer of comboChoferes" [value]="chofer.id">
+                        <mat-option *ngFor="let chofer of choferesFiltrados | async" [value]="chofer.id">
                             {{chofer.nombres + ' ' + chofer.apellidos}}
                         </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="pl-1" fxFlex="20%">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FILTRO FACTURA</b></mat-label>
+                    <mat-select name="filtroFacturas" [formControl]="formFilter.controls['filtroFacturas']">
+                        <mat-option value="0">Todos</mat-option>
+                        <mat-option value="1">Guias Facturadas</mat-option>
+                        <mat-option value="2">Guias Sin Facturar </mat-option>
                     </mat-select>
                 </mat-form-field>
                 <div class="p-1 full-width" align="right">

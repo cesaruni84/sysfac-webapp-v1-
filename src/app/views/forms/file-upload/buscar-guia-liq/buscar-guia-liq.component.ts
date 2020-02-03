@@ -14,7 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { throwError, Subject, ReplaySubject } from 'rxjs';
-import { GuiaRemision, EstadoGuia } from '../../../../shared/models/guia_remision.model';
+import { GuiaRemision, EstadoGuia, TipoBusquedaGuias } from '../../../../shared/models/guia_remision.model';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -233,18 +233,18 @@ export class BuscarGuiaLiqComponent implements OnInit, OnDestroy {
     const origen = this.formFilter.controls['filtroOrigen'].value;
     const destino = this.formFilter.controls['filtroDestino'].value;
     const formateo = false ; // sin formateo
-    const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
-    const soloFacturadas = false;   // no mostrar facturadas
+    const tipoBusqueda = TipoBusquedaGuias.GUIAS_NO_FACTURADAS;
+    // const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
+    // const soloFacturadas = false;   // no mostrar facturadas
     const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
-
 
     this.guiaRemisionService.listarGuiasConFiltros(this.usuarioSession.empresa.id,
                                                         nroSerie || '',
                                                         nroSecuencia || '',
                                                         estado, chofer,
                                                         origen, destino ,
-                                                        formateo, guiasSinLiqFact, soloFacturadas,
+                                                        formateo, tipoBusqueda,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
@@ -274,8 +274,9 @@ export class BuscarGuiaLiqComponent implements OnInit, OnDestroy {
     const origen = this.formFilter.controls['filtroOrigen'].value;
     const destino = this.formFilter.controls['filtroDestino'].value;
     const formateo = false ; // sin formateo
-    const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
-    const soloFacturadas = false;   // no mostrar facturadas
+    const tipoBusqueda = TipoBusquedaGuias.GUIAS_NO_FACTURADAS;
+    // const guiasSinLiqFact = true;  // en esta pantalla solo mostrar guias pendientes de Liquidar y/o Facturar
+    // const soloFacturadas = false;   // no mostrar facturadas
     const fechaIni = formatDate(this.formFilter.controls['filtroFechaIni'].value, 'yyyy-MM-dd', this.locale);
     const fechaFin = formatDate(this.formFilter.controls['filtroFechaFin'].value, 'yyyy-MM-dd', this.locale);
 
@@ -287,8 +288,7 @@ export class BuscarGuiaLiqComponent implements OnInit, OnDestroy {
                                                         origen,
                                                         destino,
                                                         formateo,
-                                                        guiasSinLiqFact,
-                                                        soloFacturadas,
+                                                        tipoBusqueda,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();
