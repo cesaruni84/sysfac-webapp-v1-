@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as ExcelProper from 'exceljs';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import * as fs from 'file-saver';
-import { Liquidacion } from '../../models/liquidacion.model';
+import { Liquidacion, EstadoLiquidacion } from '../../models/liquidacion.model';
 import { Documento } from '../../models/facturacion.model';
 import { TiposGenericosService } from './tiposGenericos.service';
 
@@ -31,11 +31,6 @@ export interface DocumentosReportExcel {
   moneda?: string;
   totalDocumento?: number;
   observacion?: string;
-}
-
-enum EstadoLiquidacion {
-  Vigente = 1,
-  Vencido = 2,
 }
 
 @Injectable()

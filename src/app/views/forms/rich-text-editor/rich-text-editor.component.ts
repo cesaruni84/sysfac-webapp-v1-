@@ -1,6 +1,6 @@
-import { Liquidacion } from '../../../shared/models/liquidacion.model';
+import { Liquidacion, TipoBusquedaLiq } from '../../../shared/models/liquidacion.model';
 import { LiquidacionService } from '../../../shared/services/liquidacion/liquidacion.service';
-import { Component, OnInit, Inject, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, Inject, LOCALE_ID, OnDestroy } from '@angular/core';
 import { Usuario } from '../../../shared/models/usuario.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Factoria } from '../../../shared/models/factoria.model';
@@ -16,6 +16,8 @@ import { MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } f
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { ExcelService } from '../../../shared/services/util/excel.service';
 import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.component';
+import { Subject, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-rich-text-editor',
@@ -30,7 +32,7 @@ import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.c
     }
     ]
 })
-export class RichTextEditorComponent implements OnInit {
+export class RichTextEditorComponent implements OnInit, OnDestroy {
 
   rows = [];
   temp = [];
@@ -48,7 +50,10 @@ export class RichTextEditorComponent implements OnInit {
   public valorOrigenSelected_: any = '0';
   public valorDestinoSelected_: any = '0';
   public facturado: boolean = false;
-  
+  protected _onDestroy = new Subject<void>();
+  public factoriasOrigenFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+  public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
+
   // Manejo default de mensajes en grilla
   messages: any = {
     // Message to show when array is presented
@@ -98,8 +103,11 @@ export class RichTextEditorComponent implements OnInit {
       fechaFinLiq: new FormControl(fechaActual_, ),
       origenSelected: new FormControl('', ),
       destinoSelected: new FormControl('', ),
+      origenFiltro: new FormControl('', ),
+      destinoFiltro: new FormControl('', ),
       estadoSelected: new FormControl('0', ),
-      esFacturado: new FormControl(this.facturado, ),
+      filtroFacturas: new FormControl('0', ),
+    //  esFacturado: new FormControl(this.facturado, ),
    });
 
     // Recupera datos de usuario de session
@@ -108,10 +116,22 @@ export class RichTextEditorComponent implements OnInit {
     // Carga de Combos Factorias
     this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
+      this.factoriasOrigenFiltrados.next(data1.slice());
+      this.formFilter.controls['origenFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaOrigen();
+      });
     });
 
     this.factoriaService.listarComboFactorias('D').subscribe(data3 => {
       this.comboFactoriasDestino = data3;
+      this.factoriasDestinoFiltrados.next(data3.slice());
+      this.formFilter.controls['destinoFiltro'].valueChanges
+        .pipe(takeUntil(this._onDestroy))
+        .subscribe(() => {
+          this.filtrarFactoriaDestino();
+      });
 
     });
 
@@ -122,6 +142,47 @@ export class RichTextEditorComponent implements OnInit {
     // });
 
 
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
+  protected filtrarFactoriaOrigen() {
+    if (!this.comboFactorias) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['origenFiltro'].value;
+    if (!search) {
+      this.factoriasOrigenFiltrados.next(this.comboFactorias.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasOrigenFiltrados.next(
+      this.comboFactorias.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
+  }
+
+  protected filtrarFactoriaDestino() {
+    if (!this.comboFactoriasDestino) {
+      return;
+    }
+    // busca palabra clave
+    let search = this.formFilter.controls['destinoFiltro'].value;
+    if (!search) {
+      this.factoriasDestinoFiltrados.next(this.comboFactoriasDestino.slice());
+      return;
+    } else {
+      search = search.toLowerCase();
+    }
+    // filtra
+    this.factoriasDestinoFiltrados.next(
+      this.comboFactoriasDestino.filter(factoria => factoria.refLarga2.toLowerCase().indexOf(search) > -1)
+    );
   }
 
 
@@ -159,26 +220,23 @@ export class RichTextEditorComponent implements OnInit {
     this.selected = [];
 
     // Obtiene valores de parametros para la búsqueda
-    let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
+    const nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
     const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
     const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
     const origen = this.formFilter.controls['origenSelected'].value;
     const destino = this.formFilter.controls['destinoSelected'].value;
     const estado  =  this.formFilter.controls['estadoSelected'].value;
-
-    const conFactura  =  this.formFilter.controls['esFacturado'].value;
-    let valorConFactura = 0;
-    if (conFactura) {
-      valorConFactura = 1;
+    let tipoBusqueda  =  this.formFilter.controls['filtroFacturas'].value;
+    if (nroDocLiq) {
+      tipoBusqueda = TipoBusquedaLiq.TODOS;
     }
-    const buscarLiqSinFactura = false;
+
     this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
                                                         nroDocLiq || '',
                                                         origen,
                                                         destino,
                                                         estado ,
-                                                        buscarLiqSinFactura,
-                                                        valorConFactura,
+                                                        tipoBusqueda,
                                                         fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();

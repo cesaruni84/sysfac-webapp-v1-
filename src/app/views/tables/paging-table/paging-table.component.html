@@ -25,18 +25,22 @@
                 <mat-form-field fxFlex="10%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSerie_" name="nroSerie" [formControl]="formFilter.controls['nroSerie']" maxlength="5" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerie($event)'>
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSecuencia_" name="nroSecuencia" [formControl]="formFilter.controls['nroSecuencia']" maxlength="8" style="color:#3f51b5" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuencia($event)'>
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
                 <mat-form-field fxFlex="10%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SERIE CLI</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSerieCli_" name="nroSerieCli" [formControl]="formFilter.controls['nroSerieCli']" maxlength="5" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSerieCli($event)'>
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
                 <mat-form-field fxFlex="15%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>SECUENCIA CLI</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSecuenciaCli_" name="nroSecuenciaCli" [formControl]="formFilter.controls['nroSecuenciaCli']" maxlength="8" style="color:green" (keypress)='validaDigitos($event)' (keydown.tab)='completarZerosNroSecuenciaCli($event)'>
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
                 <mat-label class="pl-1 ml-2" fxFlex="40%"> </mat-label>
                 <mat-form-field class="pl-1 ml-2" fxFlex="20%">
@@ -110,7 +114,7 @@
 
 <div class="mat-box-shadow margin-333">
 
-    <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="5" [rows]="rows" [columns]="columns" [messages]="messages">
+    <ngx-datatable class="material striped" [columnMode]="'standard'" [scrollbarH]="'true'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="10" [rows]="rows" [columns]="columns" [messages]="messages">
         <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="80">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <button mat-icon-button mat-sm-button color="primary" matTooltip="Consultar" class="mr-1" (click)="consultarGuia(row)"><mat-icon>search</mat-icon></button>

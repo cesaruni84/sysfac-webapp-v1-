@@ -51,16 +51,14 @@ export class LiquidacionService {
                                 idOrigen: number,
                                 idDestino: number,
                                 idEstado: number,
-                                buscarLiqSinFactura: boolean,
-                                conFactura: number,
+                                tipoBusqueda: number,
                                  fechaIni: string,
                                  fechaFin: string) {
     const params = new HttpParams().set('nroDocLiq', nroDocLiq.toString())
                                     .set('origen', idOrigen.toString())
                                     .set('destino', idDestino.toString())
                                     .set('estado', idEstado.toString())
-                                    .set('buscarLiqSinFactura', buscarLiqSinFactura.toString())
-                                    .set('facturado', conFactura.toString())
+                                    .set('tipoBusqueda', tipoBusqueda.toString())
                                     .set('fechaIni', fechaIni.toString())
                                     .set('fechaFin', fechaFin.toString());
 

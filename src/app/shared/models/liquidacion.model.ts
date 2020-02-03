@@ -45,3 +45,15 @@ export interface LiquidacionReportExcel {
     importeTotal: number;
 }
 
+
+export enum TipoBusquedaLiq {
+    TODOS = 0,
+    LIQ_FACTURADAS = 1,
+    LIQ_NO_FACTURADAS = 2,
+};
+
+export enum EstadoLiquidacion {
+    TODOS = 0,
+    VIGENTE = 1,
+    VENCIDO = 2,
+};

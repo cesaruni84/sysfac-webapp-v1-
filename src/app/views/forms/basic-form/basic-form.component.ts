@@ -339,6 +339,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     // Camviar 2
     this.estadoSelected_ = '0';
 
+
   }
 
   cargarCombosFormulario() {
@@ -359,7 +360,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
       this.comboFactoriasDestino = data7;
       this.factoriasDestinoFiltrados.next(data7.slice());
-      // listen for search field value changes
       this.basicForm.controls['destinoFiltro'].valueChanges
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {
@@ -370,7 +370,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     this.productoService.listarComboProductos().subscribe(data2 => {
       this.comboProductos = data2;
       this.productosFiltrados.next(data2.slice());
-          // listen for search field value changes
       this.basicForm.controls[ 'productoFiltro'].valueChanges
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {
@@ -384,13 +383,15 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     // Carga de Combos Unidades de Medida -
     this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidadMedida = data3;
+      this.basicForm.patchValue({
+        unidadMedidaSelected: this.comboUnidadMedida.find(o => o.descripcion === 'TONELADAS'),
+      });
     });
 
      // Carga de Combos Choferes
     this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
       this.choferesFiltrados.next(data4.slice());
-          // listen for search field value changes
       this.basicForm.controls['choferFiltro'].valueChanges
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {
@@ -402,7 +403,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     this.balanzaService.listarComboBalanzas().subscribe(data5 => {
       this.comboBalanzas = data5;
       this.balanzasFiltrados.next(data5.slice());
-      // listen for search field value changes
       this.basicForm.controls['balanzaFiltro'].valueChanges
         .pipe(takeUntil(this._onDestroy))
         .subscribe(() => {

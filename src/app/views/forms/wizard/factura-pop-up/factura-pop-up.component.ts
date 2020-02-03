@@ -18,6 +18,7 @@ import { TipoIGV, TipoItem } from '../../../../shared/models/tipos_facturacion';
 import { UnidadMedida } from '../../../../shared/models/unidad_medida.model';
 import { UnidadMedidaService } from '../../../../shared/services/unidad-medida/unidad-medida.service';
 import { LiquidacionService } from '../../../../shared/services/liquidacion/liquidacion.service';
+import { TipoBusquedaLiq, EstadoLiquidacion } from '../../../../shared/models/liquidacion.model';
 
 @Component({
   selector: 'app-factura-pop-up',
@@ -153,22 +154,20 @@ export class FacturaPopUpComponent implements OnInit {
 
     this.selected = [];
     this.loader.open();
-    let nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
+    const nroDocLiq  =  this.formFilter.controls['nroSerieLiq'].value;
     const fechaIniLiq = formatDate(this.formFilter.controls['fechaIniLiq'].value, 'yyyy-MM-dd', this.locale);
     const fechaFinLiq = formatDate(this.formFilter.controls['fechaFinLiq'].value, 'yyyy-MM-dd', this.locale);
     const origen = 0; // TODOS
     const destino = 0; // TODOS
-    const estado  =  1; // REGISTRADO
-    const valorConFactura = 0; // SIN FACTURAR
-    const buscarLiqSinFactura = true;
+    const estado  =  EstadoLiquidacion.VIGENTE; // SOLO LIQUIDACIONES VIGENTES
+    const tipoBusqueda = TipoBusquedaLiq.LIQ_NO_FACTURADAS ; // en esta pantalla solo recuperar liquidaciones no facturadas.
 
     this.liquidacionService.listarLiquidacionesPorFiltro(this.usuarioSession.empresa.id,
                                                             nroDocLiq || '',
                                                             origen,
                                                             destino,
                                                             estado ,
-                                                            buscarLiqSinFactura,
-                                                            valorConFactura,
+                                                            tipoBusqueda,
                                                             fechaIniLiq, fechaFinLiq).subscribe(data_ => {
       this.rows = data_;
       this.loader.close();

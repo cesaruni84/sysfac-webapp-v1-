@@ -26,6 +26,7 @@
                 <mat-form-field fxFlex="20%" class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>NRO. DE LIQUIDACION</b></mat-label>
                     <input matInput [(ngModel)]="valorNroSerieLiq_" name="nroSerieLiq" [formControl]="formFilter.controls['nroSerieLiq']" maxlength="12" style="color:green" (keypress)='validaDigitos($event)' (change)='completarZerosNroSerieLiq($event)'>
+                    <mat-icon matSuffix inline="true">edit</mat-icon>
                 </mat-form-field>
                 <mat-form-field class="pl-1">
                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>ESTADO</b></mat-label>
@@ -54,8 +55,11 @@
                 <mat-form-field fxFlex="35%" class="pl-1" floatPlaceholder="never">
                     <mat-label><b>ORIGEN</b></mat-label>
                     <mat-select [compareWith]="" [(ngModel)]="valorOrigenSelected_" name="origenSelected" [formControl]="formFilter.controls['origenSelected']">
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="formFilter.controls['origenFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let factoria2 of comboFactorias" [value]="factoria2.id">
+                        <mat-option *ngFor="let factoria2 of factoriasOrigenFiltrados | async" [value]="factoria2.id">
                             {{factoria2.refLarga2}}
                         </mat-option>
                     </mat-select>
@@ -63,15 +67,25 @@
                 <mat-form-field fxFlex="35%" class="pl-1" floatPlaceholder="never">
                     <mat-label><b>DESTINO</b></mat-label>
                     <mat-select [compareWith]="" [(ngModel)]="valorDestinoSelected_" name="destinoSelected" [formControl]="formFilter.controls['destinoSelected']">
+                        <mat-option>
+                            <ngx-mat-select-search [formControl]="formFilter.controls['destinoFiltro']" placeholderLabel="Buscar ..." noEntriesFoundLabel="'No existen coincidencias'"></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="0">Todos</mat-option>
-                        <mat-option *ngFor="let factoria of comboFactoriasDestino" [value]="factoria.id">
+                        <mat-option *ngFor="let factoria of factoriasDestinoFiltrados | async" [value]="factoria.id">
                             {{factoria.refLarga2}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <section fxFlex="10%" class="pl-1">
-                    <mat-checkbox name="esFacturado" [style.fontSize.px]="13" [formControl]="formFilter.controls['esFacturado']">Con Factura </mat-checkbox>
-                </section>
+
+                <mat-form-field class="pl-1" fxFlex="15%">
+                    <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>FILTRO FACTURA</b></mat-label>
+                    <mat-select name="filtroFacturas" [formControl]="formFilter.controls['filtroFacturas']">
+                        <mat-option value="0">Todos</mat-option>
+                        <mat-option value="1">Liq. Facturadas</mat-option>
+                        <mat-option value="2">Liq. No Facturadas </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
             </div>
             <br>
             <div fxLayout="row" fxLayout.xs="column" fxLayoutWrap fxLayoutGap="2.5%">
