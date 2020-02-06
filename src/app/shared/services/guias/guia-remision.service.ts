@@ -107,6 +107,10 @@ export class GuiaRemisionService {
     return this.http.put<any>(this.url2 + '/' + guiaRemision.id, guiaRemision, this.httpOptions);
   }
 
+  actualizarTarifaGuiaRemision(guiaRemision: GuiaRemision) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.put<any>(this.url2 + '/' + guiaRemision.id + '/tarifa', guiaRemision, this.httpOptions);
+  }
 
   anularGuiaRemisionBD(guiaRemision: GuiaRemision) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});

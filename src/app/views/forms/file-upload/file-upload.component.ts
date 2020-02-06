@@ -815,17 +815,38 @@ export class FileUploadComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const index = this.getRowIndex(row);
+
         this.updateTarifa(result, 'tarifa', index);
+        this.actuliarTarifaGuia(result, row);
       }
     });
 
   }
+
+
   updateTarifa(value, cell, rowIndex) {
     this.editing[rowIndex + '-' + cell] = false;
     this.rows[rowIndex][cell] = value;
     this.rows = [...this.rows];
     this.updateSubTotalRow('subTotal', rowIndex);
     this.recalcularTotales();
+  }
+
+
+  actuliarTarifaGuia(value, row: GuiaRemision) {
+    console.log(row);
+    const guia: GuiaRemision = new GuiaRemision();
+    guia.id = row.id;
+    row.tarifa = value;
+    row.usuarioActualiza = this.usuarioSession.codigo;
+    this.guiaRemisionService.actualizarTarifaGuiaRemision(row).subscribe(data_ => {
+      // this.snackBar.open('Item eliminado!', 'OK', { duration: 1000 });
+      // this.loader.close();
+    },
+    (error: HttpErrorResponse) => {
+      this.handleError(error);
+    });
+
   }
 
   onDetailToggle(event) {

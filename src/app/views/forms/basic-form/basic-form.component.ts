@@ -28,7 +28,7 @@ import localeFr from '@angular/common/locales/fr';
 import localeFrExtra from '@angular/common/locales/extra/fr';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
 import { takeUntil } from 'rxjs/operators';
-import { Subject, ReplaySubject } from 'rxjs';
+import { Subject, ReplaySubject, Observable, Subscription } from 'rxjs';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 import { Liquidacion } from '../../../shared/models/liquidacion.model';
 import { Documento } from '../../../shared/models/facturacion.model';
@@ -66,6 +66,10 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   public factoriasDestinoFiltrados: ReplaySubject<Factoria[]> = new ReplaySubject<Factoria[]>(1);
   public choferesFiltrados: ReplaySubject<Chofer[]> = new ReplaySubject<Chofer[]>(1);
 
+  // Array de Subscriptores
+  public subscriptions = [];
+
+
 
   // NgModel
   valorIdGuia_: number;
@@ -99,6 +103,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   liquidacion: Liquidacion;
   documento: Documento;
   guiaRemisionAnulada: any;
+  tarifaGuia: number;
 
   // Usuario sesionado
   usuarioSession: Usuario;
@@ -141,6 +146,10 @@ export class BasicFormComponent implements OnInit , OnDestroy {
     // Recupera datos de usuario de session
     this.usuarioSession = this.userService.getUserLoggedIn();
 
+  }
+
+  ngOnInit() {
+
     // Valida Save o Update
     this.validarGrabarActualizar();
 
@@ -149,9 +158,6 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
     // Carga Combos para el Formulario
     this.cargarCombosFormulario();
-  }
-
-  ngOnInit() {
 
     // Si es edicion recuperar datos de BD
     if (this.edicion) {
@@ -163,7 +169,13 @@ export class BasicFormComponent implements OnInit , OnDestroy {
   ngOnDestroy() {
     this._onDestroy.next();
     this._onDestroy.complete();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
+
+  addSubscriptor(subscription: Subscription) {
+    this.subscriptions.push(subscription);
+  }
+
 
   validarGrabarActualizar() {
     this.route.queryParams.subscribe(params => {
@@ -246,6 +258,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
     this.liquidacion = data_.liquidacion;
     this.documento = data_.documento;
+    this.tarifaGuia = data_.tarifa;
 
   }
 
@@ -344,7 +357,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
   cargarCombosFormulario() {
     // Carga de Combos Factorias- Remitente
-    this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
+    const factoriaServiceSub = this.factoriaService.listarComboFactorias('O').subscribe(data1 => {
       this.comboFactorias = data1;
       this.factoriasOrigenFiltrados.next(data1.slice());
       // listen for search field value changes
@@ -356,8 +369,10 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
     });
 
+    this.addSubscriptor(factoriaServiceSub);
+
     // Carga de Combos Factorias- Destinatario
-    this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
+    const factoriaServiceSub2 = this.factoriaService.listarComboFactorias('D').subscribe(data7 => {
       this.comboFactoriasDestino = data7;
       this.factoriasDestinoFiltrados.next(data7.slice());
       this.basicForm.controls['destinoFiltro'].valueChanges
@@ -366,8 +381,11 @@ export class BasicFormComponent implements OnInit , OnDestroy {
           this.filtrarFactoriaDestino();
       });
     });
+
+    this.addSubscriptor(factoriaServiceSub2);
+
     // Carga de Combos Productos
-    this.productoService.listarComboProductos().subscribe(data2 => {
+    const productoServiceSub = this.productoService.listarComboProductos().subscribe(data2 => {
       this.comboProductos = data2;
       this.productosFiltrados.next(data2.slice());
       this.basicForm.controls[ 'productoFiltro'].valueChanges
@@ -380,16 +398,21 @@ export class BasicFormComponent implements OnInit , OnDestroy {
         this.handleError(error);
     });
 
+    this.addSubscriptor(productoServiceSub);
+
+
     // Carga de Combos Unidades de Medida -
-    this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
+    const unidadMedidaServiceSub = this.unidadMedidaService.listarComboUnidadesMedida().subscribe(data3 => {
       this.comboUnidadMedida = data3;
       this.basicForm.patchValue({
         unidadMedidaSelected: this.comboUnidadMedida.find(o => o.descripcion === 'TONELADAS'),
       });
     });
 
+    this.addSubscriptor(unidadMedidaServiceSub);
+
      // Carga de Combos Choferes
-    this.choferService.listarComboChoferes(1).subscribe(data4 => {
+    const choferServiceSub = this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
       this.choferesFiltrados.next(data4.slice());
       this.basicForm.controls['choferFiltro'].valueChanges
@@ -398,9 +421,11 @@ export class BasicFormComponent implements OnInit , OnDestroy {
           this.filtrarChoferes();
       });
      });
+    this.addSubscriptor(choferServiceSub);
+
 
     // Carga de Combos Balanza
-    this.balanzaService.listarComboBalanzas().subscribe(data5 => {
+    const balanzaServiceSub = this.balanzaService.listarComboBalanzas().subscribe(data5 => {
       this.comboBalanzas = data5;
       this.balanzasFiltrados.next(data5.slice());
       this.basicForm.controls['balanzaFiltro'].valueChanges
@@ -409,6 +434,8 @@ export class BasicFormComponent implements OnInit , OnDestroy {
           this.filtrarBalanzas();
       });
     });
+    this.addSubscriptor(balanzaServiceSub);
+
   }
 
   seleccionarFactoriaRemitente(e: any) {
@@ -564,7 +591,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       listaGuias [0] = this.guiaDetalle_;
       this.guiaRemision.guiaDetalle = listaGuias;
 
-      this.guiaRemision.tarifa = 0.00;
+      this.guiaRemision.tarifa = this.tarifaGuia || 0.00;
       this.guiaRemision.ticketBalanza = this.basicForm.get('nroTicketBal').value;
       this.guiaRemision.placaTracto = this.basicForm.get('placaTracto').value;
       this.guiaRemision.placaBombona = this.basicForm.get('placaBombona').value;
@@ -777,7 +804,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       guiaRemisionCancelada.ticketBalanza = '?';
       guiaRemisionCancelada.totalCantidad = 0.00;
       guiaRemisionCancelada.totalPeso = 0.00;
-      guiaRemisionCancelada.tarifa = 0.00;
+      guiaRemisionCancelada.tarifa = this.tarifaGuia || 0.00;
       guiaRemisionCancelada.guiaDetalle = [];
       guiaRemisionCancelada.empresa = this.usuarioSession.empresa;
       guiaRemisionCancelada.usuarioRegistro = this.usuarioSession.codigo;
