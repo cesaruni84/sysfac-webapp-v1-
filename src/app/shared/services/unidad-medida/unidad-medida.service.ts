@@ -13,9 +13,9 @@ export class UnidadMedidaService {
 
   constructor(private http: HttpClient) { }
 
-  @Cacheable({
-    maxCacheCount: 10,
-  })
+  // @Cacheable({
+    // maxCacheCount: 10,
+  // })
   listarComboUnidadesMedida() {
     return this.http.get<UnidadMedida[]>(this.url).pipe();
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog, MatSnackBar, MatDialogRef } from '@angular/material';
 import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
 import { AppLoaderService } from '../../../../shared/services/app-loader/app-loader.service';
@@ -7,16 +7,18 @@ import { MaestroFactoriaPopupComponent } from './maestro-factoria-popup/maestro-
 import { FactoriaService } from '../../../../shared/services/factorias/factoria.service';
 import { CrudService } from '../../../cruds/crud.service';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
+import { InfoResponse } from '../../../../shared/models/error_response.model';
 
 @Component({
   selector: 'app-maestro-factoria',
   templateUrl: './maestro-factoria.component.html',
   styleUrls: ['./maestro-factoria.component.scss']
 })
-export class MaestroFactoriaComponent implements OnInit {
+export class MaestroFactoriaComponent implements OnInit, OnDestroy {
 
   public rows: any[];
   public getItemSub: Subscription;
+  infoResponse_: InfoResponse;
 
 
   constructor(private dialog: MatDialog,
@@ -30,6 +32,12 @@ export class MaestroFactoriaComponent implements OnInit {
     this.listarFactorias();
   }
 
+  ngOnDestroy() {
+    if (this.getItemSub) {
+      this.getItemSub.unsubscribe();
+    }
+  }
+
   // ngOnDestroy() {
   //   if (this.getItemSub) {
   //     this.getItemSub.unsubscribe();
@@ -38,9 +46,11 @@ export class MaestroFactoriaComponent implements OnInit {
 
   /* Lista todas las factorias de la BD */
   listarFactorias() {
+    this.loader.open();
     this.getItemSub = this.factoriaService.listarTodasLasFactorias('O').subscribe(data1 => {
         this.rows = data1;
     });
+    this.loader.close();
   }
 
   openPopUp(data: any = {}, isNew?) {
@@ -72,15 +82,19 @@ export class MaestroFactoriaComponent implements OnInit {
     this.confirmService.confirm({message: `Confirma eliminar el registro: ${row.refLarga2}?`})
       .subscribe(res => {
         if (res) {
-          // this.loader.open();
-          // this.crudService.removeItem(row)
-          //   .subscribe(data => {
-          //     this.rows = data;
-          //     this.loader.close();
-          this.snack.open('Opción deshabilitada !', 'OK', { duration: 4000 });
-          //   });
+          this.loader.open();
+          this.factoriaService.eliminarFactoria(row)
+            .subscribe(data => {
+              this.infoResponse_ = data;
+              this.loader.close();
+              this.snack.open(this.infoResponse_ .alertMessage, 'OK', { duration: 5000 });
+              this.snack._openedSnackBarRef.afterDismissed().subscribe(() => {
+                globalCacheBusterNotifier.next();
+                this.listarFactorias();
+              });
+          });
         }
-      })
+      });
   }
 
 

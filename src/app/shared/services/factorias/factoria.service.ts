@@ -54,4 +54,9 @@ export class FactoriaService {
     return this.http.put<any>(this.url2 + '/' + factoria.id, factoria, this.httpOptions);
   }
 
+  eliminarFactoria(factoria: Factoria) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.delete<any>(this.url2 + '/' + factoria.id , this.httpOptions);
+  }
+
 }

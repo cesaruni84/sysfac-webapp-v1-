@@ -2,7 +2,7 @@
     <!-- <span fxFlex></span> -->
     <button mat-raised-button class="mb-05" color="primary" (click)="openPopUp({}, true)">Nuevo Registro</button>
 </div>
-<mat-card class="p-0" [@animate]="{value:'*',params:{y:'50px',delay:'300ms'}}">
+<mat-card class="p-0">
     <mat-card-content class="p-0">
         <ngx-datatable class="material striped ml-0 mr-0" [rows]="rows" [columnMode]="'standard'" [headerHeight]="50" [footerHeight]="50" [limit]="10" [rowHeight]="'auto'">
             <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="120">
