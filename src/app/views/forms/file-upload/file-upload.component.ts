@@ -212,7 +212,7 @@ export class FileUploadComponent implements OnInit {
       empresa_: new FormControl({value: this.usuarioSession.empresa.razonSocial, disabled: true},),
       nroDocumentoLiq: new FormControl( ' ', [CustomValidators.digits, Validators.required]),
       fechaRegistro: new FormControl({value: '', disabled: true}),
-      estado: new FormControl({value: '0', disabled: true}, ),
+      estado: new FormControl({value: '0', disabled: false}, ),
       situacion: new FormControl({value: '0', disabled: true}, ),
       moneda: new FormControl({value: '0', disabled: false}, ),
       origen: new FormControl({value: '', disabled: false}, Validators.required),
@@ -350,6 +350,11 @@ export class FileUploadComponent implements OnInit {
         this.formLiquidacion.patchValue({
           origen: this.valorOrigenSelected_[0],
         });
+      } else {
+        this.valorOrigenSelected_ = this.comboFactorias.filter(factoria =>  factoria.id  === data_.origen.id);
+        this.formLiquidacion.patchValue({
+          origen: this.valorOrigenSelected_[0],
+        });
       }
 
       if (data_.notas2) {
@@ -358,6 +363,11 @@ export class FileUploadComponent implements OnInit {
         } );
 
         this.valorDestinoSelected_ = this.comboFactorias.filter(factoria => valuesDestino.includes(factoria.id));
+        this.formLiquidacion.patchValue({
+          destino: this.valorDestinoSelected_[0],
+        });
+      }else {
+        this.valorDestinoSelected_ = this.comboFactorias.filter(factoria =>  factoria.id  === data_.destino.id);
         this.formLiquidacion.patchValue({
           destino: this.valorDestinoSelected_[0],
         });
@@ -834,7 +844,6 @@ export class FileUploadComponent implements OnInit {
 
 
   actuliarTarifaGuia(value, row: GuiaRemision) {
-    console.log(row);
     const guia: GuiaRemision = new GuiaRemision();
     guia.id = row.id;
     row.tarifa = value;

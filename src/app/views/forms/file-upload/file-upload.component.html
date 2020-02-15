@@ -42,7 +42,7 @@
                                 <mat-label fxFlex="25%"></mat-label>
                                 <mat-form-field appearance="">
                                     <mat-label><b>ESTADO LIQ. </b></mat-label>
-                                    <mat-select [(ngModel)]="estadoLiquidacion_" name="estado" [formControl]="formLiquidacion.controls['estado']" align="top" [disabled]="!edicion">
+                                    <mat-select [(ngModel)]="estadoLiquidacion_" name="estado" [formControl]="formLiquidacion.controls['estado']" align="top">
                                         <mat-option value="1">Vigente</mat-option>
                                         <mat-option value="2">Vencido </mat-option>
                                     </mat-select>

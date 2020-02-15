@@ -582,7 +582,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
       // this.guiaRemision.totalPeso = this.basicForm.get('peso').value;
       this.guiaRemision.totalPeso = 0.00;
       this.guiaRemision.motivoTraslado = 2;
-      this.guiaDetalle_.id = this.valorIdGuiaDetalle_;
+      this.guiaDetalle_.id = this.valorIdGuiaDetalle_ ;
       this.guiaDetalle_.producto = this.basicForm.get('productoSelected').value;
       this.guiaDetalle_.cantidad = this.basicForm.get('cantidad').value;
       // this.guiaDetalle_.peso = this.basicForm.get('peso').value;
@@ -773,10 +773,18 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
     if (serie && secuencia ) {
       const guiaRemisionCancelada = new GuiaRemision();
-
+      const guiaDetalle_ = new GuiaDetalle();
+      const listaGuiasDetalle = [];
+      guiaRemisionCancelada.id = this.valorIdGuia_;
       guiaRemisionCancelada.serie = serie;
       guiaRemisionCancelada.secuencia = secuencia;
+
+      guiaRemisionCancelada.serieCliente = this.basicForm.get('nroSerieClie').value || '';
+      guiaRemisionCancelada.secuenciaCliente = this.basicForm.get('nroSequenClie').value || '';
       guiaRemisionCancelada.estado = EstadoGuia.ANULADO;  // Anulado
+      guiaRemisionCancelada.remitente = this.basicForm.get('remitenteSelected').value;
+      guiaRemisionCancelada.destinatario = this.basicForm.get('destinatarioSelected').value;
+      guiaRemisionCancelada.chofer = this.basicForm.get('choferSelected').value;
 
 
       let fe = new Date();
@@ -799,16 +807,32 @@ export class BasicFormComponent implements OnInit , OnDestroy {
         fr.setTime(fr.getTime() + fr.getTimezoneOffset() * 60 * 1000);
       }
       guiaRemisionCancelada.fechaRecepcion = fr;
-      guiaRemisionCancelada.placaTracto = '?';
-      guiaRemisionCancelada.placaTracto = '?';
-      guiaRemisionCancelada.ticketBalanza = '?';
-      guiaRemisionCancelada.totalCantidad = 0.00;
+      guiaRemisionCancelada.placaBombona = this.basicForm.get('placaBombona').value || '?';
+      guiaRemisionCancelada.placaTracto = this.basicForm.get('placaTracto').value || '?';
+      guiaRemisionCancelada.ticketBalanza =  this.basicForm.get('nroTicketBal').value || '?';
+      guiaRemisionCancelada.balanza =  this.basicForm.get('balanzaSelected').value ;
+      guiaRemisionCancelada.totalCantidad = this.basicForm.get('cantidad').value || 0.00;
       guiaRemisionCancelada.totalPeso = 0.00;
       guiaRemisionCancelada.tarifa = this.tarifaGuia || 0.00;
-      guiaRemisionCancelada.guiaDetalle = [];
+
+      // Detalle de Producto
+      if (guiaRemisionCancelada.id ) {
+        guiaDetalle_.id = this.valorIdGuiaDetalle_;
+        guiaDetalle_.producto = this.basicForm.get('productoSelected').value;
+        guiaDetalle_.cantidad = this.basicForm.get('cantidad').value || 0.00;
+        guiaDetalle_.peso = 0.00;
+        guiaDetalle_.unidadMedida = this.basicForm.get('unidadMedidaSelected').value;
+        listaGuiasDetalle [0] = guiaDetalle_;
+        guiaRemisionCancelada.guiaDetalle = listaGuiasDetalle;
+      } else {
+        guiaRemisionCancelada.guiaDetalle = [];
+      }
+
+      // Datos Complementarios
       guiaRemisionCancelada.empresa = this.usuarioSession.empresa;
       guiaRemisionCancelada.usuarioRegistro = this.usuarioSession.codigo;
       guiaRemisionCancelada.usuarioActualiza = this.usuarioSession.codigo;
+
       this.confirmService.confirm({message: `Confirma anular la guia de remisión:  ${serie} - ${secuencia} ?`})
         .subscribe(res => {
           if (res) {
