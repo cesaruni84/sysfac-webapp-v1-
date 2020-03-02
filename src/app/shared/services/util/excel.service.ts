@@ -3,8 +3,9 @@ import * as ExcelProper from 'exceljs';
 import * as Excel from 'exceljs/dist/exceljs.min.js';
 import * as fs from 'file-saver';
 import { Liquidacion, EstadoLiquidacion } from '../../models/liquidacion.model';
-import { Documento } from '../../models/facturacion.model';
+import { Documento, TipoFactura } from '../../models/facturacion.model';
 import { TiposGenericosService } from './tiposGenericos.service';
+import { GLOSA_TRANSPORTE } from '../../helpers/var.constant';
 
 export class LiquidacionReportExcel {
   item?: number;
@@ -252,7 +253,13 @@ export class ExcelService {
       reporteFacturacion.estado = this.estadosDocumento.find(o => o.id === documento.estado).descripcion || '?';
       reporteFacturacion.moneda = documento.moneda.descripcion;
       reporteFacturacion.totalDocumento = documento.totalDocumento;
-      reporteFacturacion.observacion = documento.observacion;
+      if (documento.notas === TipoFactura.CON_LIQUIDACION || documento.notas === TipoFactura.CON_GUIAREMISION ) {
+        reporteFacturacion.observacion = GLOSA_TRANSPORTE;
+      } else {
+        reporteFacturacion.observacion = documento.observacion;
+      }
+
+
       worksheet.addRow(reporteFacturacion).commit();
     });
 

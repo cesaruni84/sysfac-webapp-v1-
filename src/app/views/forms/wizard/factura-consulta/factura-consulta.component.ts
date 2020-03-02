@@ -19,12 +19,13 @@ import { Cliente } from '../../../../shared/models/cliente.model';
 import { ClienteService } from 'app/shared/services/facturacion/cliente.service';
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../../shared/helpers/date.adapter';
 import { ItemFacturaService } from '../../../../shared/services/facturacion/item-factura.service';
-import { Documento, EstadoDocumento } from '../../../../shared/models/facturacion.model';
+import { Documento, EstadoDocumento, TipoFactura } from '../../../../shared/models/facturacion.model';
 import { AppConfirmService } from '../../../../shared/services/app-confirm/app-confirm.service';
 import { throwError, Subject, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TipoDocumento } from '../../../../shared/models/tipos_facturacion';
 import { TiposGenericosService } from '../../../../shared/services/util/tiposGenericos.service';
+import { GLOSA_TRANSPORTE } from '../../../../shared/helpers/var.constant';
 
 export interface ChipColor {
   name: string;
@@ -271,6 +272,23 @@ export class FacturaConsultaComponent implements OnInit, OnDestroy {
           break;
     }
       return value.secuencia;
+  }
+
+  retornarGlosa(factura: Documento) {
+    let value: any;
+
+    switch (factura.notas) {
+      case TipoFactura.ITEM:
+          value = factura.observacion;
+          break;
+      case TipoFactura.CON_LIQUIDACION:
+      case TipoFactura.CON_GUIAREMISION:
+          value = GLOSA_TRANSPORTE;
+          break;
+      default:
+          break;
+    }
+    return value;
   }
 
   // Genera Reporte para Excel

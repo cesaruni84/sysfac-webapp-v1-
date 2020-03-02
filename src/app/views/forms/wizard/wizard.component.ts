@@ -345,7 +345,7 @@ export class WizardComponent implements OnInit, OnDestroy {
         // Simbolo de Moneda
         this.simbolo = this.comboMonedas.find(o => o.id === documento.moneda.id).nemonico || 'S/';
 
-        // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+        // 1: item por defecto , 2:Liquidacion, 3: Guia Remisión
         this.subTipoFactura = documento.notas;
         this.liquidaciones_ = documento.liquidaciones;
         this.guias_remision = documento.guiasRemision;
@@ -628,7 +628,7 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.moneda = this.facturaForm.controls['moneda'].value;
         this.facturaDocumento.formaPago = this.facturaForm.controls['formaPago'].value;
         this.facturaDocumento.cliente = this.facturaForm.controls['cliente'].value;
-        this.facturaDocumento.notas = this.subTipoFactura; // 1: item por defecto , 2: Orden Servicio, 3: Guia Remisión
+        this.facturaDocumento.notas = this.subTipoFactura; // 1: item por defecto , 2: Liquidacion, 3: Guia Remisión
         this.facturaDocumento.tipoAfectacion = 1;  // 10-Operación Gravada.
         this.facturaDocumento.anticipos = this.anticipos;
         this.facturaDocumento.descuentos = this.descuentos;

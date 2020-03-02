@@ -73,3 +73,8 @@ export enum EstadoDocumento {
     ANULADO = 3,
 };
 
+export enum TipoFactura {
+    ITEM = '1',
+    CON_LIQUIDACION = '2',
+    CON_GUIAREMISION = '3',
+};
