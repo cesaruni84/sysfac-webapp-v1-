@@ -253,7 +253,7 @@ export class BasicFormComponent implements OnInit , OnDestroy {
 
     if (data_.estado === EstadoGuia.ANULADO) {
       this.guiaRemisionAnulada = true;
-      this.basicForm.disable();
+      // this.basicForm.disable();
     }
 
     this.liquidacion = data_.liquidacion;
