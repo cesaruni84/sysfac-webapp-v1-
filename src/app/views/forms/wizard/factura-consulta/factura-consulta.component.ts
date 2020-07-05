@@ -208,6 +208,7 @@ export class FacturaConsultaComponent implements OnInit, OnDestroy {
                                                         estado,
                                                         fechaIni, fechaFin).subscribe(data_ => {
       this.rows = data_;
+      console.log(this.rows);
       this.loader.close();
     },
     (error: HttpErrorResponse) => {
@@ -283,7 +284,12 @@ export class FacturaConsultaComponent implements OnInit, OnDestroy {
           break;
       case TipoFactura.CON_LIQUIDACION:
       case TipoFactura.CON_GUIAREMISION:
-          value = GLOSA_TRANSPORTE;
+          if (factura.estado === EstadoDocumento.ANULADO) {
+            value = factura.observacion + ' / ' +  GLOSA_TRANSPORTE;
+          } else {
+            value = GLOSA_TRANSPORTE;
+          }
+
           break;
       default:
           break;
