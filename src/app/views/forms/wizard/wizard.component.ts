@@ -329,7 +329,7 @@ export class WizardComponent implements OnInit, OnDestroy {
           tipoDocumento: this.comboTiposDocumento.find(o => o.id === documento.tipoDocumento),
           serieDocumento: documento.serie,
           numeroDocumento: documento.secuencia,
-          fechaEmision: this.calcularFechaHoraLocal(documento.fechaEmision) || '',
+          fechaEmision: this.calcularFechaHoraLocalFechaEmision(documento.fechaEmision) || '',
           fechaVencimiento: this.calcularFechaHoraLocal(documento.fechaVencimiento) || '',
           estado: this.comboEstadosFactura.find(o => o.id === documento.estado),
           tipoOperacion: this.comboTiposOperacion.find(o => o.id === documento.tipoOperacion),
@@ -830,6 +830,17 @@ export class WizardComponent implements OnInit, OnDestroy {
       const fe = new Date(fechaString.toString());
       fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
       return fe;
+    }
+
+  }
+
+  calcularFechaHoraLocalFechaEmision(fechaString: Date): Date {
+    if (fechaString) {
+      const fe = new Date(fechaString.toString());
+      fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
+      return fe;
+    } else {
+      this.snack.open('fecha emisión incorrecta, refresque página', 'OK', { duration: 5000 });
     }
 
   }
