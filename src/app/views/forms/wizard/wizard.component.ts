@@ -39,6 +39,9 @@ import { takeUntil } from 'rxjs/operators';
     {
         provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS
     },
+    {
+        provide: LOCALE_ID, useValue: 'en-GB'
+    },
     ],
 })
 export class WizardComponent implements OnInit, OnDestroy {
@@ -606,17 +609,21 @@ export class WizardComponent implements OnInit, OnDestroy {
         this.facturaDocumento.serie = this.facturaForm.controls['serieDocumento'].value;
         this.facturaDocumento.secuencia = this.facturaForm.controls['numeroDocumento'].value;
 
-        const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
+        if (this.facturaForm.controls['fechaEmision'].value ) {
+          const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
+          console.log(fe);
+          this.facturaDocumento.fechaEmision = fe;
+        } else {
+          this.snack.open('Ingrese fecha de emisión !!', 'OK', { duration: 5000 });
+        }
         // fe.setTime(fe.getTime() + fe.getTimezoneOffset() * 60 * 1000);
-        this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
-
         // this.facturaDocumento.fechaEmision = this.calcularFechaHora(fe);
 
         if (this.facturaForm.controls['fechaVencimiento'].value) {
           const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
           //  fv.setTime(fv.getTime() + fv.getTimezoneOffset() * 60 * 1000);
-          this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
-          // this.facturaDocumento.fechaVencimiento = fv;
+          // this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
+          this.facturaDocumento.fechaVencimiento = fv;
         }
 
         // this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
