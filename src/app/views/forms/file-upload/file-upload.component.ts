@@ -559,7 +559,8 @@ export class FileUploadComponent implements OnInit {
   }
 
   calcularImporteTotal() {
-    this.totalImpGuiasLiq_ = (this.subTotalImpGuiasLiq_ + this.igvAplicado_);
+    // Modificaciones
+    this.totalImpGuiasLiq_ = (parseFloat(this.subTotalImpGuiasLiq_.toFixed(2)) + parseFloat(this.igvAplicado_.toFixed(2)));
     return this.totalImpGuiasLiq_;
   }
 
@@ -569,7 +570,6 @@ export class FileUploadComponent implements OnInit {
     this.calcularImporteIGV();
     this.calcularImporteTotal();
   }
-
 
 
   // Grabar Liquidación

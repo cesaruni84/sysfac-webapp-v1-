@@ -12,6 +12,7 @@ import { MaestroChoferesComponent } from './configuracion/maestro-choferes/maest
 import { MaestroTarifasComponent } from './configuracion/maestro-tarifas/maestro-tarifas.component';
 import { MaestroClientesComponent } from './configuracion/maestro-clientes/maestro-clientes.component';
 import { MaestroProductosComponent } from './configuracion/maestro-productos/maestro-productos.component';
+import { FacturaAuditoriaComponent } from './wizard/factura-auditoria/factura-auditoria.component';
 
 export const FormsRoutes: Routes = [
   {
@@ -43,6 +44,11 @@ export const FormsRoutes: Routes = [
       path: 'facturacion/consulta',
       component: FacturaConsultaComponent,
       data: { title: 'Facturación', breadcrumb: 'CONSULTA DE FACTURAS' }
+    },
+    {
+      path: 'facturacion/auditoria',
+      component: FacturaAuditoriaComponent,
+      data: { title: 'Facturación', breadcrumb: 'FACTURA CON ERRORES' }
     },
 
     {

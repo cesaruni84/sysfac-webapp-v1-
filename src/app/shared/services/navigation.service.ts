@@ -531,10 +531,11 @@ export class NavigationService {
       tooltip: 'Forms',
       icon: 'payment',
       state: 'forms',
-      badges: [{ color: 'accent', value: 'Nuevo' }],
+     // badges: [{ color: 'accent', value: 'Nuevo' }]
       sub: [
         { name: 'Registro', state: 'facturacion/registro' },
         { name: 'Consulta', state: 'facturacion/consulta' },
+        { name: 'Auditoria', state: 'facturacion/auditoria'},
         { name: 'Factura Electrónica', state: '404' },
       ]
     },
@@ -544,7 +545,7 @@ export class NavigationService {
       tooltip: 'Tables',
       icon: 'settings',
       state: 'forms',
-      badges: [{ color: 'accent', value: 'Nuevo' }],
+    //  badges: [{ color: 'accent', value: 'Nuevo' }],
       sub: [
         { name: 'Plantas', state: 'configuracion/factorias' },
         { name: 'Tarifas', state: 'configuracion/tarifas' },

@@ -63,6 +63,7 @@ import { TableDetailComponent } from './wizard/table-detail/table-detail.compone
 import { ClientePopupComponent } from './configuracion/maestro-clientes/cliente-popup/cliente-popup.component';
 import { ProductosPopupComponent } from './configuracion/maestro-productos/productos-popup/productos-popup.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { FacturaAuditoriaComponent } from './wizard/factura-auditoria/factura-auditoria.component';
 
 @NgModule({
   imports: [
@@ -124,7 +125,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
                 FacturaItemGuiasComponent,
                 TableDetailComponent,
                 ClientePopupComponent,
-                ProductosPopupComponent],
+                ProductosPopupComponent,
+                FacturaAuditoriaComponent],
    entryComponents: [FacturaPopUpComponent,
                       FacturaItemComponent,
                       FacturaItemGuiasComponent,
