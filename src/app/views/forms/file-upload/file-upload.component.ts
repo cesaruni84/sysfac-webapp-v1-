@@ -903,11 +903,17 @@ export class FileUploadComponent implements OnInit {
   updateSubTotalRow(cell, rowIndex) {
     // console.log('inline editing rowIndex', rowIndex);
     this.editing[rowIndex + '-' + cell] = false;
-    this.rows[rowIndex][cell] = this.rows[rowIndex]['tarifa'] * this.rows[rowIndex]['totalCantidad'] ;
+    this.rows[rowIndex][cell] = this.ajustarDecimales(this.rows[rowIndex]['tarifa'], 2) *
+                                this.ajustarDecimales(this.rows[rowIndex]['totalCantidad'], 2) ;
     this.rows = [...this.rows];
     // console.log('UPDATED!', this.rows[rowIndex][cell]);
     this.recalcularTotales();
   };
+
+
+  ajustarDecimales (value: number , decimales: number) {
+    return parseFloat(value.toFixed(decimales));
+  }
 
   validarGuias() {
     let resultado = true;
