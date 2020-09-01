@@ -165,6 +165,7 @@ export class MaestroChoferesPopupComponent implements OnInit {
   registrar() {
     this.loader.open();
     this.itemChofer.empresa = this.usuarioSession.empresa;
+    this.itemChofer.empresa.id = 1 ; // CORREGIR TEMPORALMENTE
     this.choferService.registrarChofer(this.itemChofer).subscribe((data_) => {
        this.infoResponse_ = data_;
        // this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });
@@ -180,6 +181,7 @@ export class MaestroChoferesPopupComponent implements OnInit {
     this.loader.open();
     this.itemChofer.id = this.data.payload.id;
     this.itemChofer.empresa = this.data.payload.empresa;
+    this.itemChofer.empresa.id = 1 ; // CORREGIR TEMPORALMENTE
     this.choferService.actualizarChofer(this.itemChofer).subscribe((data_) => {
        this.infoResponse_ = data_;
        // this.snack.open(this.infoResponse_.alertMessage, 'OK', { duration: 5000 });

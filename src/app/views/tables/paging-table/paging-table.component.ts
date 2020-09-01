@@ -129,7 +129,8 @@ export class PagingTableComponent implements OnInit, OnDestroy {
 
 
     // Carga de Combos Choferes
-    this.choferService.listarComboChoferes(this.usuarioSession.empresa.id).subscribe(data4 => {
+    // listarComboChoferes(this.usuarioSession.empresa.id)
+    this.choferService.listarComboChoferes(1).subscribe(data4 => {
       this.comboChoferes = data4;
       this.choferesFiltrados.next(data4.slice());
       this.formFilter.controls['choferFiltro'].valueChanges
