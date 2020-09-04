@@ -611,8 +611,20 @@ export class WizardComponent implements OnInit, OnDestroy {
 
         if (this.facturaForm.controls['fechaEmision'].value ) {
           const fe = new Date(this.facturaForm.controls['fechaEmision'].value);
-          console.log(fe);
+          // console.log("fecha de emision: ");
+          // console.log(fe);
+          fe.setTime(fe.getTime() - fe.getTimezoneOffset() * 60 * 1000);
           this.facturaDocumento.fechaEmision = fe;
+          // const fe2 = new Date(this.facturaForm.controls['fechaEmision'].value).toLocaleString("en-GB", {timeZone: "America/Bogota"});
+          // console.log(new Date(fe2));
+          // this.facturaDocumento.fechaEmision  = fe;
+          // this.facturaDocumento.fechaEmision.toLocaleDateString("en-GB", {timeZone: "America/Bogota"});
+          // this.facturaDocumento.fechaEmision.toLocaleTimeString({timeZone: "America/Bogota"});
+          // this.facturaDocumento.fechaEmision = this.facturaForm.controls['fechaEmision'].value;
+          // console.log(new Date(this.facturaForm.controls['fechaEmision'].value).toLocaleString("en-GB", {timeZone: "America/Bogota"}))
+
+          // this.facturaDocumento.fechaEmision = new Date(this.facturaForm.controls['fechaEmision'].value);
+
         } else {
           this.snack.open('Ingrese fecha de emisión !!', 'OK', { duration: 5000 });
         }
@@ -621,7 +633,7 @@ export class WizardComponent implements OnInit, OnDestroy {
 
         if (this.facturaForm.controls['fechaVencimiento'].value) {
           const fv = new Date(this.facturaForm.controls['fechaVencimiento'].value);
-          //  fv.setTime(fv.getTime() + fv.getTimezoneOffset() * 60 * 1000);
+          fv.setTime(fv.getTime() - fv.getTimezoneOffset() * 60 * 1000);
           // this.facturaDocumento.fechaVencimiento = this.calcularFechaHora(fv);
           this.facturaDocumento.fechaVencimiento = fv;
         }
@@ -687,6 +699,9 @@ export class WizardComponent implements OnInit, OnDestroy {
 
        if (!this.edicion) {
          this.registrar();
+         // console.log('termino OK');
+         // this.loader.close();
+
        }else {
          this.actualizar();
        }
