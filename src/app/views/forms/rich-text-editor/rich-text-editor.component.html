@@ -104,11 +104,11 @@
         [limit]="5" [rows]="rows" [columns]="columns" [messages]="messages">
         <!-- <ngx-datatable-column [width]="30" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
         </ngx-datatable-column> -->
-        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="70">
+        <ngx-datatable-column name="Acciones" [flexGrow]="1" [width]="90">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <span title="Consultar Liquidación {{ row?.nrodoc }}">
-                    <button mat-icon-button mat-sm-button color="primary" class="mr-1"  (click)="consultarLiquidacion(row)"><mat-icon align ="center top">search</mat-icon></button>
-                <!-- <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarGuia(row)"><mat-icon>delete</mat-icon></button> -->
+                    <button mat-icon-button mat-sm-button color="primary"  (click)="consultarLiquidacion(row)"><mat-icon align ="center top">search</mat-icon></button>
+                   <button mat-icon-button mat-sm-button color="warn" matTooltip="Eliminar" (click)="eliminarLiquidacion(row)"><mat-icon>delete</mat-icon></button>
                 </span>
             </ng-template>
         </ngx-datatable-column>
@@ -134,7 +134,7 @@
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Factura" [flexGrow]="1" [width]="120" prop="factura.ordenServicio">
+        <ngx-datatable-column name="Factura" [flexGrow]="1" [width]="100" prop="factura.ordenServicio">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <div [style.fontSize.px]="12" style="color:#3f51b5"> {{ row.documento != null ? row?.documento.serie + '-' +row?.documento.secuencia : '-'}} </div>
             </ng-template>

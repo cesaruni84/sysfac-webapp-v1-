@@ -19,10 +19,11 @@ import { MatSnackBar } from '@angular/material';
 import { ExcelService } from '../../../shared/services/util/excel.service';
 import { formatDate } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorResponse } from '../../../shared/models/error_response.model';
+import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
 import { throwError, Subject, ReplaySubject } from 'rxjs';
 import { ChipColor } from '../../forms/wizard/factura-consulta/factura-consulta.component';
 import { takeUntil } from 'rxjs/operators';
+import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 
 @Component({
   selector: 'app-paging-table',
@@ -50,7 +51,7 @@ export class PagingTableComponent implements OnInit, OnDestroy {
   formFilter: FormGroup;
   errorResponse_: ErrorResponse;
   chip: ChipColor = {name: 'Primary', color: undefined};
-
+  infoResponse_: InfoResponse;
 
   // Ng Model
   public valorNroSerie_: string;
@@ -94,6 +95,7 @@ export class PagingTableComponent implements OnInit, OnDestroy {
     private router: Router,
     private excelService: ExcelService,
     private userService: UsuarioService,
+    private confirmService: AppConfirmService,
     public snackBar: MatSnackBar,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
@@ -501,6 +503,29 @@ export class PagingTableComponent implements OnInit, OnDestroy {
       default:
           return '-';
     }
+  }
+
+  eliminarGuia(row) {
+
+    this.confirmService
+      .confirm({
+        message: `Confirma eliminar la guia de remisión: 
+    ${row.nroguia}  -  ${row.nroSecuencia} ?`
+      })
+      .subscribe(res => {
+        if (res) {
+          this.loader.open();
+          this.guiaRemisionService.eliminarGuiaBD(row)
+            .subscribe(data => {
+              this.infoResponse_ = data;
+              this.loader.close();
+              this.snackBar.open(this.infoResponse_ .alertMessage, 'OK', { duration: 5000 });
+              this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+                this.filtrar();
+              });
+          });
+        }
+      });
   }
 
 

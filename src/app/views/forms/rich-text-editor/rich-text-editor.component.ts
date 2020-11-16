@@ -18,6 +18,7 @@ import { ExcelService } from '../../../shared/services/util/excel.service';
 import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.component';
 import { Subject, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 
 @Component({
   selector: 'app-rich-text-editor',
@@ -85,6 +86,7 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
     private liquidacionService: LiquidacionService,
     public snackBar: MatSnackBar,
     public excelService: ExcelService,
+    private confirmService: AppConfirmService,
     private dialog: MatDialog,
     @Inject(LOCALE_ID) private locale: string,
     private loader: AppLoaderService) {
@@ -312,6 +314,28 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
   // Envia a Página de Consulta de Documento de Liquidación
   consultarLiquidacion(row) {
     this.router.navigate(['/forms/liquidacion'], { queryParams: { nroDocLiq: row.nrodoc } });
+  }
+
+  eliminarLiquidacion(row) {
+
+    this.confirmService
+      .confirm({
+        message: `Confirma eliminar la liquidacion :  ${row.nrodoc}  ?`
+      })
+      .subscribe(res => {
+        if (res) {
+          this.loader.open();
+          this.liquidacionService.eliminarLiquidacionBD( this.usuarioSession.empresa.id, row)
+            .subscribe(data => {
+              this.infoResponse_ = data;
+              this.loader.close();
+              this.snackBar.open(this.infoResponse_ .alertMessage, 'OK', { duration: 5000 });
+              this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
+                this.filtrarLiquidaciones();
+              });
+          });
+        }
+      });
   }
 
 

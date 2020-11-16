@@ -65,4 +65,10 @@ export class LiquidacionService {
     return this.http.get<Liquidacion[]>(this.url + idEmpresa + '/liquidaciones/SRV0', { params: params });
   }
 
+  eliminarLiquidacionBD(idEmpresa: number, liquidacion: any) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.delete<any>(this.url + idEmpresa + '/liquidaciones' + '/eliminar/' + liquidacion.id, this.httpOptions);
+
+  }
+
 }

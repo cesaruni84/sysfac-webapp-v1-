@@ -161,4 +161,11 @@ export class GuiaRemisionService {
     return this.http.get<GuiaRemision[]>(this.url + idEmpresa + '/guias/SRV4', { params: params });
   }
 
+
+  eliminarGuiaBD(guiaRemision: any) {
+    // let headers = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.delete<any>(this.url2 + '/eliminar/' + guiaRemision.id, this.httpOptions);
+
+  }
+
 }
