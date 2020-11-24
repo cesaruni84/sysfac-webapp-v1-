@@ -515,7 +515,7 @@ export class PagingTableComponent implements OnInit, OnDestroy {
       .subscribe(res => {
         if (res) {
           this.loader.open();
-          this.guiaRemisionService.eliminarGuiaBD(row)
+          this.guiaRemisionService.eliminarGuiaBD(row.nroguia, row.nroSecuencia, this.usuarioSession.empresa.id)
             .subscribe(data => {
               this.infoResponse_ = data;
               this.loader.close();

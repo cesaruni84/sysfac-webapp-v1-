@@ -162,9 +162,9 @@ export class GuiaRemisionService {
   }
 
 
-  eliminarGuiaBD(guiaRemision: any) {
+  eliminarGuiaBD(nroSerie: string , nroSecuencia: string , idEmpresa: number) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.delete<any>(this.url2 + '/eliminar/' + guiaRemision.id, this.httpOptions);
+    return this.http.delete<any>(this.url + idEmpresa  + '/guias/' + nroSerie + '/' + nroSecuencia, this.httpOptions);
 
   }
 

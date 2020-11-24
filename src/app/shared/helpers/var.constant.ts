@@ -1,7 +1,7 @@
 // tslint:disable-next-line:eofline
 export const GLOSA_TRANSPORTE = 'TRANSPORTE';
 
-// Desarrollo - Local Backend - BD AWS
+// Desarrollo - Local Backend - BD AWSng
 // export const HOST = 'http://localhost:8080/v1/sisyfac/api';
 
 // Desarrollo - AWS Backend - BD AWS
