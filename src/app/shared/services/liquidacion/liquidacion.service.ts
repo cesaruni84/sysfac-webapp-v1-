@@ -67,7 +67,7 @@ export class LiquidacionService {
 
   eliminarLiquidacionBD(idEmpresa: number, liquidacion: any) {
     // let headers = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.delete<any>(this.url + idEmpresa + '/liquidaciones' + '/eliminar/' + liquidacion.id, this.httpOptions);
+    return this.http.delete<any>(this.url + idEmpresa + '/liquidaciones/'  + liquidacion.nrodoc, this.httpOptions);
 
   }
 

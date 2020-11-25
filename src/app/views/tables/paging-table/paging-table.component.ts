@@ -523,6 +523,10 @@ export class PagingTableComponent implements OnInit, OnDestroy {
               this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
                 this.filtrar();
               });
+          },
+          (error: HttpErrorResponse) => {
+            this.loader.close();
+            this.handleError(error);
           });
         }
       });

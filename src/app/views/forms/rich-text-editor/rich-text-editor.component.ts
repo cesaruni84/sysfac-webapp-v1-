@@ -16,7 +16,7 @@ import { MatSnackBar, DateAdapter, MAT_DATE_FORMATS, MatDialogRef, MatDialog } f
 import { AppDateAdapter, APP_DATE_FORMATS } from '../../../shared/helpers/date.adapter';
 import { ExcelService } from '../../../shared/services/util/excel.service';
 import { OrdenesServicioComponent } from '../ordenes-servicio/ordenes-servicio.component';
-import { Subject, ReplaySubject } from 'rxjs';
+import { Subject, ReplaySubject, throwError } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AppConfirmService } from '../../../shared/services/app-confirm/app-confirm.service';
 
@@ -333,10 +333,42 @@ export class RichTextEditorComponent implements OnInit, OnDestroy {
               this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
                 this.filtrarLiquidaciones();
               });
+          },
+          (error: HttpErrorResponse) => {
+            this.loader.close();
+            this.handleError(error);
           });
         }
       });
   }
+
+  private handleError(error: HttpErrorResponse) {
+
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      // this.errorResponse_ = error.error;
+      this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 10000 });
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      if (error.error.codeMessage != null ) {
+        this.errorResponse_ = error.error;
+        this.snackBar.open(this.errorResponse_.errorMessage, 'OK', { duration: 10000 });
+      } else {
+        this.snackBar.open('Error de comunicación con los servicios. Intenta nuevamente.', 'OK',
+                         { duration: 10000 , verticalPosition: 'top', horizontalPosition: 'end'});
+        console.error(
+          `Backend returned code ${error.status}, ` +
+          `body was: ${error.error}`);
+      }
+
+    }
+    // return an observable with a user-facing error message
+    return throwError(
+      'Ocurrió un error inesperado, volver a intentar.');
+  };
+
 
 
 }
