@@ -949,6 +949,19 @@ export class FileUploadComponent implements OnInit {
   }
 
 
+  get moneda (): FormControl {
+    return this.formLiquidacion.get('moneda') as FormControl;
+  }
+
+  get estado (): FormControl {
+    return this.formLiquidacion.get('estado') as FormControl;
+  }
+
+  get situacion (): FormControl {
+    return this.formLiquidacion.get('situacion') as FormControl;
+  }
+
+
   private handleError(error: HttpErrorResponse) {
 
     this.loader.close();
@@ -978,17 +991,17 @@ export class FileUploadComponent implements OnInit {
   };
 
   captureScreen() {
-    const doc = new jspdf('l');
+    const documento = new jspdf('Landscape');
     this.listadoGuias = this.rows;
 
-    var lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
+    const lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
 
     this.listadoGuias.forEach(function(itemGuias, index){
-      let guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
+      const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
         guiaPDF.id = index + 1;
         guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
-        guiaPDF.guiaRemision = itemGuias.serie + itemGuias.secuencia;
-        guiaPDF.guiaCliente = itemGuias.serieCliente + itemGuias.secuenciaCliente;
+        guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
+        guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
         guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
         guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
         guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
@@ -998,44 +1011,102 @@ export class FileUploadComponent implements OnInit {
         lista.push(guiaPDF);
     }, this);
 
+    let finalY = documento.lastAutoTable.finalY || 0 ;
 
-    doc.autoTable({
-      headStyles: {fillColor: [155, 89, 182]}, // Purple
-      columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}}, // European countries centered
-      // body: [{europe: 'Sweden', america: 'Canada', asia: 'China'}, {europe: 'Norway', america: 'Mexico', asia: 'Japan'}],
+    // documento.setFontSize(18);
+    // documento.setFontSize(11);
+    // documento.text('With content', 50, 40);
+    // documento.setFontSize(11);
+    // documento.setTextColor(100);
+
+
+    documento.autoTable({
+      // headStyles: {fillColor: [155, 89, 182]}, // Purple
+      // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+      body:  [
+        [this.usuarioSession.empresa.razonSocial, '2020/10/01'],
+      ],
+      bodyStyles: {
+        font: 'helvetica', fontSize: 9, overflow: 'ellipsize'
+      },
+      // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
+      theme: 'plain',
+      startY: finalY + 10,
+      showHead: 'firstPage',
+      columns: [{header: 'EMPRESA:',  columnWidth: 200},
+                {header: 'FECHA REGISTRO:', columnWidth: 10},
+              ],
+      columnStyles: {
+            empresa: {
+                columnWidth: 200, fontSize: 10
+            },
+            fechaRegistro: {
+                columnWidth: 10, fontSize: 10, halign: 'right'
+            }
+       },
+    });
+
+    finalY = documento.lastAutoTable.finalY;
+
+    documento.autoTable({
+      // headStyles: {fillColor: [155, 89, 182]}, // Purple
+      // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+      body:  [
+        [this.nroDocumentoLiq.value, 'Soles', 'Vigente', 'Pendiente'],
+      ],
+      bodyStyles: {
+        font: 'helvetica', fontSize: 10, overflow: 'ellipsize'
+      },
+      // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
+      theme: 'plain',
+      startY: finalY + 10,
+      showHead: 'firstPage',
+      columns: [{header: 'NRO LIQUIDACION:',  columnWidth: 100},
+                {header: 'MONEDA:', columnWidth: 10},
+                {header: 'ESTADO:', columnWidth: 10},
+                {header: 'SITUACION:', columnWidth: 10},
+              ],
+      columnStyles: {
+            //empresa: {
+             //   columnWidth: 200, fontSize: 10
+            //},
+            //fechaRegistro: {
+              //  columnWidth: 10, fontSize: 10, halign: 'right'
+            //}
+       },
+    });
+
+    finalY = documento.lastAutoTable.finalY;
+
+        // jsPDF 1.4+ uses getWidth, <1.4 uses .width
+    // var pageSize = documento.internal.pageSize;
+    // var pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+    // var text = documento.splitTextToSize('mucho texto', pageWidth - 35, {});
+    // documento.text(text, 14, 30);
+
+    documento.autoTable({
+      // headStyles: {fillColor: [155, 89, 182]}, // Purple
+      columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
       body: lista,
       styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
       theme: 'striped',
+      startY: finalY + 10,
+      showHead: 'firstPage',
       columns: [{header: 'Item', dataKey: 'id'},
                 {header: 'F.Traslado', dataKey: 'fechaTraslado'},
                 {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
                 {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
                 {header: 'Descripción', dataKey: 'descripcion'},
-                {header: 'Ticket Balanza', dataKey: 'ticketBalanza'},
                 {header: 'UM', dataKey: 'unidadMedida'},
                 {header: 'Cantidad', dataKey: 'cantidad'},
                 {header: 'P.Unitario', dataKey: 'tarifa'},
                 {header: 'Sub Total', dataKey: 'subTotal'},
               ]
     });
+    documento.text("hola", 28, documento.lastAutoTable.finalY + 10);
+    documento.save('table.pdf');
 
 
-  doc.save('table.pdf');
-
-    // var data = document.getElementById('idLiquidacion');
-    // html2canvas(data).then(canvas => {
-    //   // Few necessary setting options
-    //   var imgWidth = 208;
-    //   var pageHeight = 295;
-    //   var imgHeight = canvas.height * imgWidth / canvas.width;
-    //   var heightLeft = imgHeight;
-
-    //   const contentDataURL = canvas.toDataURL('image/png');
-    //   let pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-    //   var position = 0;
-    //   pdf.addImage(contentDataURL, 'PDF', 0, position, imgWidth, imgHeight);
-    //   pdf.save('MYPdf.pdf'); // Generated PDF
-    // });
   }
 
 
