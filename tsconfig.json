@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "types": ["node"], //fix
     "paths": {
       "exceljs": [
         "node_modules/exceljs/dist/exceljs.min"

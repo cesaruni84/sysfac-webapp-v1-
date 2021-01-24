@@ -31,6 +31,8 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { throwError } from 'rxjs';
 import { globalCacheBusterNotifier } from 'ngx-cacheable';
 import { Documento } from '../../../shared/models/facturacion.model';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { ConstantPool } from '@angular/compiler/src/constant_pool';
 
 
 @Component({
@@ -128,6 +130,7 @@ export class FileUploadComponent implements OnInit {
 
   // Listado de Guias
   listadoGuias: GuiaRemision[];
+  listaGuiasPorDestino: GuiaRemision[];
   rowsGuias = [];
   rowsSelected = [];
   rows = [];
@@ -681,6 +684,7 @@ export class FileUploadComponent implements OnInit {
       this.inserto = true;
       this.snackBar._openedSnackBarRef.afterDismissed().subscribe(() => {
         this.nuevaLiquidacion();
+        //modificar aqui
       });
     },
     (error: HttpErrorResponse) => {
@@ -990,91 +994,263 @@ export class FileUploadComponent implements OnInit {
       'Ocurrió un error inesperado, volver a intentar.');
   };
 
+  groupBy1(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+         const key = keyGetter(item);
+         const collection = map.get(key);
+         if (!collection) {
+             map.set(key, [item]);
+         } else {
+             collection.push(item);
+         }
+    });
+    return map;
+  }
+
+  groupBy2(key) {
+    return function group(array) {
+      return array.reduce((acc, obj) => {
+        const property = obj[key];
+        acc[property] = acc[property] || [];
+        acc[property].push(obj);
+        return acc;
+      }, {});
+    };
+  }
+
+
+
   captureScreen() {
     const documento = new jspdf('Landscape');
-    this.listadoGuias = this.rows;
-
-    const lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
-
-    this.listadoGuias.forEach(function(itemGuias, index){
-      const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
-        guiaPDF.id = index + 1;
-        guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
-        guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
-        guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
-        guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
-        guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
-        guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
-        guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
-        guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
-        guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
-        lista.push(guiaPDF);
-    }, this);
 
     let finalY = documento.lastAutoTable.finalY || 0 ;
+    let initialMarginY = 15;
+    let initialMarginX = 15;
+
 
     // documento.setFontSize(18);
     // documento.setFontSize(11);
+
+    let pageSize = documento.internal.pageSize;
+    let pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+
+    //TITULO
+    documento.setFontSize(14);
+    documento.setFont('Calibri', 'bold');
+    documento.text('REPORTE DE LIQUIDACION', pageWidth*0.5,initialMarginY, {align:'center'});
+    documento.text('___________________________', pageWidth*0.5,initialMarginY+1, {align:'center'});
+    initialMarginY = initialMarginY + 5
+
+    // LINEA 1
+    initialMarginY = initialMarginY + 10
+    documento.setFontSize(9);
+    documento.setFont('Calibri', 'bold');
+    documento.text('EMPRESA :', initialMarginX,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.usuarioSession.empresa.razonSocial + ' - RUC ' +this.usuarioSession.empresa.ruc , initialMarginX + 25, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('FECHA REGISTRO :', pageWidth*0.72,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.85, initialMarginY);
+
+    // LINEA 2
+    initialMarginY = initialMarginY + 10
+    documento.setFontSize(9);
+    documento.setFont('Calibri', 'bold');
+    documento.text('NRO. DE DOCUMENTO :', initialMarginX,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, initialMarginX + 45, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('MONEDA :', pageWidth*0.33,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.40, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('ESTADO :', pageWidth*0.52,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.59, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('SITUACION :', pageWidth*0.72,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.81, initialMarginY);
+
+    // LINEA 3
+    initialMarginY = initialMarginY + 10
+    documento.setFont('Calibri', 'bold');
+    documento.text('FECHA INI TRASLADO :', initialMarginX,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, initialMarginX +45, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('FECHA FIN TRASLADO :', pageWidth*0.33,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.48, initialMarginY);
+    documento.setFont('Calibri', 'bold');
+    documento.text('MOTIVO TRASLADO :', pageWidth*0.60,initialMarginY);
+    documento.setFont('Calibri', 'normal');
+    documento.text(this.nroDocumentoLiq.value, pageWidth*0.72, initialMarginY);
+
+    // Carga registros con guias
+    this.listadoGuias = this.rows;
+
+    //const listaGuiasPorDestino_ = this.groupBy2('idDestino');
+    //console.log(listaGuiasPorDestino_(this.listadoGuias));
+
+    //this.listaGuiasPorDestino = listaGuiasPorDestino_(this.listadoGuias);
+    //console.log( this.listaGuiasPorDestino);
+
+    const grouped = this.groupBy1(this.listadoGuias, listadoGuias => listadoGuias.idDestino);
+    console.log( grouped.entries());
+    grouped.forEach((arrayGuiasPorDestino: GuiaRemision[], key: string) => {
+      console.log(key, arrayGuiasPorDestino);
+      initialMarginY = initialMarginY + 10;
+      documento.setFontSize(8);
+      documento.line(initialMarginX, initialMarginY, pageWidth*0.95, initialMarginY);
+      initialMarginY = initialMarginY + 15;
+
+      // Origen - Destino
+      documento.setFontSize(9);
+      documento.setFont('Calibri', 'bold');
+      documento.text('ORIGEN :', initialMarginX,initialMarginY);
+      documento.setFont('Calibri', 'normal');
+      documento.text(this.nroDocumentoLiq.value, initialMarginX + 20, initialMarginY);
+      documento.setFont('Calibri', 'bold');
+      documento.text('DESTINO :', pageWidth*0.50,initialMarginY);
+      documento.setFont('Calibri', 'normal');
+      documento.text(this.nroDocumentoLiq.value, pageWidth*0.60, initialMarginY);
+
+      const lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
+      // Formateo de campos
+      arrayGuiasPorDestino.forEach(function(itemGuias, index){
+        const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
+          guiaPDF.id = index + 1;
+          guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
+          guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
+          guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
+          guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
+          guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
+          guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
+          guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
+          guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
+          guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
+          lista.push(guiaPDF);
+      }, this);
+
+      // Pinta Tabla en PDF por origen-destino
+      documento.autoTable({
+        // headStyles: {fillColor: [155, 89, 182]}, // Purple
+        columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+        body: lista,
+        styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
+        theme: 'striped',
+        startY: initialMarginY + 15,
+        showHead: 'firstPage',
+        columns: [{header: 'Item', dataKey: 'id'},
+                  {header: 'F.Traslado', dataKey: 'fechaTraslado'},
+                  {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
+                  {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
+                  {header: 'Descripción', dataKey: 'descripcion'},
+                  {header: 'UM', dataKey: 'unidadMedida'},
+                  {header: 'Cantidad', dataKey: 'cantidad'},
+                  {header: 'P.Unitario', dataKey: 'tarifa'},
+                  {header: 'Sub Total', dataKey: 'subTotal'},
+                ]
+      });
+
+      initialMarginY = documento.lastAutoTable.finalY;
+
+    });
+
+    // console.log(grouped.get("114"));
+
+    // this.listaGuiasPorDestino.forEach(function(arrayGuiasPorDestino, index){
+      // console.log(arrayGuiasPorDestino);
+    // });
+
+
+    // Formateo de Campos
+    // this.listadoGuias.forEach(function(itemGuias, index){
+    //   const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
+    //     guiaPDF.id = index + 1;
+    //     guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
+    //     guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
+    //     guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
+    //     guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
+    //     guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
+    //     guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
+    //     guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
+    //     guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
+    //     guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
+    //     lista.push(guiaPDF);
+    // }, this);
+
+
+
+
+
+
+
+    // documento.line(30, 20, 80, 20);
+
     // documento.text('With content', 50, 40);
     // documento.setFontSize(11);
     // documento.setTextColor(100);
 
 
-    documento.autoTable({
-      // headStyles: {fillColor: [155, 89, 182]}, // Purple
-      // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-      body:  [
-        [this.usuarioSession.empresa.razonSocial, '2020/10/01'],
-      ],
-      bodyStyles: {
-        font: 'helvetica', fontSize: 9, overflow: 'ellipsize'
-      },
-      // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
-      theme: 'plain',
-      startY: finalY + 10,
-      showHead: 'firstPage',
-      columns: [{header: 'EMPRESA:',  columnWidth: 200},
-                {header: 'FECHA REGISTRO:', columnWidth: 10},
-              ],
-      columnStyles: {
-            empresa: {
-                columnWidth: 200, fontSize: 10
-            },
-            fechaRegistro: {
-                columnWidth: 10, fontSize: 10, halign: 'right'
-            }
-       },
-    });
+    // documento.autoTable({
+    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
+    //   // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+    //   body:  [
+    //     [this.usuarioSession.empresa.razonSocial, '2020/10/01'],
+    //   ],
+    //   bodyStyles: {
+    //     font: 'helvetica', fontSize: 9, overflow: 'ellipsize'
+    //   },
+    //   // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
+    //   theme: 'plain',
+    //   startY: finalY + 10,
+    //   showHead: 'firstPage',
+    //   columns: [{header: 'EMPRESA',  columnWidth: 200},
+    //             {header: 'FECHA REGISTRO', columnWidth: 10},
+    //           ],
+    //   columnStyles: {
+    //         empresa: {
+    //             columnWidth: 200, fontSize: 10
+    //         },
+    //         fechaRegistro: {
+    //             columnWidth: 10, fontSize: 10, halign: 'right'
+    //         }
+    //    },
+    // });
 
-    finalY = documento.lastAutoTable.finalY;
+    // finalY = documento.lastAutoTable.finalY;
 
-    documento.autoTable({
-      // headStyles: {fillColor: [155, 89, 182]}, // Purple
-      // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-      body:  [
-        [this.nroDocumentoLiq.value, 'Soles', 'Vigente', 'Pendiente'],
-      ],
-      bodyStyles: {
-        font: 'helvetica', fontSize: 10, overflow: 'ellipsize'
-      },
-      // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
-      theme: 'plain',
-      startY: finalY + 10,
-      showHead: 'firstPage',
-      columns: [{header: 'NRO LIQUIDACION:',  columnWidth: 100},
-                {header: 'MONEDA:', columnWidth: 10},
-                {header: 'ESTADO:', columnWidth: 10},
-                {header: 'SITUACION:', columnWidth: 10},
-              ],
-      columnStyles: {
-            //empresa: {
-             //   columnWidth: 200, fontSize: 10
-            //},
-            //fechaRegistro: {
-              //  columnWidth: 10, fontSize: 10, halign: 'right'
-            //}
-       },
-    });
+    // documento.autoTable({
+    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
+    //   // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+    //   body:  [
+    //     [this.nroDocumentoLiq.value, 'Soles', 'Vigente', 'Pendiente'],
+    //   ],
+    //   bodyStyles: {
+    //     font: 'helvetica', fontSize: 10, overflow: 'ellipsize'
+    //   },
+    //   // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
+    //   theme: 'plain',
+    //   startY: finalY + 50,
+    //   showHead: 'firstPage',
+    //   columns: [{header: 'NRO LIQUIDACION:',  columnWidth: 100},
+    //             {header: 'MONEDA:', columnWidth: 10},
+    //             {header: 'ESTADO:', columnWidth: 10},
+    //             {header: 'SITUACION:', columnWidth: 10},
+    //           ],
+    //   columnStyles: {
+    //         //empresa: {
+    //          //   columnWidth: 200, fontSize: 10
+    //         //},
+    //         //fechaRegistro: {
+    //           //  columnWidth: 10, fontSize: 10, halign: 'right'
+    //         //}
+    //    },
+    // });
 
     finalY = documento.lastAutoTable.finalY;
 
@@ -1084,26 +1260,26 @@ export class FileUploadComponent implements OnInit {
     // var text = documento.splitTextToSize('mucho texto', pageWidth - 35, {});
     // documento.text(text, 14, 30);
 
-    documento.autoTable({
-      // headStyles: {fillColor: [155, 89, 182]}, // Purple
-      columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-      body: lista,
-      styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
-      theme: 'striped',
-      startY: finalY + 10,
-      showHead: 'firstPage',
-      columns: [{header: 'Item', dataKey: 'id'},
-                {header: 'F.Traslado', dataKey: 'fechaTraslado'},
-                {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
-                {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
-                {header: 'Descripción', dataKey: 'descripcion'},
-                {header: 'UM', dataKey: 'unidadMedida'},
-                {header: 'Cantidad', dataKey: 'cantidad'},
-                {header: 'P.Unitario', dataKey: 'tarifa'},
-                {header: 'Sub Total', dataKey: 'subTotal'},
-              ]
-    });
-    documento.text("hola", 28, documento.lastAutoTable.finalY + 10);
+    // documento.autoTable({
+    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
+    //   columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
+    //   body: lista,
+    //   styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
+    //   theme: 'striped',
+    //   startY: finalY + 10,
+    //   showHead: 'firstPage',
+    //   columns: [{header: 'Item', dataKey: 'id'},
+    //             {header: 'F.Traslado', dataKey: 'fechaTraslado'},
+    //             {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
+    //             {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
+    //             {header: 'Descripción', dataKey: 'descripcion'},
+    //             {header: 'UM', dataKey: 'unidadMedida'},
+    //             {header: 'Cantidad', dataKey: 'cantidad'},
+    //             {header: 'P.Unitario', dataKey: 'tarifa'},
+    //             {header: 'Sub Total', dataKey: 'subTotal'},
+    //           ]
+    // });
+   // documento.text("hola", 28, documento.lastAutoTable.finalY + 10);
     documento.save('table.pdf');
 
 
