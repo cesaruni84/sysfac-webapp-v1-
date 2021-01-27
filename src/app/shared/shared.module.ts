@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe ,DecimalPipe} from '@angular/common';
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
-import { 
+import {
   MatSidenavModule,
   MatListModule,
   MatTooltipModule,
@@ -37,7 +37,7 @@ import { SidebarTopComponent } from './components/sidebar-top/sidebar-top.compon
 // ONLY FOR DEMO (Removable without changing any layout configuration)
 import { CustomizerComponent } from './components/customizer/customizer.component';
 
-// ALL TIME REQUIRED 
+// ALL TIME REQUIRED
 import { AdminLayoutComponent } from './components/layouts/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from './components/layouts/auth-layout/auth-layout.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
@@ -70,7 +70,7 @@ import { AppConfirmService } from './services/app-confirm/app-confirm.service';
 import { AppLoaderService } from './services/app-loader/app-loader.service';
 
 
-/* 
+/*
   Only Required if you want to use Angular Landing
   (https://themeforest.net/item/angular-landing-material-design-angular-app-landing-page/21198258)
 */
@@ -137,6 +137,7 @@ const classesToInclude = [
     NavigationService,
     RoutePartsService,
     DatePipe,
+    DecimalPipe,
     ExcelService,
     TiposGenericosService,
     AuthGuard,

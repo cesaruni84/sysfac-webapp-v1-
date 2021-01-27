@@ -14,7 +14,7 @@ import { MotivoTrasladoService } from '../../../shared/services/motivos-traslado
 import { MotivoTraslado } from '../../../shared/models/motivo_traslado.model';
 import { GuiaRemisionService } from '../../../shared/services/guias/guia-remision.service';
 import { MatSnackBar } from '@angular/material';
-import { formatDate, DatePipe } from '@angular/common';
+import { formatDate, DatePipe, DecimalPipe } from '@angular/common';
 import { AppLoaderService } from '../../../shared/services/app-loader/app-loader.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse, InfoResponse } from '../../../shared/models/error_response.model';
@@ -67,6 +67,23 @@ export class FileUploadComponent implements OnInit {
   public comboFactoriasDestino: Factoria[] = [];
   public comboMotivosTraslado: MotivoTraslado[];
 
+  // Combo de Valores constantes
+  public comboMonedas = [
+    { id: '0', codigo: '000' , descripcion: 'SOLES (S/)' },
+    { id: '1', codigo: '001' , descripcion: 'DOLARES ($)'},
+  ];
+
+  public comboEstadoLiq = [
+    { id: '1', codigo: '001' , descripcion: 'VIGENTE' },
+    { id: '2', codigo: '002' , descripcion: 'VENCIDO'},
+  ];
+
+  public comboSituacionLiq = [
+    { id: '1', codigo: '001' , descripcion: 'PENDIENTE' },
+    { id: '2', codigo: '002' , descripcion: 'EN PROCESO'},
+    { id: '3', codigo: '003' , descripcion: 'PROCESADO'},
+  ];
+
   // Manejo insert o update
   idNroDocLiq: number;
   public nroDocLiqQuery: string;
@@ -111,7 +128,6 @@ export class FileUploadComponent implements OnInit {
 
   // Ng Model
   liquidacionModel: Liquidacion;
-  // valorNroDocumentoLiq_: string;
   estadoLiquidacion_: string;
   situacionLiquidacion_: string;
   monedaLiquidacion_: string;
@@ -165,7 +181,9 @@ export class FileUploadComponent implements OnInit {
               private confirmService: AppConfirmService,
               private route: ActivatedRoute,
               private router: Router,
+              public datepipe: DatePipe,
               private fb: FormBuilder,
+              private _decimalPipe: DecimalPipe,
               private dialog: MatDialog,
               private loader: AppLoaderService,
               public snackBar: MatSnackBar,
@@ -965,6 +983,16 @@ export class FileUploadComponent implements OnInit {
     return this.formLiquidacion.get('situacion') as FormControl;
   }
 
+  get motivoTraslado (): FormControl {
+    return this.formLiquidacion.get('motivoTraslado') as FormControl;
+  }
+  get fechaIniTraslado (): FormControl {
+    return this.formLiquidacion.get('fechaIniTraslado') as FormControl;
+  }
+
+  get fechaFinTraslado (): FormControl {
+    return this.formLiquidacion.get('fechaFinTraslado') as FormControl;
+  }
 
   private handleError(error: HttpErrorResponse) {
 
@@ -994,7 +1022,7 @@ export class FileUploadComponent implements OnInit {
       'Ocurrió un error inesperado, volver a intentar.');
   };
 
-  groupBy1(list, keyGetter) {
+  groupByKey(list, keyGetter) {
     const map = new Map();
     list.forEach((item) => {
          const key = keyGetter(item);
@@ -1019,28 +1047,41 @@ export class FileUploadComponent implements OnInit {
     };
   }
 
+  convertDateToString(input:any): string {
+    return this.datepipe.transform(input, 'dd/MM/yyyy');
+  }
 
 
   captureScreen() {
-    const documento = new jspdf('Landscape');
+    const orientation = 'l'   // portrait(p) , landscape (l) -p : horizontal , - l:vertical
+    const unit = 'mm'  //  "pt" (points), "mm", "cm", "m", "in" or "px".
+    const format = 'a4';
 
-    let finalY = documento.lastAutoTable.finalY || 0 ;
+    const EXTENSION = '_.pdf';
+    const FILE_NAME_REPORTE = 'ReporteLiquidacion_';
+
+    const documento = new jspdf('landscape');
     let initialMarginY = 15;
     let initialMarginX = 15;
-
-
-    // documento.setFontSize(18);
-    // documento.setFontSize(11);
-
+    const defaulMarginY = 15;
+    const defaultBreakPage = 160;
     let pageSize = documento.internal.pageSize;
-    let pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+    const pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
+    const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
 
     //TITULO
+    documento.setTextColor(45,45,45);
     documento.setFontSize(14);
     documento.setFont('Calibri', 'bold');
     documento.text('REPORTE DE LIQUIDACION', pageWidth*0.5,initialMarginY, {align:'center'});
-    documento.text('___________________________', pageWidth*0.5,initialMarginY+1, {align:'center'});
+    // documento.text('___________________________', pageWidth*0.5,initialMarginY+1, {align:'center'});
     initialMarginY = initialMarginY + 5
+
+    // LINEA 0
+    documento.setLineWidth(0.1);
+    documento.setDrawColor(0, 0, 0);
+    documento.setLineDash([0.5]);
+    documento.line(initialMarginX, initialMarginY, pageWidth*0.95, initialMarginY);
 
     // LINEA 1
     initialMarginY = initialMarginY + 10
@@ -1052,7 +1093,7 @@ export class FileUploadComponent implements OnInit {
     documento.setFont('Calibri', 'bold');
     documento.text('FECHA REGISTRO :', pageWidth*0.72,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.85, initialMarginY);
+    documento.text(this.convertDateToString(this.valorFechaRegistro_), pageWidth*0.85, initialMarginY);
 
     // LINEA 2
     initialMarginY = initialMarginY + 10
@@ -1064,33 +1105,39 @@ export class FileUploadComponent implements OnInit {
     documento.setFont('Calibri', 'bold');
     documento.text('MONEDA :', pageWidth*0.33,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.40, initialMarginY);
+    documento.text(this.comboMonedas.find(o => o.id === this.moneda.value).descripcion, pageWidth*0.40, initialMarginY);
     documento.setFont('Calibri', 'bold');
     documento.text('ESTADO :', pageWidth*0.52,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.59, initialMarginY);
+    documento.text(this.comboEstadoLiq.find(o => o.id === this.estado.value).descripcion , pageWidth*0.59, initialMarginY);
     documento.setFont('Calibri', 'bold');
     documento.text('SITUACION :', pageWidth*0.72,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.81, initialMarginY);
+    documento.text(this.comboSituacionLiq.find(o => o.id === this.situacion.value).descripcion, pageWidth*0.81, initialMarginY);
 
     // LINEA 3
     initialMarginY = initialMarginY + 10
     documento.setFont('Calibri', 'bold');
     documento.text('FECHA INI TRASLADO :', initialMarginX,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, initialMarginX +45, initialMarginY);
+    documento.text(this.convertDateToString(this.fechaIniTraslado.value), initialMarginX +45, initialMarginY);
     documento.setFont('Calibri', 'bold');
     documento.text('FECHA FIN TRASLADO :', pageWidth*0.33,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.48, initialMarginY);
+    documento.text(this.convertDateToString(this.fechaFinTraslado.value), pageWidth*0.48, initialMarginY);
     documento.setFont('Calibri', 'bold');
     documento.text('MOTIVO TRASLADO :', pageWidth*0.60,initialMarginY);
     documento.setFont('Calibri', 'normal');
-    documento.text(this.nroDocumentoLiq.value, pageWidth*0.72, initialMarginY);
+    let motivoTraslado_ = this.comboMotivosTraslado.find(o => o.id === this.motivoTraslado.value);
+    documento.text(motivoTraslado_.codigo + ' - ' + motivoTraslado_.descripcion, pageWidth*0.72, initialMarginY);
 
     // Carga registros con guias
     this.listadoGuias = this.rows;
+
+    let simbolo ='S/';
+    if (this.moneda.value === '1'){
+      simbolo = '$';
+    }
 
     //const listaGuiasPorDestino_ = this.groupBy2('idDestino');
     //console.log(listaGuiasPorDestino_(this.listadoGuias));
@@ -1098,27 +1145,43 @@ export class FileUploadComponent implements OnInit {
     //this.listaGuiasPorDestino = listaGuiasPorDestino_(this.listadoGuias);
     //console.log( this.listaGuiasPorDestino);
 
-    const grouped = this.groupBy1(this.listadoGuias, listadoGuias => listadoGuias.idDestino);
-    console.log( grouped.entries());
+    const grouped = this.groupByKey(this.listadoGuias, listadoGuias => listadoGuias.idProducto);
+    const sizeGroup = grouped.size;
+    let index = 0;
     grouped.forEach((arrayGuiasPorDestino: GuiaRemision[], key: string) => {
-      console.log(key, arrayGuiasPorDestino);
       initialMarginY = initialMarginY + 10;
-      documento.setFontSize(8);
+      index = index + 1;
+
+      // documento.addPage();
+      if (initialMarginY > defaultBreakPage ){
+        console.log('nueva pagina');
+        documento.addPage();
+        initialMarginY = defaulMarginY;
+      }
+      documento.setLineWidth(0.1);
+      documento.setDrawColor(0, 0, 0);
+      documento.setLineDash([0.5]);
       documento.line(initialMarginX, initialMarginY, pageWidth*0.95, initialMarginY);
-      initialMarginY = initialMarginY + 15;
+      initialMarginY = initialMarginY + 10;
+
 
       // Origen - Destino
-      documento.setFontSize(9);
+      // console.log(arrayGuiasPorDestino);
+      documento.setFontSize(8.5);
       documento.setFont('Calibri', 'bold');
       documento.text('ORIGEN :', initialMarginX,initialMarginY);
       documento.setFont('Calibri', 'normal');
-      documento.text(this.nroDocumentoLiq.value, initialMarginX + 20, initialMarginY);
+      documento.text(arrayGuiasPorDestino[0].remitente.refLarga2, initialMarginX + 20, initialMarginY);
       documento.setFont('Calibri', 'bold');
-      documento.text('DESTINO :', pageWidth*0.50,initialMarginY);
+      documento.text('DESTINO :', pageWidth*0.37,initialMarginY);
       documento.setFont('Calibri', 'normal');
-      documento.text(this.nroDocumentoLiq.value, pageWidth*0.60, initialMarginY);
+      documento.text(arrayGuiasPorDestino[0].destinatario.refLarga2, pageWidth*0.43, initialMarginY);
+      documento.setFont('Calibri', 'bold');
+      documento.text('INSUMO :', pageWidth*0.70,initialMarginY);
+      documento.setFont('Calibri', 'normal');
+      documento.text(arrayGuiasPorDestino[0].guiaDetalle[0].producto.nombre, pageWidth*0.76, initialMarginY);
 
-      const lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
+      let lista: Array<GuiasRemisionPDF> = new Array<GuiasRemisionPDF>();
       // Formateo de campos
       arrayGuiasPorDestino.forEach(function(itemGuias, index){
         const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
@@ -1126,14 +1189,16 @@ export class FileUploadComponent implements OnInit {
           guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
           guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
           guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
-          guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
+          guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nombre;
           guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
-          guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
           guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
+          guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
           guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
           guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
           lista.push(guiaPDF);
       }, this);
+
+
 
       // Pinta Tabla en PDF por origen-destino
       documento.autoTable({
@@ -1142,145 +1207,113 @@ export class FileUploadComponent implements OnInit {
         body: lista,
         styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
         theme: 'striped',
-        startY: initialMarginY + 15,
+        startY: initialMarginY + 7,
         showHead: 'firstPage',
+        pageBreak: 'auto',   // 'avoid' ,'auto'
         columns: [{header: 'Item', dataKey: 'id'},
                   {header: 'F.Traslado', dataKey: 'fechaTraslado'},
                   {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
                   {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
                   {header: 'Descripción', dataKey: 'descripcion'},
-                  {header: 'UM', dataKey: 'unidadMedida'},
                   {header: 'Cantidad', dataKey: 'cantidad'},
+                  {header: 'UM', dataKey: 'unidadMedida'},
                   {header: 'P.Unitario', dataKey: 'tarifa'},
                   {header: 'Sub Total', dataKey: 'subTotal'},
                 ]
       });
 
+
+      let totalCantidad_ = arrayGuiasPorDestino.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+      let totalImportes_ = arrayGuiasPorDestino.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
       initialMarginY = documento.lastAutoTable.finalY;
+      initialMarginY = initialMarginY + 10;
+      documento.setTextColor(0, 0, 255);
+      documento.setFont('Calibri', 'bold');
+      documento.text('TOTAL CANTIDAD :', pageWidth*0.52, initialMarginY);
+      documento.setFont('Calibri', 'normal');
+      documento.text(totalCantidad_.toFixed(2).toString(), pageWidth*0.65, initialMarginY);
+      documento.setFont('Calibri', 'bold');
+      documento.text('SUB TOTAL :', pageWidth*0.76, initialMarginY);
+      documento.setFont('Calibri', 'normal');
+      documento.text(simbolo + ' ' + totalImportes_.toFixed(2).toString(), pageWidth*0.85, initialMarginY);
+      initialMarginY = initialMarginY + 5;
+      documento.setTextColor(44, 44, 44);
 
-    });
+      if (index === sizeGroup){
+        console.log('es el final del map');
+        console.log(initialMarginY);
+        console.log(pageHeight);
 
-    // console.log(grouped.get("114"));
-
-    // this.listaGuiasPorDestino.forEach(function(arrayGuiasPorDestino, index){
-      // console.log(arrayGuiasPorDestino);
-    // });
-
-
-    // Formateo de Campos
-    // this.listadoGuias.forEach(function(itemGuias, index){
-    //   const guiaPDF: GuiasRemisionPDF = new GuiasRemisionPDF();
-    //     guiaPDF.id = index + 1;
-    //     guiaPDF.fechaTraslado = itemGuias.fechaTraslado.toString();
-    //     guiaPDF.guiaRemision = itemGuias.serie + '-' + itemGuias.secuencia;
-    //     guiaPDF.guiaCliente = itemGuias.serieCliente + '-' + itemGuias.secuenciaCliente;
-    //     guiaPDF.descripcion = itemGuias.guiaDetalle[0].producto.nemonico;
-    //     guiaPDF.ticketBalanza = itemGuias.ticketBalanza;
-    //     guiaPDF.unidadMedida = itemGuias.guiaDetalle[0].unidadMedida.valor;
-    //     guiaPDF.cantidad = itemGuias.totalCantidad.toFixed(2);
-    //     guiaPDF.tarifa = itemGuias.tarifa.toFixed(2);
-    //     guiaPDF.subTotal = itemGuias.subTotal.toFixed(2);
-    //     lista.push(guiaPDF);
-    // }, this);
+        if (initialMarginY > 0.75* pageHeight) {
+          documento.addPage();
+          initialMarginY = 10;
+        }
 
 
+        documento.setFontSize(9.5);
+        documento.setLineWidth(0.1);
+        documento.setDrawColor(0, 0, 0);
+        documento.setLineDash([0.5]);
+        documento.line(initialMarginX, initialMarginY, pageWidth*0.95, initialMarginY);
+        documento.line(initialMarginX, initialMarginY+1, pageWidth*0.95, initialMarginY+1);
+        initialMarginY = initialMarginY + 10;
+        let granTotalCantidad = this.listadoGuias.map(t => t.totalCantidad).reduce((acc, value) => acc + value, 0);
+        let granTotalImportes = this.listadoGuias.map(t => t.subTotal).reduce((acc, value) => acc + value, 0);
+        let granTotalItems = this.listadoGuias.length;
 
+        // documento.setTextColor(44, 44, 44);
+        documento.setFont('Calibri', 'bold');
+        documento.text('TOTAL ITEMS : ' , initialMarginX, initialMarginY);
+        documento.setFont('Calibri', 'normal');
+        documento.text(granTotalItems.toString(), pageWidth*0.15, initialMarginY);
 
+        documento.setFont('Calibri', 'bold');
+        documento.text('TOTAL CANTIDAD :', pageWidth*0.52, initialMarginY);
+        documento.setFont('Calibri', 'normal');
+        documento.text(granTotalCantidad.toFixed(2).toString(), pageWidth*0.65, initialMarginY);
 
+        documento.setFont('Calibri', 'bold');
+        documento.text('SUB TOTAL :', pageWidth*0.76, initialMarginY);
+        documento.setFont('Calibri', 'normal');
+        documento.text(simbolo + ' ' + this._decimalPipe.transform(granTotalImportes.toFixed(2).toString(),"1.2-2"), pageWidth*0.85, initialMarginY);
 
+        initialMarginY = initialMarginY + 10;
+        documento.setFont('Calibri', 'bold');
+        documento.text('I.G.V. :', pageWidth*0.76, initialMarginY);
+        documento.setFont('Calibri', 'normal');
+        documento.text(simbolo + ' ' + this._decimalPipe.transform(this.igvAplicado_.toFixed(2).toString(),"1.2-2"), pageWidth*0.85, initialMarginY);
 
-    // documento.line(30, 20, 80, 20);
+        initialMarginY = initialMarginY + 5;
+        documento.setLineWidth(0.1);
+        documento.setDrawColor(0, 0, 0);
+        documento.setLineDash([0.5]);
+        documento.line(pageWidth*0.76, initialMarginY, pageWidth*0.95, initialMarginY);
 
-    // documento.text('With content', 50, 40);
-    // documento.setFontSize(11);
-    // documento.setTextColor(100);
+        initialMarginY = initialMarginY + 10;
+        documento.setFont('Calibri', 'bold');
+        documento.text('TOTAL :', pageWidth*0.76, initialMarginY);
+        documento.setFontSize(10);
+        documento.text(simbolo + ' ' + this._decimalPipe.transform(this.totalImpGuiasLiq_.toFixed(2).toString(),"1.2-2"), pageWidth*0.85, initialMarginY);
 
+        initialMarginY = initialMarginY + 10;
+        documento.setLineWidth(0.1);
+        documento.setDrawColor(0, 0, 0);
+        documento.setLineDash([0.5]);
+        documento.line(initialMarginX, initialMarginY, pageWidth*0.95, initialMarginY);
+        console.log(initialMarginY)
+      }
+    })
 
-    // documento.autoTable({
-    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
-    //   // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-    //   body:  [
-    //     [this.usuarioSession.empresa.razonSocial, '2020/10/01'],
-    //   ],
-    //   bodyStyles: {
-    //     font: 'helvetica', fontSize: 9, overflow: 'ellipsize'
-    //   },
-    //   // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
-    //   theme: 'plain',
-    //   startY: finalY + 10,
-    //   showHead: 'firstPage',
-    //   columns: [{header: 'EMPRESA',  columnWidth: 200},
-    //             {header: 'FECHA REGISTRO', columnWidth: 10},
-    //           ],
-    //   columnStyles: {
-    //         empresa: {
-    //             columnWidth: 200, fontSize: 10
-    //         },
-    //         fechaRegistro: {
-    //             columnWidth: 10, fontSize: 10, halign: 'right'
-    //         }
-    //    },
-    // });
-
-    // finalY = documento.lastAutoTable.finalY;
-
-    // documento.autoTable({
-    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
-    //   // columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-    //   body:  [
-    //     [this.nroDocumentoLiq.value, 'Soles', 'Vigente', 'Pendiente'],
-    //   ],
-    //   bodyStyles: {
-    //     font: 'helvetica', fontSize: 10, overflow: 'ellipsize'
-    //   },
-    //   // styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 10},
-    //   theme: 'plain',
-    //   startY: finalY + 50,
-    //   showHead: 'firstPage',
-    //   columns: [{header: 'NRO LIQUIDACION:',  columnWidth: 100},
-    //             {header: 'MONEDA:', columnWidth: 10},
-    //             {header: 'ESTADO:', columnWidth: 10},
-    //             {header: 'SITUACION:', columnWidth: 10},
-    //           ],
-    //   columnStyles: {
-    //         //empresa: {
-    //          //   columnWidth: 200, fontSize: 10
-    //         //},
-    //         //fechaRegistro: {
-    //           //  columnWidth: 10, fontSize: 10, halign: 'right'
-    //         //}
-    //    },
-    // });
-
-    finalY = documento.lastAutoTable.finalY;
-
-        // jsPDF 1.4+ uses getWidth, <1.4 uses .width
+    // jsPDF 1.4+ uses getWidth, <1.4 uses .width
     // var pageSize = documento.internal.pageSize;
     // var pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth();
     // var text = documento.splitTextToSize('mucho texto', pageWidth - 35, {});
     // documento.text(text, 14, 30);
 
-    // documento.autoTable({
-    //   // headStyles: {fillColor: [155, 89, 182]}, // Purple
-    //   columnStyles: {id: {halign: 'center'}, text: {cellWidth: 'auto'}},
-    //   body: lista,
-    //   styles: {overflow: 'ellipsize', cellWidth: 'wrap', fontSize: 8},
-    //   theme: 'striped',
-    //   startY: finalY + 10,
-    //   showHead: 'firstPage',
-    //   columns: [{header: 'Item', dataKey: 'id'},
-    //             {header: 'F.Traslado', dataKey: 'fechaTraslado'},
-    //             {header: 'Guia de Remisión', dataKey: 'guiaRemision'},
-    //             {header: 'Guia Rem. Cliente', dataKey: 'guiaCliente'},
-    //             {header: 'Descripción', dataKey: 'descripcion'},
-    //             {header: 'UM', dataKey: 'unidadMedida'},
-    //             {header: 'Cantidad', dataKey: 'cantidad'},
-    //             {header: 'P.Unitario', dataKey: 'tarifa'},
-    //             {header: 'Sub Total', dataKey: 'subTotal'},
-    //           ]
-    // });
-   // documento.text("hola", 28, documento.lastAutoTable.finalY + 10);
-    documento.save('table.pdf');
+   // GRABA DOCUMENTO PDF
+    // documento.save(FILE_NAME_REPORTE + this.nroDocumentoLiq.value + '_' + this.convertDateToString(new Date()) + EXTENSION);
+    documento.save(FILE_NAME_REPORTE + this.nroDocumentoLiq.value + '_' + EXTENSION);
+
 
 
   }

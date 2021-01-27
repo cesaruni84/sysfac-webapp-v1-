@@ -1,7 +1,7 @@
 import { InlineEditComponent } from './file-upload/inline-edit/inline-edit.component';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import {NgxMaskModule} from 'ngx-mask';
 import { MAT_DATE_LOCALE, DateAdapter, MAT_DATE_FORMATS, MatTooltipModule } from '@angular/material';
 import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
@@ -142,4 +142,4 @@ import { FacturaAuditoriaComponent } from './wizard/factura-auditoria/factura-au
 })
 export class AppFormsModule {
 
-} 
+}

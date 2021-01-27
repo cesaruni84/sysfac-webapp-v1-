@@ -125,12 +125,12 @@
 
                         <mat-divider></mat-divider>
                         <mat-card-content class="p-0 m-0">
-                            <div class="mat-box-shadow m-0">
+                            <div class="mat-box-shadow m-0" id="idTabla" >
 
                                 <mat-divider></mat-divider>
                                 <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
 
-                                <ngx-datatable ngx-resize-watcher #table id="idTabla" class="material expandable" [columnMode]="'force'" [scrollbarH]="'false'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'desc'}, {prop: 'secuenciaCliente', dir: 'desc'}]"
+                                <ngx-datatable ngx-resize-watcher #mytable class="material expandable" [columnMode]="'force'" [scrollbarH]="'false'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [rows]="rows" [messages]="messages2" [sorts]="[{prop: 'destinatario.nombre', dir: 'desc'}, {prop: 'secuenciaCliente', dir: 'desc'}]"
                                     [groupRowsBy]="sortBy" [groupExpansionDefault]="true">
                                     <!-- Group Header Template -->
                                     <ngx-datatable-group-header [rowHeight]="60" #myGroupHeader (toggle)="onDetailToggle($event)">
@@ -290,7 +290,7 @@
                             <div fxLayout="row" fxLayout.xs="column" [style.fontSize.px]="13" fxLayoutWrap fxLayoutGap="1.5%" fxLayoutAlign="left">
                                 <div fxFlex="80px" class="p-05">
                                 </div>
-                                <span fxFlex="620px"></span>
+                                <span fxFlex="626px"></span>
                                 <div fxFlex="80px">
                                     <mat-label style="color:rgba(0, 0, 0, 0.54);"><b>I.G.V. : </b> </mat-label>
                                 </div>
