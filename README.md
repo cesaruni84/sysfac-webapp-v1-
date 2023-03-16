@@ -1,10 +1,10 @@
-# Egret
+# SysFac
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli).
 
 # Doc
 
-[Egret Doc](http://egret-doc.mhrafi.com/)
+
 
 ## Development server
 
